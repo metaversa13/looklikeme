@@ -1,0 +1,462 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================
+// ПОЛЬЗОВАТЕЛИ И АВТОРИЗАЦИЯ
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+
+  // Подписка
+  subscriptionType     SubscriptionType @default(FREE)
+  subscriptionEndDate  DateTime?
+  lifetimeAccess       Boolean          @default(false)
+
+  // Статистика
+  totalGenerations     Int              @default(0)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  // Реферальная программа
+  referralCode         String           @unique @default(cuid())
+  referredBy           String?
+  bonusGenerations     Int              @default(0)
+  bonusExpiresAt       DateTime?
+
+  // Связи
+  accounts             Account[]
+  sessions             Session[]
+  generations          Generation[]
+  favorites            Favorite[]
+  collections          Collection[]
+  dailyLimits          DailyLimit[]
+  achievements         UserAchievement[]
+  stylePreferences     StylePreference[]
+  chatMessages         ChatMessage[]
+
+  @@index([email])
+  @@index([referralCode])
+  @@map("users")
+}
+
+enum SubscriptionType {
+  FREE
+  PREMIUM
+  LIFETIME
+}
+
+// NextAuth.js tables
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================
+// СТИЛИ ОДЕЖДЫ
+// ============================================
+
+model Style {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  slug            String   @unique
+  description     String   @db.Text
+  promptTemplate  String   @db.Text
+  isPremium       Boolean  @default(false)
+  category        String   // "formal", "casual", "sport", etc.
+  iconUrl         String?
+  exampleImageUrl String?
+  sortOrder       Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Связи
+  generations     Generation[]
+  preferences     StylePreference[]
+
+  @@index([isPremium])
+  @@index([isActive])
+  @@map("styles")
+}
+
+// Предпочтения пользователя по стилям (для умных рекомендаций)
+model StylePreference {
+  id        String   @id @default(cuid())
+  userId    String
+  styleId   String
+  useCount  Int      @default(0)
+  lastUsed  DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  style     Style    @relation(fields: [styleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, styleId])
+  @@index([userId])
+  @@map("style_preferences")
+}
+
+// ============================================
+// ЦВЕТОВЫЕ ПАЛИТРЫ
+// ============================================
+
+model ColorPalette {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  colors      String[] // Array of hex colors: ["#FFDAB9", "#98FF98"]
+  isPremium   Boolean  @default(true)  // ВСЕ палитры Premium
+  season      String?  // "spring", "summer", "autumn", "winter"
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  // Связи
+  generations Generation[]
+
+  @@index([isPremium])
+  @@map("color_palettes")
+}
+
+// ============================================
+// ЛОКАЦИИ (ФОНЫ)
+// ============================================
+
+model Location {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  slug            String   @unique
+  description     String   @db.Text
+  promptTemplate  String   @db.Text  // Промпт для фона
+  isPremium       Boolean  @default(false)
+  iconEmoji       String?  // Эмодзи для иконки
+  exampleImageUrl String?
+  sortOrder       Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Связи
+  generations     Generation[]
+
+  @@index([isPremium])
+  @@index([isActive])
+  @@map("locations")
+}
+
+// ============================================
+// ГЕНЕРАЦИИ ОБРАЗОВ
+// ============================================
+
+model Generation {
+  id                String   @id @default(cuid())
+  userId            String
+  styleId           String?  // Опциональный - для связи с таблицей Style
+  paletteId         String?
+  locationId        String?  // ID локации (фона)
+
+  // Slug-и для быстрого доступа (без JOIN)
+  styleSlug         String?  // "casual-chic", "business", etc.
+  locationSlug      String?  // "studio", "city-day", etc.
+  paletteSlug       String?  // "spring", "summer", etc.
+
+  // URLs изображений
+  originalPhotoUrl  String?  // Оригинальное фото пользователя (опционально)
+  processedPhotoUrl String?  // Фото после удаления фона
+  resultImageUrl    String   // Сгенерированный образ
+
+  // Метаданные генерации
+  prompt            String   @db.Text
+  replicateId       String?  // ID задачи в Replicate
+  generationTime    Int?     // Время генерации в мс
+
+  // Статус
+  status            GenerationStatus @default(PENDING)
+  error             String?  @db.Text
+
+  // Timestamps
+  createdAt         DateTime @default(now())
+  expiresAt         DateTime? // Для FREE пользователей (30 дней)
+
+  // Связи
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  style             Style?          @relation(fields: [styleId], references: [id])
+  palette           ColorPalette?   @relation(fields: [paletteId], references: [id])
+  location          Location?       @relation(fields: [locationId], references: [id])
+  favorite          Favorite?
+  collectionItems   CollectionItem[]
+
+  @@index([userId])
+  @@index([styleId])
+  @@index([createdAt])
+  @@index([expiresAt])
+  @@map("generations")
+}
+
+enum GenerationStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// ============================================
+// ИЗБРАННОЕ И КОЛЛЕКЦИИ
+// ============================================
+
+model Favorite {
+  id           String     @id @default(cuid())
+  userId       String
+  generationId String     @unique
+  createdAt    DateTime   @default(now())
+
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generation   Generation @relation(fields: [generationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, generationId])
+  @@index([userId])
+  @@map("favorites")
+}
+
+model Collection {
+  id          String           @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       CollectionItem[]
+
+  @@index([userId])
+  @@map("collections")
+}
+
+model CollectionItem {
+  id           String     @id @default(cuid())
+  collectionId String
+  generationId String
+  addedAt      DateTime   @default(now())
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  generation   Generation @relation(fields: [generationId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, generationId])
+  @@index([collectionId])
+  @@map("collection_items")
+}
+
+// ============================================
+// ЛИМИТЫ И ПОДПИСКИ
+// ============================================
+
+model DailyLimit {
+  id               String   @id @default(cuid())
+  userId           String
+  date             DateTime @db.Date
+  generationsCount Int      @default(0)
+
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("daily_limits")
+}
+
+model Purchase {
+  id             String         @id @default(cuid())
+  userId         String
+  type           PurchaseType
+  amount         Int            // в копейках
+  currency       String         @default("RUB")
+  status         PurchaseStatus @default(PENDING)
+
+  // Детали пакета
+  packageType    PackageType?
+  generationsAdded Int?
+
+  // Детали подписки
+  subscriptionPeriod String?    // "month", "lifetime"
+  subscriptionEndDate DateTime?
+
+  // Платежная информация
+  paymentProvider String?       // "yukassa", "manual"
+  paymentId       String?       // ID транзакции
+
+  createdAt      DateTime       @default(now())
+  paidAt         DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@map("purchases")
+}
+
+enum PurchaseType {
+  PACKAGE
+  SUBSCRIPTION
+  LIFETIME
+}
+
+enum PackageType {
+  PACK_20   // 20 генераций
+  PACK_100  // 100 генераций
+}
+
+enum PurchaseStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// ============================================
+// ДОСТИЖЕНИЯ И ГЕЙМИФИКАЦИЯ
+// ============================================
+
+model Achievement {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  icon        String   // Emoji или URL
+  requirement String   @db.Text // JSON с условиями
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  // Связи
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime    @default(now())
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@map("user_achievements")
+}
+
+// ============================================
+// AI ЧАТ-БОТ СТИЛИСТ
+// ============================================
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  role      String   // "user" или "assistant"
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("chat_messages")
+}
+
+// ============================================
+// РЕФЕРАЛЬНАЯ ПРОГРАММА
+// ============================================
+
+model Referral {
+  id              String   @id @default(cuid())
+  referrerId      String   // Кто пригласил
+  referredUserId  String   @unique // Кого пригласил
+  bonusGranted    Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  activatedAt     DateTime? // Когда реферал сделал первую генерацию
+
+  @@index([referrerId])
+  @@map("referrals")
+}
+
+// ============================================
+// АНАЛИТИКА И МЕТРИКИ
+// ============================================
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  userId     String?
+  event      String   // "generation_created", "style_selected", "premium_purchased"
+  properties Json?    // Дополнительные данные
+  createdAt  DateTime @default(now())
+
+  @@index([event])
+  @@index([createdAt])
+  @@map("analytics_events")
+}
+
+// ============================================
+// СИСТЕМА УВЕДОМЛЕНИЙ
+// ============================================
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // "achievement", "bonus", "subscription_expiring"
+  title     String
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}

@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 0%; /* Черный фон */
+    --foreground: 60 29% 88%; /* Кремовый текст */
+
+    --card: 0 0% 3%;
+    --card-foreground: 60 29% 88%;
+
+    --popover: 0 0% 3%;
+    --popover-foreground: 60 29% 88%;
+
+    --primary: 45 65% 52%; /* Золотой */
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 60 29% 88%; /* Кремовый */
+    --secondary-foreground: 0 0% 0%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 60 29% 70%;
+
+    --accent: 45 65% 52%; /* Золотой */
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 60 29% 88%;
+
+    --border: 60 29% 20%;
+    --input: 60 29% 20%;
+    --ring: 45 65% 52%; /* Золотой */
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 60 29% 88%;
+
+    --card: 0 0% 3%;
+    --card-foreground: 60 29% 88%;
+
+    --popover: 0 0% 3%;
+    --popover-foreground: 60 29% 88%;
+
+    --primary: 45 65% 52%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 60 29% 88%;
+    --secondary-foreground: 0 0% 0%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 60 29% 70%;
+
+    --accent: 45 65% 52%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 60 29% 88%;
+
+    --border: 60 29% 20%;
+    --input: 60 29% 20%;
+    --ring: 45 65% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Кастомные стили LookLikeme */
+@layer utilities {
+  .vogue-gradient {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  }
+
+  .gold-gradient {
+    background: linear-gradient(135deg, #D4AF37 0%, #B8952D 100%);
+  }
+
+  .cream-gradient {
+    background: linear-gradient(135deg, #F5F5DC 0%, #E5DDB3 100%);
+  }
+
+  /* Glassmorphism для карточек */
+  .glass-card {
+    background: rgba(245, 245, 220, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(245, 245, 220, 0.1);
+  }
+
+  /* Золотой shimmer эффект */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(212, 175, 55, 0.2),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  /* Премиум бейдж */
+  .premium-badge {
+    @apply bg-gradient-to-r from-gold-500 to-gold-600 text-black font-semibold px-3 py-1 rounded-full text-xs;
+  }
+
+  /* Hover эффект для кнопок */
+  .btn-gold-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:shadow-gold-500/50 hover:scale-105;
+  }
+}
+
+/* Скроллбар */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #B8952D;
+}
+
+/* Глобальные transition */
+* {
+  @apply transition-colors duration-200;
+}

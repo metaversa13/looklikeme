@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результат - Looklikeme</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#D4AF37',
+                        cream: '#F5F5DC',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .font-serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .confetti {
+            animation: confetti 3s ease-out;
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-black text-cream min-h-screen pb-24">
+
+    <!-- Header -->
+    <header class="border-b border-gold/20 bg-black/95 backdrop-blur sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="my-images.html" class="flex items-center gap-2 text-cream/70 hover:text-cream transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                К галерее
+            </a>
+            <h1 class="font-serif text-xl font-bold text-gold">Looklikeme</h1>
+            <button class="text-cream/70 hover:text-cream">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+
+        <!-- Success Message -->
+        <div class="max-w-2xl mx-auto mb-8 slide-in">
+            <div class="bg-gold/10 border border-gold/30 rounded-xl p-4 text-center">
+                <div class="text-3xl mb-2">✨</div>
+                <h2 class="font-serif text-2xl font-bold text-gold mb-1">Ваш образ готов!</h2>
+                <p class="text-sm text-cream/70">Сгенерировано в стиле Casual Chic с палитрой Весна</p>
+            </div>
+        </div>
+
+        <!-- Image Result -->
+        <div class="max-w-2xl mx-auto mb-8 slide-in">
+            <div class="bg-cream/5 border-2 border-gold/30 rounded-2xl overflow-hidden">
+                <!-- Image with Watermark -->
+                <div class="relative aspect-[3/4] bg-gradient-to-br from-gold/20 to-cream/10 flex items-center justify-center">
+                    <div class="text-center text-cream/30">
+                        <div class="text-6xl mb-4">👗</div>
+                        <div class="text-lg font-serif">Ваш образ в стиле<br>Casual Chic</div>
+                    </div>
+                    <!-- Watermark for FREE users -->
+                    <div class="absolute bottom-4 right-4 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-lg">
+                        <div class="text-gold text-sm font-semibold">Looklikeme</div>
+                    </div>
+                </div>
+
+                <!-- Image Info -->
+                <div class="p-4 border-t border-gold/20">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <h3 class="font-semibold mb-1">Casual Chic</h3>
+                            <div class="text-xs text-cream/60">Создано 26 января, 15:42</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="w-10 h-10 bg-cream/10 hover:bg-cream/20 rounded-lg flex items-center justify-center transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                            </button>
+                            <button class="w-10 h-10 bg-cream/10 hover:bg-cream/20 rounded-lg flex items-center justify-center transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="max-w-2xl mx-auto mb-8 grid grid-cols-2 gap-3">
+            <button class="bg-gold hover:bg-gold/90 text-black font-semibold py-4 rounded-xl transition flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Скачать
+            </button>
+            <button class="bg-cream/10 hover:bg-cream/20 text-cream font-semibold py-4 rounded-xl transition flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                Найти на WB
+            </button>
+        </div>
+
+        <!-- Upsell for Premium (Soft Paywall) -->
+        <div class="max-w-2xl mx-auto mb-8">
+            <div class="bg-gradient-to-r from-gold/20 to-cream/10 border border-gold/30 rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 text-4xl">👑</div>
+                    <div class="flex-1">
+                        <h3 class="font-serif text-xl font-bold mb-2 text-gold">Улучшите результат</h3>
+                        <p class="text-sm text-cream/80 mb-4">С Premium вы получите образ без водяного знака и доступ к 17 дополнительным стилям</p>
+                        <div class="flex gap-3">
+                            <button class="bg-gold hover:bg-gold/90 text-black px-6 py-2 rounded-lg text-sm font-semibold transition">
+                                Premium за 199₽/мес
+                            </button>
+                            <button class="text-gold hover:underline text-sm">
+                                Пакет 20 генераций →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Similar Styles Suggestion -->
+        <div class="max-w-2xl mx-auto mb-8">
+            <h3 class="font-semibold mb-4 flex items-center gap-2">
+                <span>Попробуйте другие стили</span>
+                <span class="text-xs bg-gold/20 text-gold px-2 py-1 rounded">FREE</span>
+            </h3>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-cream/5 border border-cream/20 hover:border-gold/50 rounded-xl p-3 cursor-pointer transition">
+                    <div class="aspect-[3/4] bg-gradient-to-br from-cream/20 to-gold/10 rounded-lg mb-2 flex items-center justify-center">
+                        <span class="text-3xl">💼</span>
+                    </div>
+                    <div class="text-sm font-medium">Business</div>
+                    <div class="text-xs text-cream/60">Деловой стиль</div>
+                </div>
+                <div class="bg-cream/5 border border-cream/20 hover:border-gold/50 rounded-xl p-3 cursor-pointer transition">
+                    <div class="aspect-[3/4] bg-gradient-to-br from-gold/20 to-cream/20 rounded-lg mb-2 flex items-center justify-center">
+                        <span class="text-3xl">✨</span>
+                    </div>
+                    <div class="text-sm font-medium">Evening</div>
+                    <div class="text-xs text-cream/60">Вечерний образ</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievement Unlocked (Easter Egg) -->
+        <div class="max-w-2xl mx-auto slide-in">
+            <div class="bg-gold/10 border border-gold/30 rounded-xl p-4 flex items-center gap-4">
+                <div class="flex-shrink-0 text-4xl">🏆</div>
+                <div class="flex-1">
+                    <div class="font-semibold mb-1">Достижение разблокировано!</div>
+                    <div class="text-sm text-cream/70">Стилист — Создайте первый образ</div>
+                </div>
+                <div class="text-gold text-sm font-semibold">+1</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Bottom Action -->
+    <div class="fixed bottom-0 left-0 right-0 bg-black border-t border-gold/20 p-4">
+        <div class="container mx-auto max-w-2xl">
+            <button class="w-full bg-gold hover:bg-gold/90 text-black font-semibold py-4 rounded-xl transition">
+                Создать ещё образ
+            </button>
+            <div class="text-center mt-2 text-xs text-cream/50">
+                Осталось 2 из 3 генераций сегодня
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

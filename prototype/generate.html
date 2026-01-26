@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор стиля - Looklikeme</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#D4AF37',
+                        cream: '#F5F5DC',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .font-serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .style-card {
+            transition: all 0.3s ease;
+        }
+
+        .style-card:hover {
+            transform: scale(1.05);
+        }
+
+        .style-card.selected {
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-black text-cream min-h-screen pb-24">
+
+    <!-- Header -->
+    <header class="border-b border-gold/20 bg-black/95 backdrop-blur sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 text-cream/70 hover:text-cream transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Назад
+            </a>
+            <h1 class="font-serif text-xl font-bold text-gold">Looklikeme</h1>
+            <div class="w-16"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+
+        <!-- Progress Steps -->
+        <div class="max-w-2xl mx-auto mb-8">
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gold flex items-center justify-center text-black text-sm font-semibold">✓</div>
+                    <span class="text-sm font-medium">Фото</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-gold mx-3"></div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gold flex items-center justify-center text-black text-sm font-semibold">2</div>
+                    <span class="text-sm font-medium text-gold">Стиль</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-cream/20 mx-3"></div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-cream/20 flex items-center justify-center text-sm">3</div>
+                    <span class="text-sm text-cream/50">Результат</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Preview -->
+        <div class="max-w-2xl mx-auto mb-8">
+            <div class="bg-cream/5 border border-gold/30 rounded-xl p-4 flex items-center gap-4">
+                <div class="w-20 h-20 bg-cream/10 rounded-lg flex items-center justify-center">
+                    <svg class="w-10 h-10 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <div class="text-sm font-medium mb-1">Ваше фото загружено</div>
+                    <div class="text-xs text-cream/50">image.jpg • 2.4 MB</div>
+                </div>
+                <button class="text-gold hover:text-gold/70 text-sm">Изменить</button>
+            </div>
+        </div>
+
+        <!-- Section Title -->
+        <div class="max-w-2xl mx-auto mb-6">
+            <h2 class="font-serif text-3xl font-bold mb-2 text-gold">Выберите стиль</h2>
+            <p class="text-cream/70">3 бесплатных стиля • 17 стилей в Premium</p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="max-w-2xl mx-auto mb-6 flex gap-2 overflow-x-auto pb-2">
+            <button class="px-4 py-2 rounded-full bg-gold text-black text-sm font-medium whitespace-nowrap">Все стили</button>
+            <button class="px-4 py-2 rounded-full bg-cream/10 text-cream/70 hover:bg-cream/20 text-sm whitespace-nowrap transition">Повседневные</button>
+            <button class="px-4 py-2 rounded-full bg-cream/10 text-cream/70 hover:bg-cream/20 text-sm whitespace-nowrap transition">Деловые</button>
+            <button class="px-4 py-2 rounded-full bg-cream/10 text-cream/70 hover:bg-cream/20 text-sm whitespace-nowrap transition">Вечерние</button>
+        </div>
+
+        <!-- Styles Grid -->
+        <div class="max-w-2xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+
+            <!-- Free Style 1 -->
+            <div class="style-card selected bg-cream/5 border-2 border-gold/30 rounded-xl p-4 cursor-pointer">
+                <div class="aspect-[3/4] bg-gradient-to-br from-gold/20 to-cream/10 rounded-lg mb-3 flex items-center justify-center">
+                    <span class="text-4xl">👗</span>
+                </div>
+                <div class="flex items-start justify-between mb-1">
+                    <h3 class="font-semibold text-sm">Casual Chic</h3>
+                    <span class="text-xs bg-gold/20 text-gold px-2 py-0.5 rounded">FREE</span>
+                </div>
+                <p class="text-xs text-cream/60">Повседневный стиль</p>
+            </div>
+
+            <!-- Free Style 2 -->
+            <div class="style-card bg-cream/5 border-2 border-cream/20 rounded-xl p-4 cursor-pointer hover:border-gold/50">
+                <div class="aspect-[3/4] bg-gradient-to-br from-cream/20 to-gold/10 rounded-lg mb-3 flex items-center justify-center">
+                    <span class="text-4xl">💼</span>
+                </div>
+                <div class="flex items-start justify-between mb-1">
+                    <h3 class="font-semibold text-sm">Business</h3>
+                    <span class="text-xs bg-gold/20 text-gold px-2 py-0.5 rounded">FREE</span>
+                </div>
+                <p class="text-xs text-cream/60">Деловой стиль</p>
+            </div>
+
+            <!-- Free Style 3 -->
+            <div class="style-card bg-cream/5 border-2 border-cream/20 rounded-xl p-4 cursor-pointer hover:border-gold/50">
+                <div class="aspect-[3/4] bg-gradient-to-br from-gold/20 to-cream/20 rounded-lg mb-3 flex items-center justify-center">
+                    <span class="text-4xl">✨</span>
+                </div>
+                <div class="flex items-start justify-between mb-1">
+                    <h3 class="font-semibold text-sm">Evening</h3>
+                    <span class="text-xs bg-gold/20 text-gold px-2 py-0.5 rounded">FREE</span>
+                </div>
+                <p class="text-xs text-cream/60">Вечерний образ</p>
+            </div>
+
+            <!-- Premium Style (Locked) -->
+            <div class="style-card bg-cream/5 border-2 border-cream/20 rounded-xl p-4 cursor-pointer hover:border-gold/50 relative overflow-hidden">
+                <div class="aspect-[3/4] bg-gradient-to-br from-cream/10 to-gold/10 rounded-lg mb-3 flex items-center justify-center relative">
+                    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-10">
+                        <div class="text-center">
+                            <svg class="w-8 h-8 mx-auto mb-2 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                            </svg>
+                            <div class="text-xs text-gold font-medium">Premium</div>
+                        </div>
+                    </div>
+                    <span class="text-4xl">🎨</span>
+                </div>
+                <div class="flex items-start justify-between mb-1">
+                    <h3 class="font-semibold text-sm">Bohemian</h3>
+                    <span class="text-xs bg-cream/20 text-cream px-2 py-0.5 rounded">PRO</span>
+                </div>
+                <p class="text-xs text-cream/60">Богемный шик</p>
+            </div>
+
+            <!-- Premium Style (Locked) -->
+            <div class="style-card bg-cream/5 border-2 border-cream/20 rounded-xl p-4 cursor-pointer hover:border-gold/50 relative overflow-hidden">
+                <div class="aspect-[3/4] bg-gradient-to-br from-gold/10 to-cream/20 rounded-lg mb-3 flex items-center justify-center relative">
+                    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-10">
+                        <div class="text-center">
+                            <svg class="w-8 h-8 mx-auto mb-2 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                            </svg>
+                            <div class="text-xs text-gold font-medium">Premium</div>
+                        </div>
+                    </div>
+                    <span class="text-4xl">👠</span>
+                </div>
+                <div class="flex items-start justify-between mb-1">
+                    <h3 class="font-semibold text-sm">Glamour</h3>
+                    <span class="text-xs bg-cream/20 text-cream px-2 py-0.5 rounded">PRO</span>
+                </div>
+                <p class="text-xs text-cream/60">Гламурный образ</p>
+            </div>
+
+            <!-- Premium Style (Locked) -->
+            <div class="style-card bg-cream/5 border-2 border-cream/20 rounded-xl p-4 cursor-pointer hover:border-gold/50 relative overflow-hidden">
+                <div class="aspect-[3/4] bg-gradient-to-br from-cream/20 to-gold/20 rounded-lg mb-3 flex items-center justify-center relative">
+                    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-10">
+                        <div class="text-center">
+                            <svg class="w-8 h-8 mx-auto mb-2 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                            </svg>
+                            <div class="text-xs text-gold font-medium">Premium</div>
+                        </div>
+                    </div>
+                    <span class="text-4xl">🏃‍♀️</span>
+                </div>
+                <div class="flex items-start justify-between mb-1">
+                    <h3 class="font-semibold text-sm">Sporty</h3>
+                    <span class="text-xs bg-cream/20 text-cream px-2 py-0.5 rounded">PRO</span>
+                </div>
+                <p class="text-xs text-cream/60">Спортивный шик</p>
+            </div>
+
+        </div>
+
+        <!-- Location Section -->
+        <div class="max-w-2xl mx-auto mb-8">
+            <h3 class="font-semibold mb-3">Выберите локацию</h3>
+            <p class="text-cream/70 text-sm mb-4">1 бесплатная локация • 3 локации в Premium</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                <!-- Free Location: Studio -->
+                <div class="bg-cream/5 border-2 border-gold rounded-xl p-4 cursor-pointer">
+                    <div class="aspect-square bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg mb-3 flex items-center justify-center">
+                        <span class="text-4xl">🎨</span>
+                    </div>
+                    <div class="flex items-start justify-between mb-1">
+                        <h4 class="font-semibold text-sm">Студия</h4>
+                        <span class="text-xs bg-gold/20 text-gold px-2 py-0.5 rounded">FREE</span>
+                    </div>
+                    <p class="text-xs text-cream/60">Однотонный фон</p>
+                </div>
+
+                <!-- Premium Location: City Day -->
+                <div class="bg-cream/5 border-2 border-cream/20 hover:border-gold/50 rounded-xl p-4 cursor-pointer transition">
+                    <div class="aspect-square bg-gradient-to-br from-sky-400 to-blue-300 rounded-lg mb-3 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-10">
+                            <div class="text-center">
+                                <svg class="w-6 h-6 mx-auto mb-1 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                                </svg>
+                                <div class="text-xs text-gold font-medium">Premium</div>
+                            </div>
+                        </div>
+                        <span class="text-4xl">🌆</span>
+                    </div>
+                    <div class="flex items-start justify-between mb-1">
+                        <h4 class="font-semibold text-sm">Город (день)</h4>
+                        <span class="text-xs bg-cream/20 text-cream px-2 py-0.5 rounded">PRO</span>
+                    </div>
+                    <p class="text-xs text-cream/60">Городская улица</p>
+                </div>
+
+                <!-- Premium Location: City Night -->
+                <div class="bg-cream/5 border-2 border-cream/20 hover:border-gold/50 rounded-xl p-4 cursor-pointer transition">
+                    <div class="aspect-square bg-gradient-to-br from-indigo-900 to-purple-900 rounded-lg mb-3 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-10">
+                            <div class="text-center">
+                                <svg class="w-6 h-6 mx-auto mb-1 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                                </svg>
+                                <div class="text-xs text-gold font-medium">Premium</div>
+                            </div>
+                        </div>
+                        <span class="text-4xl">🌃</span>
+                    </div>
+                    <div class="flex items-start justify-between mb-1">
+                        <h4 class="font-semibold text-sm">Город (ночь)</h4>
+                        <span class="text-xs bg-cream/20 text-cream px-2 py-0.5 rounded">PRO</span>
+                    </div>
+                    <p class="text-xs text-cream/60">Ночные огни</p>
+                </div>
+
+                <!-- Premium Location: Runway -->
+                <div class="bg-cream/5 border-2 border-cream/20 hover:border-gold/50 rounded-xl p-4 cursor-pointer transition">
+                    <div class="aspect-square bg-gradient-to-br from-gold/30 to-yellow-200/30 rounded-lg mb-3 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-10">
+                            <div class="text-center">
+                                <svg class="w-6 h-6 mx-auto mb-1 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                                </svg>
+                                <div class="text-xs text-gold font-medium">Premium</div>
+                            </div>
+                        </div>
+                        <span class="text-4xl">✨</span>
+                    </div>
+                    <div class="flex items-start justify-between mb-1">
+                        <h4 class="font-semibold text-sm">Подиум</h4>
+                        <span class="text-xs bg-cream/20 text-cream px-2 py-0.5 rounded">PRO</span>
+                    </div>
+                    <p class="text-xs text-cream/60">Модный показ</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Color Palette Section -->
+        <div class="max-w-2xl mx-auto mb-8">
+            <h3 class="font-semibold mb-3">Цветовая палитра (опционально)</h3>
+            <p class="text-cream/70 text-sm mb-4">Все палитры доступны в Premium</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+                <!-- Premium Palette: Spring -->
+                <div class="bg-cream/5 border-2 border-cream/20 hover:border-gold/50 rounded-xl p-3 cursor-pointer transition">
+                    <div class="flex gap-1 mb-2 relative overflow-hidden rounded">
+                        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-10">
+                            <svg class="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                            </svg>
+                        </div>
+                        <div class="w-6 h-6 rounded-full bg-rose-400"></div>
+                        <div class="w-6 h-6 rounded-full bg-pink-300"></div>
+                        <div class="w-6 h-6 rounded-full bg-purple-400"></div>
+                    </div>
+                    <div class="flex items-center justify-between mb-1">
+                        <div class="text-xs font-medium">Весна</div>
+                        <span class="text-xs bg-cream/20 text-cream px-1.5 py-0.5 rounded">PRO</span>
+                    </div>
+                    <div class="text-xs text-cream/50">Теплые пастельные</div>
+                </div>
+
+                <!-- Premium Palette: Summer -->
+                <div class="bg-cream/5 border-2 border-cream/20 hover:border-gold/50 rounded-xl p-3 cursor-pointer transition">
+                    <div class="flex gap-1 mb-2 relative overflow-hidden rounded">
+                        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-10">
+                            <svg class="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                            </svg>
+                        </div>
+                        <div class="w-6 h-6 rounded-full bg-sky-300"></div>
+                        <div class="w-6 h-6 rounded-full bg-rose-300"></div>
+                        <div class="w-6 h-6 rounded-full bg-slate-300"></div>
+                    </div>
+                    <div class="flex items-center justify-between mb-1">
+                        <div class="text-xs font-medium">Лето</div>
+                        <span class="text-xs bg-cream/20 text-cream px-1.5 py-0.5 rounded">PRO</span>
+                    </div>
+                    <div class="text-xs text-cream/50">Холодные мягкие</div>
+                </div>
+
+                <!-- Premium Palette: Autumn -->
+                <div class="bg-cream/5 border-2 border-cream/20 hover:border-gold/50 rounded-xl p-3 cursor-pointer transition">
+                    <div class="flex gap-1 mb-2 relative overflow-hidden rounded">
+                        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-10">
+                            <svg class="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                            </svg>
+                        </div>
+                        <div class="w-6 h-6 rounded-full bg-amber-700"></div>
+                        <div class="w-6 h-6 rounded-full bg-orange-600"></div>
+                        <div class="w-6 h-6 rounded-full bg-yellow-700"></div>
+                    </div>
+                    <div class="flex items-center justify-between mb-1">
+                        <div class="text-xs font-medium">Осень</div>
+                        <span class="text-xs bg-cream/20 text-cream px-1.5 py-0.5 rounded">PRO</span>
+                    </div>
+                    <div class="text-xs text-cream/50">Теплые глубокие</div>
+                </div>
+
+                <!-- Premium Palette: Winter -->
+                <div class="bg-cream/5 border-2 border-cream/20 hover:border-gold/50 rounded-xl p-3 cursor-pointer transition">
+                    <div class="flex gap-1 mb-2 relative overflow-hidden rounded">
+                        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-10">
+                            <svg class="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                            </svg>
+                        </div>
+                        <div class="w-6 h-6 rounded-full bg-black border border-white"></div>
+                        <div class="w-6 h-6 rounded-full bg-white border border-black"></div>
+                        <div class="w-6 h-6 rounded-full bg-blue-600"></div>
+                    </div>
+                    <div class="flex items-center justify-between mb-1">
+                        <div class="text-xs font-medium">Зима</div>
+                        <span class="text-xs bg-cream/20 text-cream px-1.5 py-0.5 rounded">PRO</span>
+                    </div>
+                    <div class="text-xs text-cream/50">Холодные яркие</div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Bottom Action -->
+    <div class="fixed bottom-0 left-0 right-0 bg-black border-t border-gold/20 p-4">
+        <div class="container mx-auto max-w-2xl">
+            <button class="w-full bg-gold hover:bg-gold/90 text-black font-semibold py-4 rounded-xl transition flex items-center justify-center gap-2">
+                <span>Создать образ</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>
