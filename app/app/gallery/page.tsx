@@ -146,10 +146,10 @@ export default function GalleryPage() {
       // Показываем модальное окно с инструкциями
       setShowWBModal(true);
 
-      // Через секунду автоматически открываем WB
+      // Через секунду автоматически открываем WB с поиском (чтобы иконка камеры была видна)
       setTimeout(() => {
-        window.open("https://global.wildberries.ru/search-by-photo", "_blank");
-      }, 1500);
+        window.open("https://www.wildberries.ru/catalog/0/search.aspx?search=одежда", "_blank");
+      }, copiedToClipboard ? 800 : 1500);
 
       // Если не удалось скопировать - скачиваем файл
       if (!copiedToClipboard) {
@@ -384,17 +384,23 @@ export default function GalleryPage() {
                     <div className="flex items-start gap-3">
                       <span className="text-gold text-lg flex-shrink-0">1.</span>
                       <p className="text-cream/80 text-sm">
-                        Откроется новая вкладка с поиском по фото
+                        Откроется страница Wildberries
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="text-gold text-lg flex-shrink-0">2.</span>
                       <p className="text-cream/80 text-sm">
-                        Нажмите <span className="font-mono bg-cream/10 px-2 py-0.5 rounded">Ctrl+V</span> для вставки изображения
+                        <span className="font-semibold text-cream">Нажмите на иконку камеры 📷</span> в строке поиска
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="text-gold text-lg flex-shrink-0">3.</span>
+                      <p className="text-cream/80 text-sm">
+                        Нажмите <span className="font-mono bg-cream/10 px-2 py-0.5 rounded">Ctrl+V</span> для вставки изображения
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-gold text-lg flex-shrink-0">4.</span>
                       <p className="text-cream/80 text-sm">
                         Выберите понравившиеся товары
                       </p>
@@ -416,17 +422,23 @@ export default function GalleryPage() {
                     <div className="flex items-start gap-3">
                       <span className="text-gold text-lg flex-shrink-0">1.</span>
                       <p className="text-cream/80 text-sm">
-                        Откроется новая вкладка с поиском по фото
+                        Откроется страница Wildberries
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="text-gold text-lg flex-shrink-0">2.</span>
                       <p className="text-cream/80 text-sm">
-                        Загрузите файл из папки "Загрузки"
+                        <span className="font-semibold text-cream">Нажмите на иконку камеры 📷</span> в строке поиска
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="text-gold text-lg flex-shrink-0">3.</span>
+                      <p className="text-cream/80 text-sm">
+                        Загрузите файл из папки "Загрузки"
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-gold text-lg flex-shrink-0">4.</span>
                       <p className="text-cream/80 text-sm">
                         Выберите понравившиеся товары
                       </p>
