@@ -30,6 +30,8 @@ export default function GalleryPage() {
   const [generations, setGenerations] = useState<Generation[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<Generation | null>(null);
+  const [showWBModal, setShowWBModal] = useState(false);
+  const [wbImageReady, setWbImageReady] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -125,22 +127,44 @@ export default function GalleryPage() {
   // Поиск на Wildberries
   const handleSearchOnWB = async (imageUrl: string) => {
     try {
-      // Скачиваем изображение
+      // Получаем изображение как blob
       const response = await fetch(imageUrl);
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `looklikeme-wb-${Date.now()}.jpg`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
 
-      // Открываем WB поиск по фото в новой вкладке
-      window.open("https://global.wildberries.ru/search-by-photo", "_blank");
+      // Пытаемся скопировать в буфер обмена
+      let copiedToClipboard = false;
+      try {
+        const item = new ClipboardItem({ [blob.type]: blob });
+        await navigator.clipboard.write([item]);
+        copiedToClipboard = true;
+        setWbImageReady(true);
+      } catch (clipboardErr) {
+        console.log("Clipboard not supported, will download instead");
+        setWbImageReady(false);
+      }
+
+      // Показываем модальное окно с инструкциями
+      setShowWBModal(true);
+
+      // Через секунду автоматически открываем WB
+      setTimeout(() => {
+        window.open("https://global.wildberries.ru/search-by-photo", "_blank");
+      }, 1500);
+
+      // Если не удалось скопировать - скачиваем файл
+      if (!copiedToClipboard) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `looklikeme-wb-${Date.now()}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
     } catch (err) {
       console.error("WB search error:", err);
+      alert("Произошла ошибка. Попробуйте скачать изображение вручную.");
     }
   };
 
@@ -315,6 +339,109 @@ export default function GalleryPage() {
                   Создано: {new Date(selectedImage.createdAt).toLocaleString("ru-RU")}
                 </p>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Модальное окно с инструкциями для WB */}
+        {showWBModal && (
+          <div
+            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowWBModal(false)}
+          >
+            <div
+              className="glass-card rounded-2xl p-8 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Иконка */}
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gold/20 rounded-full flex items-center justify-center">
+                  <span className="text-3xl">🔍</span>
+                </div>
+                <h2 className="text-2xl font-bold text-cream mb-2">
+                  Поиск на Wildberries
+                </h2>
+                <p className="text-cream/60 text-sm">
+                  Открываем страницу поиска по фото
+                </p>
+              </div>
+
+              {/* Инструкции */}
+              <div className="space-y-4 mb-6">
+                {wbImageReady ? (
+                  <>
+                    <div className="flex items-start gap-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                      <span className="text-green-400 text-xl flex-shrink-0">✓</span>
+                      <div>
+                        <p className="text-green-400 font-medium text-sm">
+                          Изображение скопировано!
+                        </p>
+                        <p className="text-cream/60 text-xs mt-1">
+                          На странице WB нажмите Ctrl+V (или Cmd+V на Mac), чтобы вставить фото
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-gold text-lg flex-shrink-0">1.</span>
+                      <p className="text-cream/80 text-sm">
+                        Откроется новая вкладка с поиском по фото
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-gold text-lg flex-shrink-0">2.</span>
+                      <p className="text-cream/80 text-sm">
+                        Нажмите <span className="font-mono bg-cream/10 px-2 py-0.5 rounded">Ctrl+V</span> для вставки изображения
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-gold text-lg flex-shrink-0">3.</span>
+                      <p className="text-cream/80 text-sm">
+                        Выберите понравившиеся товары
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-start gap-3 p-3 bg-cream/5 border border-cream/10 rounded-lg">
+                      <span className="text-gold text-xl flex-shrink-0">📥</span>
+                      <div>
+                        <p className="text-cream font-medium text-sm">
+                          Изображение загружено
+                        </p>
+                        <p className="text-cream/60 text-xs mt-1">
+                          Файл сохранён в папку "Загрузки"
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-gold text-lg flex-shrink-0">1.</span>
+                      <p className="text-cream/80 text-sm">
+                        Откроется новая вкладка с поиском по фото
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-gold text-lg flex-shrink-0">2.</span>
+                      <p className="text-cream/80 text-sm">
+                        Загрузите файл из папки "Загрузки"
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-gold text-lg flex-shrink-0">3.</span>
+                      <p className="text-cream/80 text-sm">
+                        Выберите понравившиеся товары
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Кнопка */}
+              <button
+                onClick={() => setShowWBModal(false)}
+                className="w-full py-3 bg-gold hover:bg-gold-600 text-black font-semibold rounded-lg transition-all"
+              >
+                Понятно
+              </button>
             </div>
           </div>
         )}
