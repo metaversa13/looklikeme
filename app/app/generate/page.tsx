@@ -103,6 +103,30 @@ export default function GeneratePage() {
     }
   };
 
+  // Поиск на Wildberries
+  const handleSearchOnWB = async () => {
+    if (!generatedImage) return;
+
+    try {
+      // Скачиваем изображение
+      const response = await fetch(generatedImage);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `looklikeme-wb-${Date.now()}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      // Открываем WB поиск по фото в новой вкладке
+      window.open("https://global.wildberries.ru/search-by-photo", "_blank");
+    } catch (err) {
+      console.error("WB search error:", err);
+    }
+  };
+
   // Редирект на логин если не авторизован
   if (status === "loading") {
     return (
@@ -465,7 +489,7 @@ export default function GeneratePage() {
               {/* Кнопка генерации */}
               <button
                 onClick={handleGenerate}
-                disabled={!canGenerate || (limits && !limits.canGenerate)}
+                disabled={!canGenerate || !!(limits && !limits.canGenerate)}
                 className={`
                   w-full py-4 rounded-xl font-semibold text-lg transition-all
                   ${canGenerate && (!limits || limits.canGenerate)
@@ -580,6 +604,15 @@ export default function GeneratePage() {
                       {isSaving ? "Сохранение..." : isSaved ? "✓ Сохранено" : "💾 Сохранить"}
                     </button>
                   </div>
+
+                  {/* Кнопка поиска на Wildberries */}
+                  <button
+                    onClick={handleSearchOnWB}
+                    className="w-full py-3 glass-card hover:bg-cream/5 text-cream font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                  >
+                    🔍 Найти похожее на Wildberries
+                  </button>
+
                   {isSaved && (
                     <button
                       onClick={() => router.push("/gallery")}

@@ -122,6 +122,28 @@ export default function GalleryPage() {
     }
   };
 
+  // Поиск на Wildberries
+  const handleSearchOnWB = async (imageUrl: string) => {
+    try {
+      // Скачиваем изображение
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `looklikeme-wb-${Date.now()}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      // Открываем WB поиск по фото в новой вкладке
+      window.open("https://global.wildberries.ru/search-by-photo", "_blank");
+    } catch (err) {
+      console.error("WB search error:", err);
+    }
+  };
+
   if (status === "loading" || loading) {
     return (
       <>
@@ -248,29 +270,39 @@ export default function GalleryPage() {
               </div>
 
               {/* Кнопки действий */}
-              <div className="flex gap-3 mt-4">
+              <div className="space-y-3 mt-4">
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => handleDownload(selectedImage.resultImageUrl, selectedImage.id)}
+                    className="flex-1 py-3 bg-gold hover:bg-gold-600 text-black font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                  >
+                    📥 Скачать
+                  </button>
+                  <button
+                    onClick={() => toggleFavorite(selectedImage.id)}
+                    className={`flex-1 py-3 rounded-lg transition-all flex items-center justify-center gap-2 font-semibold ${
+                      selectedImage.favorite
+                        ? "bg-red-500/20 text-red-400 border border-red-500/50"
+                        : "bg-cream/10 text-cream hover:bg-cream/20"
+                    }`}
+                  >
+                    {selectedImage.favorite ? "💔 Убрать" : "❤️ В избранное"}
+                  </button>
+                  <button
+                    onClick={() => deleteGeneration(selectedImage.id)}
+                    className="py-3 px-4 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-lg transition-all flex items-center justify-center"
+                    title="Удалить"
+                  >
+                    🗑️
+                  </button>
+                </div>
+
+                {/* Кнопка поиска на Wildberries */}
                 <button
-                  onClick={() => handleDownload(selectedImage.resultImageUrl, selectedImage.id)}
-                  className="flex-1 py-3 bg-gold hover:bg-gold-600 text-black font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                  onClick={() => handleSearchOnWB(selectedImage.resultImageUrl)}
+                  className="w-full py-3 glass-card hover:bg-cream/5 text-cream font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
                 >
-                  📥 Скачать
-                </button>
-                <button
-                  onClick={() => toggleFavorite(selectedImage.id)}
-                  className={`flex-1 py-3 rounded-lg transition-all flex items-center justify-center gap-2 font-semibold ${
-                    selectedImage.favorite
-                      ? "bg-red-500/20 text-red-400 border border-red-500/50"
-                      : "bg-cream/10 text-cream hover:bg-cream/20"
-                  }`}
-                >
-                  {selectedImage.favorite ? "💔 Убрать" : "❤️ В избранное"}
-                </button>
-                <button
-                  onClick={() => deleteGeneration(selectedImage.id)}
-                  className="py-3 px-4 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-lg transition-all flex items-center justify-center"
-                  title="Удалить"
-                >
-                  🗑️
+                  🔍 Найти похожее на Wildberries
                 </button>
               </div>
 
