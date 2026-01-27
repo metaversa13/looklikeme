@@ -34,9 +34,18 @@ const locationPrompts: Record<string, string> = {
   "runway": "Set the background to a fashion runway catwalk with fashion show spotlights, editorial style setting.",
 };
 
+// Промпты для цветовых палитр
+const palettePrompts: Record<string, string> = {
+  "spring": "Use soft warm pastel colors: gentle pink, peach, light lavender, and pale yellow tones in the clothing.",
+  "summer": "Use cool gentle colors: sky blue, soft coral, light gray, and lavender tones in the clothing.",
+  "autumn": "Use warm deep colors: terracotta, olive, mustard, and chestnut brown tones in the clothing.",
+  "winter": "Use cool bright colors: deep black, crisp white, navy blue, and burgundy red tones in the clothing.",
+};
+
 // Premium функции (требуют подписку)
 const premiumStyles = ["bohemian", "glamour", "sporty-chic"];
 const premiumLocations = ["city-day", "city-night", "runway"];
+const premiumPalettes = ["spring", "summer", "autumn", "winter"];
 
 // Инструкции по сохранению идентичности
 const preservationPrompt = `
@@ -92,7 +101,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { image, style, location } = body;
+    const { image, style, location, palette } = body;
 
     if (!image || !style) {
       return NextResponse.json(
@@ -126,6 +135,17 @@ export async function POST(request: NextRequest) {
           { status: 403 }
         );
       }
+
+      // Проверяем палитру
+      if (palette && premiumPalettes.includes(palette)) {
+        return NextResponse.json(
+          {
+            error: "Premium feature",
+            message: `Цветовая палитра "${palette}" доступна только для Premium подписки`,
+          },
+          { status: 403 }
+        );
+      }
     }
 
     // Проверяем API токен
@@ -143,10 +163,11 @@ export async function POST(request: NextRequest) {
     // Собираем промпт-инструкцию для Kontext
     const stylePrompt = stylePrompts[style] || stylePrompts["casual-chic"];
     const locationPrompt = locationPrompts[location] || locationPrompts["studio"];
+    const palettePrompt = palette && palettePrompts[palette] ? palettePrompts[palette] : "";
 
     // Kontext работает с инструкциями по редактированию
-    // Структура: Действие + Контекст + Сохранение идентичности
-    const fullPrompt = `${stylePrompt} ${locationPrompt} ${preservationPrompt} High quality fashion photography, professional lighting, sharp focus, photorealistic.`;
+    // Структура: Действие + Цвет (если выбран) + Контекст + Сохранение идентичности
+    const fullPrompt = `${stylePrompt} ${palettePrompt} ${locationPrompt} ${preservationPrompt} High quality fashion photography, professional lighting, sharp focus, photorealistic.`;
 
     console.log("Prompt:", fullPrompt);
 
