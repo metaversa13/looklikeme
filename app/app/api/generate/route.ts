@@ -16,31 +16,31 @@ const DAILY_LIMITS = {
 };
 
 // Промпты для стилей (для Kontext - инструкции по редактированию)
-// Важно: избегаем слова "transform", явно указываем что менять
+// ВАЖНО: Промпты гендерно-нейтральные - AI определяет пол и выбирает соответствующую одежду
 const stylePrompts: Record<string, string> = {
   // FREE стили (3 шт)
-  "casual": "Change only the clothes to casual everyday style: comfortable jeans, simple t-shirt or casual blouse, sneakers or casual shoes, relaxed and effortless look",
-  "business": "Change only the clothes to professional business attire: elegant tailored suit with blazer, dress pants or pencil skirt, classic button-up shirt, polished corporate look with sophisticated accessories",
+  "casual": "Change only the clothes to casual everyday style appropriate for this person's gender: comfortable jeans, simple t-shirt or casual top, sneakers or casual shoes, relaxed and effortless look",
+  "business": "Change only the clothes to professional business attire appropriate for this person's gender: elegant tailored suit with blazer and dress pants for men OR tailored blazer with pants/pencil skirt for women, classic button-up shirt, polished corporate look with sophisticated accessories",
   "streetwear": "Change only the clothes to urban streetwear fashion: oversized hoodie or graphic tee, baggy cargo pants or joggers, chunky sneakers, modern street style with urban edge",
 
   // PREMIUM стили (17 шт)
-  "romantic": "Change only the clothes to romantic feminine style: flowy floral dress with delicate prints, soft pastel colors, lace or chiffon details, dreamy and gentle aesthetic",
-  "athleisure": "Change only the clothes to sporty chic athletic wear: fitted leggings, stylish sports bra or crop top, lightweight jacket, premium athleisure fashion that blends comfort and style",
-  "elegant-evening": "Change only the clothes to elegant evening attire: stunning floor-length gown or cocktail dress, luxurious fabrics like silk or satin, sophisticated formal look perfect for gala events",
-  "boho": "Change only the clothes to bohemian style: flowing maxi dress or loose layers, ethnic patterns and prints, fringe details, natural fabrics, artistic free-spirited boho look with layered accessories",
-  "minimalist": "Change only the clothes to minimalist fashion: clean simple lines, monochromatic neutral colors, high-quality basic pieces, understated elegance with no unnecessary details",
-  "vintage-retro": "Change only the clothes to vintage 1950s style: classic A-line dress or high-waisted skirt, retro prints like polka dots, vintage silhouette with feminine details, nostalgic pin-up aesthetic",
-  "smart-casual": "Change only the clothes to smart casual style: blazer paired with dark jeans, nice blouse or shirt, loafers or ankle boots, polished yet relaxed business-casual look",
-  "glamorous": "Change only the clothes to glamorous high fashion: luxurious designer clothing with sparkles and shine, metallic or sequined fabrics, statement pieces, red carpet worthy haute couture style",
-  "preppy": "Change only the clothes to preppy collegiate style: pleated skirt or chinos, cardigan or sweater vest, collared shirt, classic American prep school aesthetic with refined details",
-  "edgy-rock": "Change only the clothes to edgy rock style: black leather jacket, ripped or distressed jeans, band t-shirt or graphic tee, studded accessories, bold rebellious rocker aesthetic",
-  "feminine": "Change only the clothes to ultra-feminine style: silk blouse or delicate top, flowing midi skirt, soft luxurious fabrics, romantic details like bows or ruffles, graceful elegant femininity",
-  "avant-garde": "Change only the clothes to avant-garde fashion: experimental design with unconventional shapes, architectural silhouettes, bold artistic pieces, cutting-edge high-fashion with unique forms",
-  "resort-vacation": "Change only the clothes to resort vacation style: light linen dress or flowy beach outfit, sun hat, comfortable sandals, breezy tropical aesthetic perfect for summer getaway",
-  "monochrome": "Change only the clothes to monochrome fashion: entire outfit in one single color (black, white, or neutral), different textures and shades of the same color, sophisticated tonal look",
-  "layered": "Change only the clothes to layered style: multiple clothing layers like turtleneck under sweater, long coat over outfit, scarf and accessories, complex stylish layering with depth",
-  "classic-timeless": "Change only the clothes to classic timeless fashion: little black dress or tailored trench coat, elegant simple pieces that never go out of style, refined sophisticated look",
-  "trendy-2026": "Change only the clothes to 2026 fashion trends: latest cutting-edge styles, modern trendy colors and cuts, contemporary fashion-forward pieces, current runway-inspired look",
+  "romantic": "Change only the clothes to romantic style appropriate for this person's gender: soft flowing fabrics, delicate prints and patterns, pastel colors, elegant and dreamy aesthetic with gentle details",
+  "athleisure": "Change only the clothes to sporty chic athletic wear: fitted athletic pants or leggings, stylish sports top or tank, lightweight athletic jacket, premium athleisure fashion that blends comfort and style",
+  "elegant-evening": "Change only the clothes to elegant evening formal attire appropriate for this person's gender: for men - tuxedo or elegant suit with bow tie, for women - stunning evening gown or cocktail dress, luxurious fabrics like silk or satin, sophisticated formal look",
+  "boho": "Change only the clothes to bohemian style: flowing loose layers, ethnic patterns and prints, fringe or embroidery details, natural fabrics, artistic free-spirited boho look with layered accessories",
+  "minimalist": "Change only the clothes to minimalist fashion: clean simple lines, monochromatic neutral colors (black, white, gray, beige), high-quality basic pieces, understated elegance with no unnecessary details",
+  "vintage-retro": "Change only the clothes to vintage 1950s style appropriate for this person's gender: for men - retro suit with high-waisted trousers and vintage shirt OR for women - classic A-line dress or high-waisted skirt, retro prints like polka dots or stripes, nostalgic vintage silhouette",
+  "smart-casual": "Change only the clothes to smart casual style: blazer paired with dark jeans or chinos, nice shirt or blouse, loafers or ankle boots, polished yet relaxed business-casual look",
+  "glamorous": "Change only the clothes to glamorous high fashion appropriate for this person's gender: luxurious designer clothing with sparkles and shine, metallic or sequined fabrics, statement pieces, red carpet worthy haute couture style",
+  "preppy": "Change only the clothes to preppy collegiate style: chinos or pleated pants/skirt, cardigan or sweater vest over collared shirt, classic American prep school aesthetic with refined details",
+  "edgy-rock": "Change only the clothes to edgy rock style: black leather jacket, ripped or distressed jeans, band t-shirt or graphic tee, studded belts or accessories, bold rebellious rocker aesthetic",
+  "feminine": "Change only the clothes to ultra-feminine style appropriate for women: silk blouse or delicate top, flowing midi skirt or elegant dress, soft luxurious fabrics, romantic details like bows or ruffles, graceful elegant femininity",
+  "avant-garde": "Change only the clothes to avant-garde fashion: experimental design with unconventional shapes, architectural silhouettes, bold artistic pieces, cutting-edge high-fashion with unique geometric forms",
+  "resort-vacation": "Change only the clothes to resort vacation style: light linen clothing or flowy beach outfit, sun hat, comfortable sandals, breezy tropical aesthetic perfect for summer getaway",
+  "monochrome": "Change only the clothes to monochrome fashion: entire outfit in one single color (black, white, gray, beige, or navy), different textures and shades of the same color, sophisticated tonal look",
+  "layered": "Change only the clothes to layered style: multiple clothing layers like turtleneck under sweater or shirt, long coat or jacket over outfit, scarf and accessories, complex stylish layering with depth and dimension",
+  "classic-timeless": "Change only the clothes to classic timeless fashion appropriate for this person's gender: for men - tailored trench coat with suit OR for women - little black dress or elegant coat, simple pieces that never go out of style, refined sophisticated look",
+  "trendy-2026": "Change only the clothes to 2026 fashion trends appropriate for this person's gender: latest cutting-edge styles, modern trendy colors and cuts, contemporary fashion-forward pieces, current runway-inspired look",
 };
 
 // Промпты для локаций (для Kontext - инструкции по фону)
