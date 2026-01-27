@@ -41,7 +41,7 @@ export function Header() {
               {/* Subscription Badge */}
               {session.user.subscriptionType !== "FREE" && (
                 <span className="hidden sm:inline-flex premium-badge">
-                  {session.user.subscriptionType === "LIFETIME" ? "LIFETIME" : "PRO"}
+                  {session.user.subscriptionType === "LIFETIME" ? "Lifetime" : "Premium"}
                 </span>
               )}
 

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import Image from "next/image";
+import Link from "next/link";
 
 // Данные стилей (позже загрузим из БД)
 const styles = [
@@ -52,8 +53,33 @@ export default function GeneratePage() {
     paletteSlug: string | null;
     generationTime: number;
   } | null>(null);
+  const [limits, setLimits] = useState<{
+    canGenerate: boolean;
+    remaining: number;
+    limit: number;
+    subscriptionType: string;
+  } | null>(null);
 
   const isPremium = session?.user?.subscriptionType !== "FREE";
+
+  // Загружаем информацию о лимитах
+  useEffect(() => {
+    const fetchLimits = async () => {
+      try {
+        const response = await fetch("/api/limits");
+        if (response.ok) {
+          const data = await response.json();
+          setLimits(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch limits:", error);
+      }
+    };
+
+    if (session) {
+      fetchLimits();
+    }
+  }, [session]);
 
   // Сохранить в галерею
   const handleSaveToGallery = async () => {
@@ -162,6 +188,22 @@ export default function GeneratePage() {
       const data = await response.json();
 
       if (!response.ok) {
+        // Специальная обработка для лимита
+        if (response.status === 429) {
+          setError(data.message || "Достигнут дневной лимит");
+          // Обновляем информацию о лимитах
+          const limitsResponse = await fetch("/api/limits");
+          if (limitsResponse.ok) {
+            const limitsData = await limitsResponse.json();
+            setLimits(limitsData);
+          }
+          return;
+        }
+        // Специальная обработка для Premium функций
+        if (response.status === 403) {
+          setError(data.message || "Эта функция доступна только для Premium подписки");
+          return;
+        }
         throw new Error(data.error || "Generation failed");
       }
 
@@ -176,6 +218,13 @@ export default function GeneratePage() {
         generationTime: Date.now() - startTime,
       });
       setIsSaved(false);
+
+      // Обновляем лимиты после успешной генерации
+      const limitsResponse = await fetch("/api/limits");
+      if (limitsResponse.ok) {
+        const limitsData = await limitsResponse.json();
+        setLimits(limitsData);
+      }
     } catch (err) {
       console.error("Generation error:", err);
       setError(err instanceof Error ? err.message : "Ошибка генерации");
@@ -286,7 +335,7 @@ export default function GeneratePage() {
                         <div className="text-cream text-sm font-medium">{style.name}</div>
                         {isLocked && (
                           <div className="absolute top-2 right-2 text-xs bg-gold/20 text-gold px-2 py-0.5 rounded">
-                            PRO
+                            Premium
                           </div>
                         )}
                       </button>
@@ -325,7 +374,7 @@ export default function GeneratePage() {
                         <div className="text-cream text-xs">{location.name}</div>
                         {isLocked && (
                           <div className="absolute top-1 right-1 text-[10px] bg-gold/20 text-gold px-1.5 py-0.5 rounded">
-                            PRO
+                            Premium
                           </div>
                         )}
                       </button>
@@ -338,7 +387,7 @@ export default function GeneratePage() {
               <div className="glass-card rounded-xl p-6">
                 <h2 className="text-lg font-semibold text-cream mb-4 flex items-center gap-2">
                   <span className="text-2xl">🎨</span> Цветовая палитра
-                  <span className="text-xs bg-gold/20 text-gold px-2 py-0.5 rounded ml-2">PRO</span>
+                  <span className="text-xs bg-gold/20 text-gold px-2 py-0.5 rounded ml-2">Premium</span>
                 </h2>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -380,18 +429,46 @@ export default function GeneratePage() {
 
                 {!isPremium && (
                   <p className="text-cream/40 text-xs mt-3 text-center">
-                    Цветовые палитры доступны для PRO подписки
+                    Цветовые палитры доступны для Premium подписки
                   </p>
                 )}
               </div>
 
+              {/* Информация о лимитах */}
+              {limits && (
+                <div className="mb-4">
+                  {limits.limit === -1 ? (
+                    <div className="flex items-center justify-center gap-2 text-gold text-sm">
+                      <span>✨</span>
+                      <span>Безлимитная генерация</span>
+                    </div>
+                  ) : limits.canGenerate ? (
+                    <div className="flex items-center justify-center gap-2 text-cream/60 text-sm">
+                      <span>Осталось {limits.remaining} из {limits.limit} генераций сегодня</span>
+                    </div>
+                  ) : (
+                    <div className="glass-card rounded-lg p-4 mb-4 border border-red-500/20">
+                      <p className="text-red-400 text-sm mb-3 text-center">
+                        Вы исчерпали дневной лимит ({limits.limit} генераций)
+                      </p>
+                      <Link
+                        href="/pricing"
+                        className="block w-full py-2 bg-gold hover:bg-gold-600 text-black text-center font-semibold rounded-lg transition-all"
+                      >
+                        Обновить до Premium
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Кнопка генерации */}
               <button
                 onClick={handleGenerate}
-                disabled={!canGenerate}
+                disabled={!canGenerate || (limits && !limits.canGenerate)}
                 className={`
                   w-full py-4 rounded-xl font-semibold text-lg transition-all
-                  ${canGenerate
+                  ${canGenerate && (!limits || limits.canGenerate)
                     ? "bg-gold hover:bg-gold-600 text-black"
                     : "bg-cream/10 text-cream/40 cursor-not-allowed"
                   }

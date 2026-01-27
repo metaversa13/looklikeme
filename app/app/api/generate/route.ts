@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/db/prisma";
 import Replicate from "replicate";
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
+
+// Лимиты генераций в день
+const DAILY_LIMITS = {
+  FREE: 5,
+  PREMIUM: -1, // безлимит
+  LIFETIME: -1, // безлимит
+};
 
 // Промпты для стилей (для Kontext - инструкции по редактированию)
 // Важно: избегаем слова "transform", явно указываем что менять
@@ -26,6 +34,10 @@ const locationPrompts: Record<string, string> = {
   "runway": "Set the background to a fashion runway catwalk with fashion show spotlights, editorial style setting.",
 };
 
+// Premium функции (требуют подписку)
+const premiumStyles = ["bohemian", "glamour", "sporty-chic"];
+const premiumLocations = ["city-day", "city-night", "runway"];
+
 // Инструкции по сохранению идентичности
 const preservationPrompt = `
 IMPORTANT: Preserve the exact same face of this person - keep identical facial features, face shape, eye color, eye shape, nose, lips, skin tone, and facial expression.
@@ -37,8 +49,46 @@ export async function POST(request: NextRequest) {
   try {
     // Проверяем авторизацию
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Получаем данные пользователя
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { subscriptionType: true },
+    });
+
+    const subscriptionType = user?.subscriptionType || "FREE";
+    const dailyLimit = DAILY_LIMITS[subscriptionType];
+
+    // Проверяем лимит для FREE пользователей
+    if (dailyLimit !== -1) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const dailyUsage = await prisma.dailyLimit.findUnique({
+        where: {
+          userId_date: {
+            userId: session.user.id,
+            date: today,
+          },
+        },
+      });
+
+      const used = dailyUsage?.generationsCount || 0;
+
+      if (used >= dailyLimit) {
+        return NextResponse.json(
+          {
+            error: "Daily limit reached",
+            message: `Вы исчерпали дневной лимит (${dailyLimit} генераций). Обновитесь до Premium для безлимитного доступа.`,
+            limit: dailyLimit,
+            used,
+          },
+          { status: 429 }
+        );
+      }
     }
 
     const body = await request.json();
@@ -49,6 +99,33 @@ export async function POST(request: NextRequest) {
         { error: "Image and style are required" },
         { status: 400 }
       );
+    }
+
+    // Проверяем доступ к premium функциям
+    const isPremium = subscriptionType !== "FREE";
+
+    if (!isPremium) {
+      // Проверяем стиль
+      if (premiumStyles.includes(style)) {
+        return NextResponse.json(
+          {
+            error: "Premium feature",
+            message: `Стиль "${style}" доступен только для Premium подписки`,
+          },
+          { status: 403 }
+        );
+      }
+
+      // Проверяем локацию
+      if (location && premiumLocations.includes(location)) {
+        return NextResponse.json(
+          {
+            error: "Premium feature",
+            message: `Локация "${location}" доступна только для Premium подписки`,
+          },
+          { status: 403 }
+        );
+      }
     }
 
     // Проверяем API токен
@@ -93,6 +170,35 @@ export async function POST(request: NextRequest) {
 
     // Kontext возвращает URL напрямую или в массиве
     const resultUrl = Array.isArray(output) ? output[0] : output;
+
+    // Обновляем счетчики пользователя
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    await prisma.$transaction([
+      // Увеличиваем общий счетчик генераций
+      prisma.user.update({
+        where: { id: session.user.id },
+        data: { totalGenerations: { increment: 1 } },
+      }),
+      // Увеличиваем дневной лимит
+      prisma.dailyLimit.upsert({
+        where: {
+          userId_date: {
+            userId: session.user.id,
+            date: today,
+          },
+        },
+        create: {
+          userId: session.user.id,
+          date: today,
+          generationsCount: 1,
+        },
+        update: {
+          generationsCount: { increment: 1 },
+        },
+      }),
+    ]);
 
     return NextResponse.json({
       success: true,
