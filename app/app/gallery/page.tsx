@@ -16,12 +16,29 @@ interface Generation {
 }
 
 const styleNames: Record<string, string> = {
-  "casual-chic": "Casual Chic",
+  // FREE стили
+  "casual": "Casual",
   "business": "Business",
-  "evening": "Evening",
-  "bohemian": "Bohemian",
-  "glamour": "Glamour",
-  "sporty-chic": "Sporty Chic",
+  "streetwear": "Streetwear",
+
+  // PREMIUM стили
+  "romantic": "Romantic",
+  "athleisure": "Athleisure",
+  "elegant-evening": "Elegant Evening",
+  "boho": "Boho",
+  "minimalist": "Minimalist",
+  "vintage-retro": "Vintage Retro",
+  "smart-casual": "Smart Casual",
+  "glamorous": "Glamorous",
+  "preppy": "Preppy",
+  "edgy-rock": "Edgy Rock",
+  "feminine": "Feminine",
+  "avant-garde": "Avant-garde",
+  "resort-vacation": "Resort",
+  "monochrome": "Monochrome",
+  "layered": "Layered",
+  "classic-timeless": "Classic",
+  "trendy-2026": "Trendy 2026",
 };
 
 export default function GalleryPage() {
