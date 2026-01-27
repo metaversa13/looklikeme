@@ -30,6 +30,10 @@ export default function GalleryPage() {
   const [generations, setGenerations] = useState<Generation[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<Generation | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
+
+  const isPremium = session?.user?.subscriptionType !== "FREE";
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -119,6 +123,37 @@ export default function GalleryPage() {
       console.error("Delete error:", error);
       // При ошибке перезагружаем список
       fetchGenerations();
+    }
+  };
+
+  // Поделиться в соцсетях
+  const handleShare = async (imageUrl: string) => {
+    try {
+      // Если FREE пользователь - добавляем watermark
+      if (!isPremium) {
+        const response = await fetch("/api/share/watermark", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageUrl }),
+        });
+
+        if (response.ok) {
+          // Получаем blob изображения с watermark
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          setShareImageUrl(url);
+        } else {
+          throw new Error("Failed to add watermark");
+        }
+      } else {
+        // Premium пользователи получают оригинал
+        setShareImageUrl(imageUrl);
+      }
+
+      setShowShareModal(true);
+    } catch (err) {
+      console.error("Share preparation error:", err);
+      alert("Произошла ошибка при подготовке изображения для шаринга.");
     }
   };
 
@@ -315,6 +350,14 @@ export default function GalleryPage() {
                 >
                   🔍 Найти похожее на Wildberries
                 </button>
+
+                {/* Кнопка поделиться */}
+                <button
+                  onClick={() => handleShare(selectedImage.resultImageUrl)}
+                  className="w-full py-3 glass-card hover:bg-cream/5 text-cream font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                >
+                  📤 Поделиться
+                </button>
               </div>
 
               {/* Информация */}
@@ -325,6 +368,126 @@ export default function GalleryPage() {
                 <p className="text-cream/60 text-sm">
                   Создано: {new Date(selectedImage.createdAt).toLocaleString("ru-RU")}
                 </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Модальное окно "Поделиться" */}
+        {showShareModal && shareImageUrl && (
+          <div
+            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+            onClick={() => {
+              setShowShareModal(false);
+              if (shareImageUrl && !isPremium) {
+                window.URL.revokeObjectURL(shareImageUrl);
+              }
+            }}
+          >
+            <div
+              className="glass-card rounded-2xl p-6 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Заголовок */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-cream">Поделиться образом</h2>
+                <button
+                  onClick={() => {
+                    setShowShareModal(false);
+                    if (shareImageUrl && !isPremium) {
+                      window.URL.revokeObjectURL(shareImageUrl);
+                    }
+                  }}
+                  className="text-cream/60 hover:text-cream text-2xl transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Превью изображения */}
+              <div className="relative aspect-[3/4] rounded-lg overflow-hidden mb-6">
+                <Image
+                  src={shareImageUrl}
+                  alt="Share preview"
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              </div>
+
+              {!isPremium && (
+                <div className="mb-4 p-3 bg-gold/10 border border-gold/20 rounded-lg">
+                  <p className="text-gold text-xs text-center">
+                    ✨ Premium пользователи делятся образами без watermark
+                  </p>
+                </div>
+              )}
+
+              {/* Кнопки соцсетей */}
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    const text = encodeURIComponent("Создал(а) свой образ на Looklikeme.ru ✨");
+                    window.open(
+                      `https://vk.com/share.php?url=${encodeURIComponent(window.location.origin)}&title=${text}`,
+                      "_blank"
+                    );
+                  }}
+                  className="w-full py-3 bg-[#0077FF] hover:bg-[#0066DD] text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
+                >
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14c5.6 0 6.93-1.33 6.93-6.93V8.93C22 3.33 20.67 2 15.07 2zm3.22 14.45h-1.75c-.63 0-.82-.5-1.95-1.66-1-.93-1.43-1.06-1.69-1.06-.35 0-.44.09-.44.54v1.52c0 .4-.13.64-1.18.64-1.75 0-3.7-1.06-5.07-3.04-2.04-2.88-2.6-5.05-2.6-5.49 0-.26.09-.5.54-.5h1.75c.4 0 .55.19.71.61.76 2.16 2.04 4.05 2.56 4.05.2 0 .29-.09.29-.58v-2.25c-.06-.96-.56-1.04-.56-1.38 0-.21.18-.42.46-.42h2.75c.34 0 .46.18.46.57v3.04c0 .34.15.46.25.46.2 0 .36-.12.73-.49 1.13-1.27 1.94-3.23 1.94-3.23.11-.23.29-.45.74-.45h1.75c.53 0 .64.27.53.63-.19.95-1.89 3.4-1.89 3.4-.16.26-.22.38 0 .68.16.23.69.67 1.04 1.08.64.73 1.14 1.33 1.27 1.75.13.43-.07.64-.5.64z"/>
+                  </svg>
+                  Поделиться ВКонтакте
+                </button>
+
+                <button
+                  onClick={() => {
+                    const text = encodeURIComponent("Создал(а) свой образ на Looklikeme.ru ✨\n\nПопробуй сам: " + window.location.origin);
+                    window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.origin)}&text=${text}`, "_blank");
+                  }}
+                  className="w-full py-3 bg-[#0088cc] hover:bg-[#0077bb] text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
+                >
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.67-.52.36-.99.53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.37-.48 1.02-.73 3.99-1.74 6.66-2.89 8-3.45 3.81-1.58 4.6-1.85 5.12-1.86.11 0 .37.03.54.17.14.12.18.27.2.38-.01.06.01.24 0 .38z"/>
+                  </svg>
+                  Поделиться в Telegram
+                </button>
+
+                <button
+                  onClick={() => {
+                    const text = encodeURIComponent("Создал(а) свой образ на Looklikeme.ru ✨\n\nПопробуй сам: " + window.location.origin);
+                    window.open(`https://wa.me/?text=${text}`, "_blank");
+                  }}
+                  className="w-full py-3 bg-[#25D366] hover:bg-[#20BD5A] text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
+                >
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.97.58 3.83 1.58 5.39L2 22l4.91-1.63c1.48.83 3.16 1.26 4.92 1.26 5.46 0 9.91-4.45 9.91-9.91C21.74 6.45 17.5 2 12.04 2zm5.8 13.96c-.24.67-1.4 1.24-1.92 1.29-.53.05-1.03.24-3.47-.73-2.96-1.18-4.86-4.18-5.01-4.37-.15-.19-1.19-1.59-1.19-3.04 0-1.44.76-2.16 1.03-2.45.27-.29.59-.36.79-.36.2 0 .4.01.57.01.18.01.43-.07.67.51.24.59.83 2.03.9 2.18.07.15.12.33.02.53-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.61.17.29.76 1.25 1.64 2.03 1.13.99 2.09 1.31 2.39 1.45.29.15.46.12.63-.07.17-.19.73-.85.92-1.15.19-.29.39-.24.65-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.12.07.67-.17 1.34z"/>
+                  </svg>
+                  Поделиться в WhatsApp
+                </button>
+
+                <button
+                  onClick={async () => {
+                    try {
+                      const response = await fetch(shareImageUrl);
+                      const blob = await response.blob();
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `looklikeme-share-${Date.now()}.jpg`;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                      window.URL.revokeObjectURL(url);
+                    } catch (err) {
+                      console.error("Download error:", err);
+                    }
+                  }}
+                  className="w-full py-3 glass-card hover:bg-cream/5 text-cream font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
+                >
+                  📥 Скачать для шаринга
+                </button>
               </div>
             </div>
           </div>
