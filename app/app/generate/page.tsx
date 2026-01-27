@@ -7,14 +7,31 @@ import { Header } from "@/components/header";
 import Image from "next/image";
 import Link from "next/link";
 
-// Данные стилей (позже загрузим из БД)
+// Все 20 стилей одежды
 const styles = [
-  { id: "casual-chic", name: "Casual Chic", emoji: "👕", isPremium: false },
-  { id: "business", name: "Business", emoji: "💼", isPremium: false },
-  { id: "evening", name: "Evening", emoji: "🌙", isPremium: false },
-  { id: "bohemian", name: "Bohemian", emoji: "🌸", isPremium: true },
-  { id: "glamour", name: "Glamour", emoji: "💎", isPremium: true },
-  { id: "sporty-chic", name: "Sporty Chic", emoji: "🏃", isPremium: true },
+  // FREE стили (3 шт)
+  { id: "casual", name: "Casual", emoji: "👕", description: "Повседневный стиль", isPremium: false },
+  { id: "business", name: "Business", emoji: "💼", description: "Деловой образ", isPremium: false },
+  { id: "streetwear", name: "Streetwear", emoji: "🧢", description: "Уличная мода", isPremium: false },
+
+  // PREMIUM стили (17 шт)
+  { id: "romantic", name: "Romantic", emoji: "💐", description: "Романтичный стиль", isPremium: true },
+  { id: "athleisure", name: "Athleisure", emoji: "🏃", description: "Спортивный шик", isPremium: true },
+  { id: "elegant-evening", name: "Elegant Evening", emoji: "🌙", description: "Вечерний элегантный", isPremium: true },
+  { id: "boho", name: "Boho", emoji: "🌸", description: "Богемный стиль", isPremium: true },
+  { id: "minimalist", name: "Minimalist", emoji: "⚪", description: "Минималистичный", isPremium: true },
+  { id: "vintage-retro", name: "Vintage Retro", emoji: "🕰️", description: "Винтажный 50-х", isPremium: true },
+  { id: "smart-casual", name: "Smart Casual", emoji: "👔", description: "Деловой-повседневный", isPremium: true },
+  { id: "glamorous", name: "Glamorous", emoji: "💎", description: "Гламурный стиль", isPremium: true },
+  { id: "preppy", name: "Preppy", emoji: "🎓", description: "Преппи стиль", isPremium: true },
+  { id: "edgy-rock", name: "Edgy Rock", emoji: "🎸", description: "Рок стиль", isPremium: true },
+  { id: "feminine", name: "Feminine", emoji: "🎀", description: "Ультра-женственный", isPremium: true },
+  { id: "avant-garde", name: "Avant-garde", emoji: "🎨", description: "Авангардный", isPremium: true },
+  { id: "resort-vacation", name: "Resort", emoji: "🏖️", description: "Курортный стиль", isPremium: true },
+  { id: "monochrome", name: "Monochrome", emoji: "⚫", description: "Монохромный", isPremium: true },
+  { id: "layered", name: "Layered", emoji: "🧥", description: "Многослойный", isPremium: true },
+  { id: "classic-timeless", name: "Classic", emoji: "👗", description: "Классический", isPremium: true },
+  { id: "trendy-2026", name: "Trendy 2026", emoji: "✨", description: "Актуальные тренды", isPremium: true },
 ];
 
 const locations = [
@@ -61,6 +78,7 @@ export default function GeneratePage() {
   } | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
+  const [showAllStyles, setShowAllStyles] = useState(false);
 
   const isPremium = session?.user?.subscriptionType !== "FREE";
 
@@ -377,12 +395,17 @@ export default function GeneratePage() {
 
               {/* Выбор стиля */}
               <div className="glass-card rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-cream mb-4 flex items-center gap-2">
-                  <span className="text-2xl">👗</span> Стиль
-                </h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-cream flex items-center gap-2">
+                    <span className="text-2xl">👗</span> Стиль
+                  </h2>
+                  <span className="text-cream/40 text-xs">
+                    {styles.length} стилей доступно
+                  </span>
+                </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {styles.map((style) => {
+                  {(showAllStyles ? styles : styles.slice(0, 6)).map((style) => {
                     const isLocked = style.isPremium && !isPremium;
                     const isSelected = selectedStyle === style.id;
 
@@ -403,6 +426,7 @@ export default function GeneratePage() {
                       >
                         <div className="text-2xl mb-1">{style.emoji}</div>
                         <div className="text-cream text-sm font-medium">{style.name}</div>
+                        <div className="text-cream/40 text-xs mt-0.5">{style.description}</div>
                         {isLocked && (
                           <div className="absolute top-2 right-2 text-xs bg-gold/20 text-gold px-2 py-0.5 rounded">
                             Premium
@@ -412,6 +436,26 @@ export default function GeneratePage() {
                     );
                   })}
                 </div>
+
+                {/* Кнопка показать все/свернуть */}
+                {styles.length > 6 && (
+                  <button
+                    onClick={() => setShowAllStyles(!showAllStyles)}
+                    className="w-full mt-4 py-2 text-cream/60 hover:text-gold text-sm transition-colors flex items-center justify-center gap-2"
+                  >
+                    {showAllStyles ? (
+                      <>
+                        <span>Свернуть</span>
+                        <span className="text-xs">↑</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Показать все стили ({styles.length - 6} ещё)</span>
+                        <span className="text-xs">↓</span>
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
 
               {/* Выбор локации */}

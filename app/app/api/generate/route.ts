@@ -18,12 +18,29 @@ const DAILY_LIMITS = {
 // Промпты для стилей (для Kontext - инструкции по редактированию)
 // Важно: избегаем слова "transform", явно указываем что менять
 const stylePrompts: Record<string, string> = {
-  "casual-chic": "Change only the clothes of this person to casual chic fashion: stylish jeans and an elegant blouse, comfortable yet stylish look",
-  "business": "Change only the clothes of this person to professional business attire: an elegant tailored suit, sophisticated corporate look",
-  "evening": "Change only the clothes of this person to an elegant evening dress: glamorous formal gown, red carpet worthy",
-  "bohemian": "Change only the clothes of this person to bohemian chic style: flowing fabrics, artistic boho outfit with layered accessories",
-  "glamour": "Change only the clothes of this person to glamorous high fashion: luxury designer clothing, haute couture style",
-  "sporty-chic": "Change only the clothes of this person to sporty chic athletic wear: elegant sportswear, premium athleisure fashion",
+  // FREE стили (3 шт)
+  "casual": "Change only the clothes to casual everyday style: comfortable jeans, simple t-shirt or casual blouse, sneakers or casual shoes, relaxed and effortless look",
+  "business": "Change only the clothes to professional business attire: elegant tailored suit with blazer, dress pants or pencil skirt, classic button-up shirt, polished corporate look with sophisticated accessories",
+  "streetwear": "Change only the clothes to urban streetwear fashion: oversized hoodie or graphic tee, baggy cargo pants or joggers, chunky sneakers, modern street style with urban edge",
+
+  // PREMIUM стили (17 шт)
+  "romantic": "Change only the clothes to romantic feminine style: flowy floral dress with delicate prints, soft pastel colors, lace or chiffon details, dreamy and gentle aesthetic",
+  "athleisure": "Change only the clothes to sporty chic athletic wear: fitted leggings, stylish sports bra or crop top, lightweight jacket, premium athleisure fashion that blends comfort and style",
+  "elegant-evening": "Change only the clothes to elegant evening attire: stunning floor-length gown or cocktail dress, luxurious fabrics like silk or satin, sophisticated formal look perfect for gala events",
+  "boho": "Change only the clothes to bohemian style: flowing maxi dress or loose layers, ethnic patterns and prints, fringe details, natural fabrics, artistic free-spirited boho look with layered accessories",
+  "minimalist": "Change only the clothes to minimalist fashion: clean simple lines, monochromatic neutral colors, high-quality basic pieces, understated elegance with no unnecessary details",
+  "vintage-retro": "Change only the clothes to vintage 1950s style: classic A-line dress or high-waisted skirt, retro prints like polka dots, vintage silhouette with feminine details, nostalgic pin-up aesthetic",
+  "smart-casual": "Change only the clothes to smart casual style: blazer paired with dark jeans, nice blouse or shirt, loafers or ankle boots, polished yet relaxed business-casual look",
+  "glamorous": "Change only the clothes to glamorous high fashion: luxurious designer clothing with sparkles and shine, metallic or sequined fabrics, statement pieces, red carpet worthy haute couture style",
+  "preppy": "Change only the clothes to preppy collegiate style: pleated skirt or chinos, cardigan or sweater vest, collared shirt, classic American prep school aesthetic with refined details",
+  "edgy-rock": "Change only the clothes to edgy rock style: black leather jacket, ripped or distressed jeans, band t-shirt or graphic tee, studded accessories, bold rebellious rocker aesthetic",
+  "feminine": "Change only the clothes to ultra-feminine style: silk blouse or delicate top, flowing midi skirt, soft luxurious fabrics, romantic details like bows or ruffles, graceful elegant femininity",
+  "avant-garde": "Change only the clothes to avant-garde fashion: experimental design with unconventional shapes, architectural silhouettes, bold artistic pieces, cutting-edge high-fashion with unique forms",
+  "resort-vacation": "Change only the clothes to resort vacation style: light linen dress or flowy beach outfit, sun hat, comfortable sandals, breezy tropical aesthetic perfect for summer getaway",
+  "monochrome": "Change only the clothes to monochrome fashion: entire outfit in one single color (black, white, or neutral), different textures and shades of the same color, sophisticated tonal look",
+  "layered": "Change only the clothes to layered style: multiple clothing layers like turtleneck under sweater, long coat over outfit, scarf and accessories, complex stylish layering with depth",
+  "classic-timeless": "Change only the clothes to classic timeless fashion: little black dress or tailored trench coat, elegant simple pieces that never go out of style, refined sophisticated look",
+  "trendy-2026": "Change only the clothes to 2026 fashion trends: latest cutting-edge styles, modern trendy colors and cuts, contemporary fashion-forward pieces, current runway-inspired look",
 };
 
 // Промпты для локаций (для Kontext - инструкции по фону)
@@ -43,7 +60,12 @@ const palettePrompts: Record<string, string> = {
 };
 
 // Premium функции (требуют подписку)
-const premiumStyles = ["bohemian", "glamour", "sporty-chic"];
+const premiumStyles = [
+  "romantic", "athleisure", "elegant-evening", "boho", "minimalist",
+  "vintage-retro", "smart-casual", "glamorous", "preppy", "edgy-rock",
+  "feminine", "avant-garde", "resort-vacation", "monochrome", "layered",
+  "classic-timeless", "trendy-2026"
+];
 const premiumLocations = ["city-day", "city-night", "runway"];
 const premiumPalettes = ["spring", "summer", "autumn", "winter"];
 
@@ -161,7 +183,7 @@ export async function POST(request: NextRequest) {
     console.log("Image size:", Math.round(image.length / 1024), "KB");
 
     // Собираем промпт-инструкцию для Kontext
-    const stylePrompt = stylePrompts[style] || stylePrompts["casual-chic"];
+    const stylePrompt = stylePrompts[style] || stylePrompts["casual"];
     const locationPrompt = locationPrompts[location] || locationPrompts["studio"];
     const palettePrompt = palette && palettePrompts[palette] ? palettePrompts[palette] : "";
 
