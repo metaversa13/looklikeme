@@ -49,13 +49,13 @@ export default function Home() {
                 <div className="text-4xl mb-4">✨</div>
                 <h3 className="text-gold font-semibold mb-2">AI Генерация</h3>
                 <p className="text-cream/70 text-sm">
-                  Flux AI создает реалистичные модные образы за секунды
+                  Личный AI стилист создает реалистичные модные образы за секунды
                 </p>
               </div>
 
               <div className="glass-card p-6 rounded-xl">
                 <div className="text-4xl mb-4">👗</div>
-                <h3 className="text-gold font-semibold mb-2">6+ Стилей</h3>
+                <h3 className="text-gold font-semibold mb-2">20 Стилей</h3>
                 <p className="text-cream/70 text-sm">
                   От casual до glamour — найдите свой идеальный стиль
                 </p>
@@ -63,9 +63,33 @@ export default function Home() {
 
               <div className="glass-card p-6 rounded-xl">
                 <div className="text-4xl mb-4">🎨</div>
-                <h3 className="text-gold font-semibold mb-2">Цветовые палитры</h3>
+                <h3 className="text-gold font-semibold mb-2">8 Цветовых палитр</h3>
                 <p className="text-cream/70 text-sm">
-                  Подберите идеальные цвета под ваш цветотип
+                  Сезонные и стилистические палитры для идеального образа
+                </p>
+              </div>
+
+              <div className="glass-card p-6 rounded-xl">
+                <div className="text-4xl mb-4">🛍️</div>
+                <h3 className="text-gold font-semibold mb-2">Поиск на маркетплейсах</h3>
+                <p className="text-cream/70 text-sm">
+                  Находите похожую одежду на популярных маркетплейсах (скоро)
+                </p>
+              </div>
+
+              <div className="glass-card p-6 rounded-xl">
+                <div className="text-4xl mb-4">💬</div>
+                <h3 className="text-gold font-semibold mb-2">AI Стилист</h3>
+                <p className="text-cream/70 text-sm">
+                  Персональные советы от AI стилиста — бесплатно
+                </p>
+              </div>
+
+              <div className="glass-card p-6 rounded-xl">
+                <div className="text-4xl mb-4">🎁</div>
+                <h3 className="text-gold font-semibold mb-2">5 бесплатных образов</h3>
+                <p className="text-cream/70 text-sm">
+                  Начните прямо сейчас — первые 5 генераций бесплатно
                 </p>
               </div>
             </div>

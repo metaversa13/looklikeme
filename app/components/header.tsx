@@ -22,6 +22,9 @@ export function Header() {
           <Link href="/generate" className="text-cream/70 hover:text-gold transition-colors">
             Создать образ
           </Link>
+          <Link href="/stylist" className="text-cream/70 hover:text-gold transition-colors">
+            AI Стилист
+          </Link>
           {session && (
             <Link href="/gallery" className="text-cream/70 hover:text-gold transition-colors">
               Мои образы

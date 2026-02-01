@@ -113,6 +113,7 @@ model Style {
   promptTemplate  String   @db.Text
   isPremium       Boolean  @default(false)
   category        String   // "formal", "casual", "sport", etc.
+  gender          StyleGender @default(UNIVERSAL) // Гендерная принадлежность стиля
   iconUrl         String?
   exampleImageUrl String?
   sortOrder       Int      @default(0)
@@ -127,6 +128,12 @@ model Style {
   @@index([isPremium])
   @@index([isActive])
   @@map("styles")
+}
+
+enum StyleGender {
+  UNIVERSAL  // Подходит для всех гендеров
+  MALE       // Только для мужчин
+  FEMALE     // Только для женщин
 }
 
 // Предпочтения пользователя по стилям (для умных рекомендаций)

@@ -7,31 +7,31 @@ import { Header } from "@/components/header";
 import Image from "next/image";
 import Link from "next/link";
 
-// Все 20 стилей одежды
+// Все 20 стилей одежды с гендерными метаданными
 const styles = [
   // FREE стили (3 шт)
-  { id: "casual", name: "Casual", emoji: "👕", description: "Повседневный стиль", isPremium: false },
-  { id: "business", name: "Business", emoji: "💼", description: "Деловой образ", isPremium: false },
-  { id: "streetwear", name: "Streetwear", emoji: "🧢", description: "Уличная мода", isPremium: false },
+  { id: "casual", name: "Casual", emoji: "👕", description: "Повседневный стиль", isPremium: false, gender: "universal" },
+  { id: "business", name: "Business", emoji: "💼", description: "Деловой образ", isPremium: false, gender: "universal" },
+  { id: "streetwear", name: "Streetwear", emoji: "🧢", description: "Уличная мода", isPremium: false, gender: "universal" },
 
   // PREMIUM стили (17 шт)
-  { id: "romantic", name: "Romantic", emoji: "💐", description: "Романтичный стиль", isPremium: true },
-  { id: "athleisure", name: "Athleisure", emoji: "🏃", description: "Спортивный шик", isPremium: true },
-  { id: "elegant-evening", name: "Elegant Evening", emoji: "🌙", description: "Вечерний элегантный", isPremium: true },
-  { id: "boho", name: "Boho", emoji: "🌸", description: "Богемный стиль", isPremium: true },
-  { id: "minimalist", name: "Minimalist", emoji: "⚪", description: "Минималистичный", isPremium: true },
-  { id: "vintage-retro", name: "Vintage Retro", emoji: "🕰️", description: "Винтажный 50-х", isPremium: true },
-  { id: "smart-casual", name: "Smart Casual", emoji: "👔", description: "Деловой-повседневный", isPremium: true },
-  { id: "glamorous", name: "Glamorous", emoji: "💎", description: "Гламурный стиль", isPremium: true },
-  { id: "preppy", name: "Preppy", emoji: "🎓", description: "Преппи стиль", isPremium: true },
-  { id: "edgy-rock", name: "Edgy Rock", emoji: "🎸", description: "Рок стиль", isPremium: true },
-  { id: "feminine", name: "Feminine", emoji: "🎀", description: "Ультра-женственный", isPremium: true },
-  { id: "avant-garde", name: "Avant-garde", emoji: "🎨", description: "Авангардный", isPremium: true },
-  { id: "resort-vacation", name: "Resort", emoji: "🏖️", description: "Курортный стиль", isPremium: true },
-  { id: "monochrome", name: "Monochrome", emoji: "⚫", description: "Монохромный", isPremium: true },
-  { id: "layered", name: "Layered", emoji: "🧥", description: "Многослойный", isPremium: true },
-  { id: "classic-timeless", name: "Classic", emoji: "👗", description: "Классический", isPremium: true },
-  { id: "trendy-2026", name: "Trendy 2026", emoji: "✨", description: "Актуальные тренды", isPremium: true },
+  { id: "romantic", name: "Romantic", emoji: "💐", description: "Романтичный стиль", isPremium: true, gender: "universal" },
+  { id: "athleisure", name: "Athleisure", emoji: "🏃", description: "Спортивный шик", isPremium: true, gender: "universal" },
+  { id: "elegant-evening", name: "Elegant Evening", emoji: "🌙", description: "Вечерний элегантный", isPremium: true, gender: "universal" },
+  { id: "boho", name: "Boho", emoji: "🌸", description: "Богемный стиль", isPremium: true, gender: "universal" },
+  { id: "minimalist", name: "Minimalist", emoji: "⚪", description: "Минималистичный", isPremium: true, gender: "universal" },
+  { id: "vintage-retro", name: "Vintage Retro", emoji: "🕰️", description: "Винтажный 50-х", isPremium: true, gender: "universal" },
+  { id: "smart-casual", name: "Smart Casual", emoji: "👔", description: "Деловой-повседневный", isPremium: true, gender: "universal" },
+  { id: "glamorous", name: "Glamorous", emoji: "💎", description: "Гламурный стиль", isPremium: true, gender: "universal" },
+  { id: "preppy", name: "Preppy", emoji: "🎓", description: "Преппи стиль", isPremium: true, gender: "universal" },
+  { id: "edgy-rock", name: "Edgy Rock", emoji: "🎸", description: "Рок стиль", isPremium: true, gender: "universal" },
+  { id: "feminine", name: "Feminine", emoji: "🎀", description: "Ультра-женственный", isPremium: true, gender: "female" },
+  { id: "avant-garde", name: "Avant-garde", emoji: "🎨", description: "Авангардный", isPremium: true, gender: "universal" },
+  { id: "resort-vacation", name: "Resort", emoji: "🏖️", description: "Курортный стиль", isPremium: true, gender: "universal" },
+  { id: "monochrome", name: "Monochrome", emoji: "⚫", description: "Монохромный", isPremium: true, gender: "universal" },
+  { id: "layered", name: "Layered", emoji: "🧥", description: "Многослойный", isPremium: true, gender: "universal" },
+  { id: "classic-timeless", name: "Classic", emoji: "👗", description: "Классический", isPremium: true, gender: "universal" },
+  { id: "trendy-2026", name: "Trendy 2026", emoji: "✨", description: "Актуальные тренды", isPremium: true, gender: "universal" },
 ];
 
 const locations = [
@@ -39,13 +39,24 @@ const locations = [
   { id: "city-day", name: "Город (день)", emoji: "🌆", isPremium: true },
   { id: "city-night", name: "Город (ночь)", emoji: "🌃", isPremium: true },
   { id: "runway", name: "Подиум", emoji: "✨", isPremium: true },
+  { id: "beach", name: "Пляж", emoji: "🏖️", isPremium: true },
+  { id: "cafe", name: "Кафе", emoji: "☕", isPremium: true },
+  { id: "nature", name: "Природа", emoji: "🌳", isPremium: true },
+  { id: "loft", name: "Лофт", emoji: "🏗️", isPremium: true },
 ];
 
 const palettes = [
+  // Сезонные палитры (4 шт)
   { id: "spring", name: "Весна", colors: ["#FFB6C1", "#FFE4E1", "#DDA0DD", "#F0E68C"], isPremium: true },
   { id: "summer", name: "Лето", colors: ["#87CEEB", "#FFB6D9", "#D3D3D3", "#E6E6FA"], isPremium: true },
   { id: "autumn", name: "Осень", colors: ["#CD853F", "#D2691E", "#DAA520", "#8B4513"], isPremium: true },
   { id: "winter", name: "Зима", colors: ["#000000", "#FFFFFF", "#000080", "#DC143C"], isPremium: true },
+
+  // Стилистические палитры (4 шт)
+  { id: "classic-neutrals", name: "Классика", colors: ["#F5E6D3", "#D4C5B9", "#8B7355", "#2C2C2C"], isPremium: true },
+  { id: "nature-earth", name: "Природные", colors: ["#8B7355", "#6B8E23", "#D2691E", "#556B2F"], isPremium: true },
+  { id: "soft-pastels", name: "Пастель", colors: ["#FFB6C1", "#E6E6FA", "#B0E0E6", "#FFDAB9"], isPremium: true },
+  { id: "rich-bold", name: "Насыщенные", colors: ["#8B0000", "#000080", "#2F4F4F", "#1C1C1C"], isPremium: true },
 ];
 
 export default function GeneratePage() {
@@ -409,6 +420,12 @@ export default function GeneratePage() {
                     const isLocked = style.isPremium && !isPremium;
                     const isSelected = selectedStyle === style.id;
 
+                    // Определяем иконку гендера
+                    const genderIcon =
+                      style.gender === "male" ? "♂" :
+                      style.gender === "female" ? "♀" :
+                      "⚥"; // ⚥ или 👥 для универсального
+
                     return (
                       <button
                         key={style.id}
@@ -424,7 +441,20 @@ export default function GeneratePage() {
                           }
                         `}
                       >
-                        <div className="text-2xl mb-1">{style.emoji}</div>
+                        <div className="flex items-start justify-between mb-1">
+                          <div className="text-2xl">{style.emoji}</div>
+                          {/* Гендерная иконка в правом верхнем углу */}
+                          <div
+                            className="text-xs text-cream/40"
+                            title={
+                              style.gender === "male" ? "Только для мужчин" :
+                              style.gender === "female" ? "Только для женщин" :
+                              "Для всех"
+                            }
+                          >
+                            {genderIcon}
+                          </div>
+                        </div>
                         <div className="text-cream text-sm font-medium">{style.name}</div>
                         <div className="text-cream/40 text-xs mt-0.5">{style.description}</div>
                         {isLocked && (
