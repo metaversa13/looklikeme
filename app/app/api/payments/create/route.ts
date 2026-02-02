@@ -23,8 +23,14 @@ export async function POST(request: NextRequest) {
       string,
       { amount: number; description: string; type: string; period?: string }
     > = {
+      BASE: {
+        amount: 299,
+        description: "Подписка Base на 1 месяц",
+        type: "SUBSCRIPTION",
+        period: "month",
+      },
       PREMIUM: {
-        amount: 199,
+        amount: 499,
         description: "Подписка Premium на 1 месяц",
         type: "SUBSCRIPTION",
         period: "month",

@@ -9,16 +9,16 @@ export default function LoginPage() {
   const error = searchParams.get("error");
 
   return (
-    <main className="min-h-screen bg-black flex items-center justify-center px-4">
+    <main className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold tracking-tight">
-            <span className="text-cream">Look</span>
+            <span className="text-foreground">Look</span>
             <span className="text-gold">Like</span>
-            <span className="text-cream">me</span>
+            <span className="text-foreground">me</span>
           </h1>
-          <p className="text-cream/60 mt-2">Войдите, чтобы создавать образы</p>
+          <p className="text-foreground/60 mt-2">Войдите, чтобы создавать образы</p>
         </div>
 
         {/* Login Card */}
@@ -82,7 +82,7 @@ export default function LoginPage() {
           </button>
 
           <div className="mt-6 text-center">
-            <p className="text-cream/40 text-xs">
+            <p className="text-foreground/40 text-xs">
               Продолжая, вы соглашаетесь с{" "}
               <a href="/terms" className="text-gold hover:underline">
                 условиями использования
@@ -93,7 +93,7 @@ export default function LoginPage() {
 
         {/* Back to home */}
         <div className="mt-6 text-center">
-          <a href="/" className="text-cream/60 hover:text-gold text-sm transition-colors">
+          <a href="/" className="text-foreground/60 hover:text-gold text-sm transition-colors">
             ← Вернуться на главную
           </a>
         </div>

@@ -42,6 +42,8 @@ export const authOptions: NextAuthOptions = {
             lifetimeAccess: true,
             subscriptionEndDate: true,
             totalGenerations: true,
+            bonusGenerations: true,
+            referralCode: true,
           },
         });
 
@@ -50,6 +52,8 @@ export const authOptions: NextAuthOptions = {
           session.user.lifetimeAccess = dbUser.lifetimeAccess;
           session.user.subscriptionEndDate = dbUser.subscriptionEndDate;
           session.user.totalGenerations = dbUser.totalGenerations;
+          session.user.bonusGenerations = dbUser.bonusGenerations;
+          session.user.referralCode = dbUser.referralCode;
         }
       }
       return session;

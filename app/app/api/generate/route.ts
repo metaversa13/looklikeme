@@ -9,90 +9,88 @@ const replicate = new Replicate({
 });
 
 // Лимиты генераций в месяц
-const MONTHLY_LIMITS = {
+const MONTHLY_LIMITS: Record<string, number> = {
   FREE: 5,
+  BASE: 50,
   PREMIUM: 100,
   LIFETIME: 200,
 };
 
 // Промпты для стилей (для Kontext - инструкции по редактированию)
-// ВАЖНО: Промпты учитывают гендер - AI должен определить пол человека и выбрать соответствующую одежду
-// КРИТИЧНО: Никогда не одевать мужчин в женскую одежду (платья, юбки, блузки) и наоборот
+// ВАЖНО: Каждый промпт описывает ПОЛНЫЙ образ от головы до обуви
+// КРИТИЧНО: Никогда не одевать мужчин в женскую одежду и наоборот
 
-// Префикс для определения гендера (добавляется ко всем промптам)
-const genderDetectionPrefix = "FIRST: Look at this person carefully and determine if they are male or female. THEN: ";
+// Префикс для определения гендера
+const genderDetectionPrefix = "FIRST: Carefully identify if this person is male or female based on their face and body. THEN follow the instructions below EXACTLY: ";
 
 const stylePrompts: Record<string, string> = {
-  // FREE стили (3 шт) - универсальные
-  "casual": "Change only the clothes to casual everyday style. If this person is MALE: comfortable jeans, simple t-shirt or polo shirt, casual sneakers. If this person is FEMALE: comfortable jeans or casual pants, simple t-shirt or casual top, sneakers or flats. Relaxed and effortless unisex look.",
+  // FREE стили (3 шт)
+  "casual": "COMPLETELY REPLACE all clothing on this person with casual everyday outfit. Show FULL BODY from head to feet. If MALE: fitted medium-blue denim jeans, plain white cotton crew-neck t-shirt, gray zip-up hoodie worn open, white leather low-top sneakers with white laces, silver wristwatch. If FEMALE: high-waisted light-wash straight-leg jeans, fitted beige ribbed tank top, oversized cream knit cardigan draped open, white canvas sneakers, small gold hoop earrings. Relaxed effortless everyday look.",
 
-  "business": "Change only the clothes to professional business attire. If this person is MALE: tailored business suit with blazer, dress pants, dress shirt with tie, polished leather shoes, sophisticated masculine corporate look. If this person is FEMALE: tailored blazer with dress pants OR pencil skirt, professional blouse or button-up shirt, closed-toe heels or flats, sophisticated feminine corporate look.",
+  "business": "COMPLETELY REPLACE all clothing on this person with professional business attire. Show FULL BODY from head to feet. If MALE: charcoal gray two-piece wool suit with notch-lapel blazer buttoned, white crisp cotton dress shirt, navy silk tie with subtle pattern, black polished Oxford leather shoes, silver cufflinks, leather belt. If FEMALE: tailored navy blazer with single button, white silk blouse tucked in, charcoal pencil skirt to the knee OR tailored dress pants, nude pointed-toe pumps with 3-inch heel, pearl stud earrings, leather structured handbag. Sophisticated corporate look.",
 
-  "streetwear": "Change only the clothes to urban streetwear fashion. If this person is MALE: oversized hoodie or graphic tee, baggy cargo pants or joggers, chunky sneakers. If this person is FEMALE: oversized hoodie or fitted streetwear top, cargo pants or joggers, chunky sneakers. Modern unisex street style with urban edge.",
+  "streetwear": "COMPLETELY REPLACE all clothing on this person with urban streetwear fashion. Show FULL BODY from head to feet. If MALE: oversized black graphic hoodie with bold print, wide-leg khaki cargo pants with side pockets, chunky white-and-gray Nike Air Max sneakers, black baseball cap worn backwards, silver chain necklace. If FEMALE: oversized cropped gray hoodie, high-waisted black cargo joggers with drawstring, chunky white platform sneakers, small crossbody bag, layered silver chain necklaces. Modern street style with urban edge.",
 
   // PREMIUM стили (17 шт)
-  "romantic": "Change only the clothes to romantic style. If this person is MALE: soft casual shirt with gentle patterns, comfortable chinos, subtle romantic colors. If this person is FEMALE: soft flowing fabrics, delicate blouse or dress with prints, pastel colors, elegant dreamy aesthetic with gentle details.",
+  "romantic": "COMPLETELY REPLACE all clothing on this person with romantic style outfit. Show FULL BODY from head to feet. If MALE: soft dusty-rose linen button-up shirt with sleeves rolled to elbows, cream chinos with slim fit, tan suede loafers, brown leather braided bracelet. If FEMALE: flowing midi dress in soft blush pink with delicate floral print, sweetheart neckline, puff sleeves, nude strappy low-heel sandals, dainty gold pendant necklace, small pearl earrings. Dreamy romantic aesthetic.",
 
-  "athleisure": "Change only the clothes to sporty athletic wear. If this person is MALE: fitted athletic pants or joggers, sports t-shirt or tank, athletic jacket, masculine sporty look. If this person is FEMALE: fitted athletic leggings or pants, stylish sports tank or top, lightweight athletic jacket, feminine sporty chic look. Premium athleisure that blends comfort and style.",
+  "athleisure": "COMPLETELY REPLACE all clothing on this person with premium athletic wear. Show FULL BODY from head to feet. If MALE: fitted black jogger pants with tapered ankles, dark gray performance compression t-shirt, lightweight black zip-up track jacket, black-and-white running sneakers with visible cushioning, sport smartwatch. If FEMALE: high-waisted charcoal compression leggings, fitted white sports crop top with mesh panels, lightweight lavender zip-up athletic jacket, white-and-pink running sneakers, hair tied in sleek ponytail, fitness tracker on wrist. Premium athleisure blending comfort and style.",
 
-  "elegant-evening": "Change only the clothes to elegant evening formal attire. If this person is MALE: black tuxedo or elegant dark suit with bow tie or formal tie, dress shirt, polished dress shoes, sophisticated masculine formal look. If this person is FEMALE: stunning evening gown or elegant cocktail dress, luxurious fabrics like silk or satin, sophisticated feminine formal look.",
+  "elegant-evening": "COMPLETELY REPLACE all clothing on this person with elegant evening formal attire. Show FULL BODY from head to feet. If MALE: black wool tuxedo with satin peak lapels, crisp white tuxedo dress shirt with French cuffs, black silk bow tie, black patent leather Oxford shoes, silver cufflinks, white pocket square. If FEMALE: floor-length black silk evening gown with thin spaghetti straps, subtle side slit, delicate diamond pendant necklace, crystal drop earrings, black strappy high-heel sandals with rhinestone detail, small satin clutch purse. Red carpet sophistication.",
 
-  "boho": "Change only the clothes to bohemian style. If this person is MALE: loose linen shirt, comfortable pants with ethnic patterns, natural fabrics, masculine boho look. If this person is FEMALE: flowing layers, ethnic prints, maxi skirt or flowy dress, fringe details, feminine artistic free-spirited boho look with layered accessories.",
+  "boho": "COMPLETELY REPLACE all clothing on this person with bohemian style. Show FULL BODY from head to feet. If MALE: loose cream linen shirt with wooden buttons half-open, olive-green relaxed-fit cotton pants, brown leather sandals, woven leather bracelet, wooden bead necklace. If FEMALE: flowing tiered maxi skirt in earthy terracotta with ethnic print, cream crochet crop top, long fringed kimono cardigan in mustard, brown leather gladiator sandals lacing up the ankle, layered gold boho necklaces, oversized round sunglasses. Free-spirited artistic boho.",
 
-  "minimalist": "Change only the clothes to minimalist fashion: clean simple lines, monochromatic neutral colors (black, white, gray, beige), high-quality basic pieces, understated elegance. Simple unisex style with no unnecessary details.",
+  "minimalist": "COMPLETELY REPLACE all clothing on this person with minimalist fashion. Show FULL BODY from head to feet. If MALE: black slim-fit cotton trousers, plain white heavyweight cotton t-shirt with perfect fit, light gray unstructured linen blazer, white clean leather minimal sneakers, simple black leather watch. If FEMALE: wide-leg cream tailored trousers, black fitted ribbed turtleneck top, camel wool oversized coat draped over shoulders, white pointed-toe leather mules, single thin gold bangle bracelet. Clean lines, no logos, understated luxury.",
 
-  "vintage-retro": "Change only the clothes to vintage 1950s style. If this person is MALE: retro suit with high-waisted trousers, vintage dress shirt, classic tie, retro prints, nostalgic masculine vintage look. If this person is FEMALE: classic A-line dress or high-waisted skirt with vintage blouse, retro prints like polka dots or stripes, nostalgic feminine vintage silhouette.",
+  "vintage-retro": "COMPLETELY REPLACE all clothing on this person with 1950s vintage style. Show FULL BODY from head to feet. If MALE: high-waisted charcoal pleated trousers with cuffs, white fitted dress shirt, burgundy knit vest, dark suspenders, polished brown wingtip Oxford shoes, vintage gold wristwatch. If FEMALE: fitted red polka-dot A-line dress with full skirt to below the knee, white Peter Pan collar, cinched waist with matching belt, red closed-toe kitten heels, pearl necklace, red lipstick. Nostalgic retro silhouette.",
 
-  "smart-casual": "Change only the clothes to smart casual style. If this person is MALE: blazer or sport coat with dark jeans or chinos, nice button-up shirt, loafers. If this person is FEMALE: blazer with jeans or dress pants, nice blouse, ankle boots or loafers. Polished yet relaxed business-casual look.",
+  "smart-casual": "COMPLETELY REPLACE all clothing on this person with smart-casual outfit. Show FULL BODY from head to feet. If MALE: navy textured blazer unstructured, light blue Oxford button-down shirt untucked, dark indigo slim jeans, tan suede desert boots, brown leather belt, no tie. If FEMALE: camel structured blazer, white silk camisole underneath, dark wash straight-leg jeans, pointed-toe black leather ankle boots with low heel, gold chain necklace, structured leather tote bag. Polished yet relaxed.",
 
-  "glamorous": "Change only the clothes to glamorous high fashion. If this person is MALE: luxurious designer suit with metallic accents, statement pieces, masculine haute couture style. If this person is FEMALE: luxurious designer dress or outfit with sparkles, sequined or metallic fabrics, statement pieces, feminine red carpet worthy haute couture style.",
+  "glamorous": "COMPLETELY REPLACE all clothing on this person with glamorous high fashion. Show FULL BODY from head to feet. If MALE: midnight-blue velvet dinner jacket with black satin lapels, black fitted dress pants, white dress shirt with jeweled cufflinks, black velvet loafers with gold embroidery, gold wristwatch with black dial. If FEMALE: form-fitting gold sequined cocktail dress above the knee, dramatic statement crystal chandelier earrings, gold metallic strappy stiletto heels, small crystal-embellished clutch, bold smoky eye makeup. Red carpet glamour.",
 
-  "preppy": "Change only the clothes to preppy collegiate style. If this person is MALE: chinos or khaki pants, cardigan or sweater vest over collared shirt, boat shoes or loafers, masculine prep school aesthetic. If this person is FEMALE: pleated skirt or chinos, cardigan over collared blouse, feminine classic American prep school aesthetic with refined details.",
+  "preppy": "COMPLETELY REPLACE all clothing on this person with preppy collegiate style. Show FULL BODY from head to feet. If MALE: khaki chino pants with belt, navy-and-green striped rugby polo shirt, cream cable-knit V-neck sweater layered over collared shirt, brown leather penny loafers worn without socks, brown leather belt with brass buckle. If FEMALE: navy pleated mini skirt, white fitted button-down Oxford shirt, forest-green cable-knit cardigan with gold buttons, white knee-high socks, brown leather Mary Jane shoes, plaid headband. Classic American prep school.",
 
-  "edgy-rock": "Change only the clothes to edgy rock style: black leather jacket, ripped or distressed jeans, band t-shirt or graphic tee, studded belts or accessories. Bold rebellious unisex rocker aesthetic.",
+  "edgy-rock": "COMPLETELY REPLACE all clothing on this person with edgy rock style. Show FULL BODY from head to feet. If MALE: black fitted leather biker jacket with silver zippers, faded vintage band graphic t-shirt, black ripped skinny jeans with distressing at knees, black leather combat boots with silver buckles, studded black leather belt, silver ring on finger. If FEMALE: cropped black leather moto jacket, torn black graphic band tee, black ripped skinny jeans, black platform Dr. Martens lace-up boots, choker necklace, multiple ear piercings with silver studs. Rebellious rocker aesthetic.",
 
-  "feminine": "ONLY FOR WOMEN - Change only the clothes to ultra-feminine style: silk blouse or delicate top, flowing midi skirt or elegant dress, soft luxurious fabrics, romantic details like bows or ruffles, graceful elegant femininity. If the person is male, DO NOT apply this style - show an error instead.",
+  "feminine": "ONLY FOR WOMEN. COMPLETELY REPLACE all clothing with ultra-feminine style. Show FULL BODY from head to feet. Flowing blush-pink silk midi wrap dress with V-neckline and flutter sleeves, cinched waist with fabric tie belt, nude pointed-toe slingback kitten heels, delicate rose-gold pendant necklace, small pearl stud earrings, soft structured cream leather handbag. Graceful romantic femininity with luxurious soft fabrics.",
 
-  "avant-garde": "Change only the clothes to avant-garde fashion: experimental design with unconventional shapes, architectural silhouettes, bold artistic pieces, cutting-edge high-fashion with unique geometric forms. Unisex avant-garde style.",
+  "avant-garde": "COMPLETELY REPLACE all clothing on this person with avant-garde fashion. Show FULL BODY from head to feet. If MALE: oversized black architectural deconstructed coat with asymmetric hem, all-black monochrome layered outfit with geometric cut-outs, black chunky platform boots with exaggerated sole, single bold abstract metal brooch. If FEMALE: sculptural white origami-inspired top with dramatic angular shoulders, flowing black asymmetric wide-leg pants, black-and-white geometric platform shoes, single bold oversized metal cuff bracelet. Experimental cutting-edge high fashion.",
 
-  "resort-vacation": "Change only the clothes to resort vacation style. If this person is MALE: light linen shirt, shorts or linen pants, comfortable sandals, masculine breezy tropical look. If this person is FEMALE: flowy beach dress or light resort outfit, sun hat, comfortable sandals, feminine breezy tropical aesthetic perfect for summer getaway.",
+  "resort-vacation": "COMPLETELY REPLACE all clothing on this person with resort vacation style. Show FULL BODY from head to feet. If MALE: light blue linen short-sleeve button-up shirt with relaxed fit, beige linen drawstring shorts above the knee, brown leather woven sandals, aviator sunglasses pushed up on head, woven rope bracelet. If FEMALE: flowing tropical-print wrap midi dress in turquoise and coral, wide-brim natural straw sun hat, gold metallic flat thong sandals, oversized tortoiseshell sunglasses, woven straw beach tote bag, shell anklet. Breezy tropical resort aesthetic.",
 
-  "monochrome": "Change only the clothes to monochrome fashion: entire outfit in one single color (black, white, gray, beige, or navy), different textures and shades of the same color, sophisticated tonal look. Unisex monochrome style.",
+  "monochrome": "COMPLETELY REPLACE all clothing on this person with monochrome fashion. Show FULL BODY from head to feet. If MALE: black wool overcoat, black cashmere turtleneck sweater, black tailored slim trousers, black leather Chelsea boots, black leather belt — entirely black outfit with varied textures. If FEMALE: all-cream outfit — cream cashmere turtleneck, cream wide-leg tailored trousers, cream wool long coat, cream pointed-toe leather ankle boots, gold stud earrings as only contrast. Sophisticated single-color tonal look with texture variety.",
 
-  "layered": "Change only the clothes to layered style: multiple clothing layers like turtleneck under sweater or button-up shirt, long coat or jacket over outfit, scarf and accessories. Complex stylish layering with depth and dimension. Unisex layered style.",
+  "layered": "COMPLETELY REPLACE all clothing on this person with layered outfit. Show FULL BODY from head to feet. If MALE: white fitted turtleneck base layer, gray wool crew-neck sweater over it, navy long wool overcoat on top, dark indigo jeans, brown suede Chelsea boots, burgundy wool scarf, brown leather gloves. If FEMALE: thin black turtleneck, oversized beige chunky knit sweater, long camel wool wrap coat, black skinny jeans or leather leggings, black suede over-the-knee boots, large plaid blanket scarf, small crossbody bag. Stylish multi-layer depth.",
 
-  "classic-timeless": "Change only the clothes to classic timeless fashion. If this person is MALE: tailored trench coat with suit, dress shirt, classic tie, polished masculine look. If this person is FEMALE: little black dress OR elegant coat with dress pants, simple pieces that never go out of style, refined feminine sophisticated look.",
+  "classic-timeless": "COMPLETELY REPLACE all clothing on this person with classic timeless fashion. Show FULL BODY from head to feet. If MALE: beige double-breasted trench coat with belt tied, navy wool suit underneath, white dress shirt, burgundy silk tie, black polished cap-toe Oxford shoes, matching black leather belt. If FEMALE: elegant beige trench coat, black fitted turtleneck, high-waisted charcoal tailored wide-leg trousers, black pointed-toe stiletto pumps, structured black leather handbag, simple gold watch, pearl stud earrings. Timeless refined sophistication.",
 
-  "trendy-2026": "Change only the clothes to 2026 fashion trends. If this person is MALE: latest men's cutting-edge styles, modern trendy colors and cuts, contemporary masculine fashion-forward pieces. If this person is FEMALE: latest women's cutting-edge styles, modern trendy colors and cuts, contemporary feminine fashion-forward pieces. Current runway-inspired look.",
+  "trendy-2026": "COMPLETELY REPLACE all clothing on this person with cutting-edge 2026 fashion trends. Show FULL BODY from head to feet. If MALE: oversized structured bomber jacket in metallic olive, relaxed wide-leg pleated trousers in slate gray, chunky futuristic sneakers in white-and-silver, minimal tech-wear crossbody micro bag, tinted small rectangular sunglasses. If FEMALE: oversized power-shoulder cropped blazer in electric cobalt blue, high-waisted wide-leg satin pants in silver, chunky platform loafers in white patent leather, micro structured bag in chrome finish, statement geometric earrings. Bold contemporary runway-inspired look.",
 };
 
 // Промпты для локаций (для Kontext - инструкции по фону)
 // КРИТИЧНО: Промпты должны быть императивными и явными
 const locationPrompts: Record<string, string> = {
-  "studio": "BACKGROUND MUST BE: Professional photo studio with clean neutral solid color backdrop, seamless white or gray background, studio lighting setup, minimalist clean setting.",
-  "city-day": "BACKGROUND MUST BE: Urban city street in bright daytime, modern architecture buildings, sunny weather with natural daylight, metropolitan street scene, contemporary cityscape.",
-  "city-night": "BACKGROUND MUST BE: City street at nighttime, glowing neon signs and street lights, evening urban atmosphere, illuminated buildings, cinematic night cityscape with bokeh lights.",
-  "runway": "BACKGROUND MUST BE: Fashion runway catwalk stage, professional spotlights, fashion show setting, dramatic runway lighting, haute couture presentation atmosphere.",
-  "beach": "BACKGROUND MUST BE: Sunny beach with ocean waves, golden sand, clear blue sky, tropical seaside setting, natural beach environment with water in background.",
-  "cafe": "BACKGROUND MUST BE: Stylish modern cafe interior, cozy coffee shop setting, elegant restaurant ambiance, chic bistro environment with soft ambient lighting.",
-  "nature": "BACKGROUND MUST BE: Beautiful natural outdoor setting, green park or forest scenery, natural landscape with trees and foliage, outdoor nature environment.",
-  "loft": "BACKGROUND MUST BE: Industrial loft space with exposed brick walls, urban industrial setting, raw concrete textures, modern warehouse aesthetic with industrial elements.",
+  "studio": "Replace the background with a plain solid light gray seamless backdrop, clean Vogue-style studio photoshoot, soft professional lighting.",
+  "city-day": "Replace the background with a modern city street in bright daylight, skyscrapers, golden sunlight, blurred cityscape behind.",
+  "city-night": "Replace the background with a city street at night, neon signs, street lights, wet asphalt reflections, cinematic bokeh.",
+  "runway": "Replace the background with a fashion show runway, white catwalk floor, dramatic spotlights, blurred audience in darkness.",
+  "beach": "Replace the background with a tropical beach at golden hour, turquoise ocean, golden sand, palm trees blurred behind.",
+  "cafe": "Replace the background with an elegant Parisian cafe interior, warm Edison lighting, marble table, large window with natural light.",
+  "nature": "Replace the background with a lush green park, tall trees, dappled sunlight through leaves, golden-hour natural lighting.",
+  "loft": "Replace the background with an industrial loft, exposed brick walls, large steel-frame windows, polished concrete floor.",
 };
 
 // Промпты для цветовых палитр
 // КРИТИЧНО: Палитры должны явно указывать точные цвета для одежды
 const palettePrompts: Record<string, string> = {
-  // Сезонные палитры (4 шт)
-  "spring": "CLOTHING COLORS MUST BE: Soft warm pastel spring colors - gentle pink, peach, light lavender, pale yellow. Use ONLY these soft spring pastel colors for all clothing items.",
-  "summer": "CLOTHING COLORS MUST BE: Cool soft summer shades - sky blue, soft pink, light gray, lavender. Use ONLY these cool soft summer colors for all clothing items.",
-  "autumn": "CLOTHING COLORS MUST BE: Warm deep autumn colors - terracotta orange, chocolate brown, mustard yellow, chestnut brown. Use ONLY these warm autumn earth tones for all clothing items.",
-  "winter": "CLOTHING COLORS MUST BE: Cool bright winter tones - black, white, navy blue, crimson red. Use ONLY these cool bright winter colors for all clothing items.",
-
-  // Стилистические палитры (4 шт)
-  "classic-neutrals": "CLOTHING COLORS MUST BE: Elegant neutral tones - beige, cream, taupe brown, and charcoal black. Use ONLY these sophisticated neutral colors for all clothing items.",
-  "nature-earth": "CLOTHING COLORS MUST BE: Natural earthy tones - brown, olive green, terracotta, and khaki. Use ONLY these natural earth colors for all clothing items.",
-  "soft-pastels": "CLOTHING COLORS MUST BE: Soft romantic pastel shades - baby pink, lavender purple, light blue, and peach. Use ONLY these gentle pastel colors for all clothing items.",
-  "rich-bold": "CLOTHING COLORS MUST BE: Deep rich bold tones - burgundy wine red, navy blue, dark slate gray, and black. Use ONLY these saturated bold colors for all clothing items.",
+  "spring": "Make ALL clothing colors soft blush pink, warm peach, light lavender, and pale yellow only.",
+  "summer": "Make ALL clothing colors sky blue, soft rose pink, light gray, and cool lavender only.",
+  "autumn": "Make ALL clothing colors burnt terracotta, chocolate brown, mustard yellow, and chestnut only.",
+  "winter": "Make ALL clothing colors jet black, crisp white, navy blue, and crimson red only.",
+  "classic-neutrals": "Make ALL clothing colors warm beige, soft cream, taupe, and charcoal gray only.",
+  "nature-earth": "Make ALL clothing colors brown, olive green, terracotta, and khaki only.",
+  "soft-pastels": "Make ALL clothing colors baby pink, lavender, powder blue, and peach only.",
+  "rich-bold": "Make ALL clothing colors burgundy, navy blue, dark slate, and black only.",
 };
 
 // Premium функции (требуют подписку)
@@ -105,12 +103,9 @@ const premiumStyles = [
 const premiumLocations = ["city-day", "city-night", "runway", "beach", "cafe", "nature", "loft"];
 const premiumPalettes = ["spring", "summer", "autumn", "winter", "classic-neutrals", "nature-earth", "soft-pastels", "rich-bold"];
 
-// Инструкции по сохранению идентичности
-const preservationPrompt = `
-IMPORTANT: Preserve the exact same face of this person - keep identical facial features, face shape, eye color, eye shape, nose, lips, skin tone, and facial expression.
-Maintain the same hairstyle and hair color. Keep the person in the same pose and position.
-Only change the clothing and background as instructed above.
-`.trim();
+// Инструкции по сохранению идентичности — короткие и точные
+// Kontext Pro хорошо сохраняет лицо сам, длинные инструкции только мешают
+const preservationPrompt = "CRITICAL: Keep this person's EXACT same face, facial features, eye color, skin tone, hairstyle, hair color, and expression completely unchanged. Only change clothing and background.";
 
 export async function POST(request: NextRequest) {
   try {
@@ -123,11 +118,12 @@ export async function POST(request: NextRequest) {
     // Получаем данные пользователя
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { subscriptionType: true },
+      select: { subscriptionType: true, bonusGenerations: true },
     });
 
     const subscriptionType = user?.subscriptionType || "FREE";
-    const monthlyLimit = MONTHLY_LIMITS[subscriptionType];
+    const bonusGenerations = user?.bonusGenerations || 0;
+    const monthlyLimit = MONTHLY_LIMITS[subscriptionType] + bonusGenerations;
 
     // Проверяем месячный лимит генераций
     const now = new Date();
@@ -147,7 +143,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: "Monthly limit reached",
-          message: `Вы исчерпали месячный лимит (${monthlyLimit} генераций). ${subscriptionType === "FREE" ? "Оформите Premium для увеличения лимита." : subscriptionType === "PREMIUM" ? "Оформите Lifetime для 200 генераций в месяц." : "Лимит обновится в следующем месяце."}`,
+          message: `Вы исчерпали месячный лимит (${monthlyLimit} генераций). ${subscriptionType === "FREE" ? "Оформите подписку Base или Premium для увеличения лимита." : subscriptionType === "BASE" ? "Перейдите на Premium для 100 генераций в месяц." : "Лимит обновится в следующем месяце."}`,
           limit: monthlyLimit,
           used,
         },
@@ -220,24 +216,23 @@ export async function POST(request: NextRequest) {
     const locationPrompt = locationPrompts[location] || locationPrompts["studio"];
     const palettePrompt = palette && palettePrompts[palette] ? palettePrompts[palette] : "";
 
-    // Kontext работает с инструкциями по редактированию
-    // Структура: четкие пронумерованные инструкции, чтобы модель выполнила ВСЕ
-    const parts: string[] = [
-      genderDetectionPrefix,
-      `STEP 1 - CLOTHING: ${stylePrompt}`,
-    ];
+    // Единый промпт — одним абзацем, одежда на первом месте
+    // Kontext лучше работает с коротким плотным промптом без разбивки на step'ы
+    let fullPrompt = genderDetectionPrefix + stylePrompt;
 
+    // Палитра — сразу после одежды, как уточнение цветов
     if (palettePrompt) {
-      parts.push(`STEP 2 - COLORS: ${palettePrompt}`);
-      parts.push(`STEP 3 - BACKGROUND: ${locationPrompt}`);
-    } else {
-      parts.push(`STEP 2 - BACKGROUND: ${locationPrompt}`);
+      fullPrompt += " " + palettePrompt;
     }
 
-    parts.push(`FINAL STEP - IDENTITY: ${preservationPrompt}`);
-    parts.push("ALL STEPS ABOVE ARE MANDATORY. Apply clothing, colors, and background changes SIMULTANEOUSLY. High quality fashion photography, professional lighting, sharp focus, photorealistic.");
+    // Фон — после одежды
+    fullPrompt += " " + locationPrompt;
 
-    const fullPrompt = parts.join("\n\n");
+    // Сохранение лица — коротко и жёстко
+    fullPrompt += " " + preservationPrompt;
+
+    // Финальный якорь
+    fullPrompt += " Full body shot from head to shoes. High-end fashion editorial photography, photorealistic, 8K.";
 
     console.log("Prompt:", fullPrompt);
 
@@ -247,11 +242,11 @@ export async function POST(request: NextRequest) {
       {
         input: {
           prompt: fullPrompt,
-          input_image: image, // Передаём base64 изображение пользователя
+          input_image: image,
           aspect_ratio: "3:4",
           output_format: "jpg",
           safety_tolerance: 2,
-          prompt_upsampling: true, // Автоулучшение промпта
+          prompt_upsampling: false, // ОТКЛЮЧЕНО — наши промпты детальные, перефразирование ломает мульти-step инструкции
         },
       }
     );

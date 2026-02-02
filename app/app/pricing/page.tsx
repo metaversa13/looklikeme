@@ -14,15 +14,17 @@ interface PricingPlan {
   features: string[];
   highlighted?: boolean;
   buttonText: string;
+  badge?: string;
 }
 
 const plans: PricingPlan[] = [
   {
     id: "FREE",
-    name: "Бесплатный",
+    name: "Freemium",
     price: 0,
     description: "Попробуйте сервис бесплатно",
     features: [
+      "5 генераций в месяц",
       "Базовые стили одежды",
       "Фон: фотостудия",
       "Образы хранятся 30 дней",
@@ -31,38 +33,35 @@ const plans: PricingPlan[] = [
     buttonText: "Текущий план",
   },
   {
-    id: "PREMIUM",
-    name: "Premium",
-    price: 199,
+    id: "BASE",
+    name: "Base",
+    price: 299,
     period: "месяц",
-    description: "Полный доступ ко всем функциям",
+    description: "Для активного использования",
     features: [
-      "До 100 генераций в месяц",
+      "До 50 генераций в месяц",
       "Все стили одежды",
       "Все локации (фоны)",
       "Все цветовые палитры",
       "Образы хранятся бессрочно",
       "Без водяных знаков",
+    ],
+    buttonText: "Оформить подписку",
+  },
+  {
+    id: "PREMIUM",
+    name: "Premium",
+    price: 499,
+    period: "месяц",
+    description: "Максимум возможностей",
+    features: [
+      "До 100 генераций в месяц",
+      "Всё из Base",
       "Приоритетная генерация",
     ],
     highlighted: true,
     buttonText: "Оформить подписку",
-  },
-  {
-    id: "LIFETIME",
-    name: "Lifetime",
-    price: 4990,
-    description: "Один платёж — навсегда",
-    features: [
-      "До 200 генераций в месяц",
-      "Всё из Premium",
-      "Пожизненный доступ",
-      "Ранний доступ к новинкам",
-      "Приоритетная поддержка",
-      "Эксклюзивные стили",
-      "Ограничено: всего 50 подписок",
-    ],
-    buttonText: "Купить навсегда",
+    badge: "На 20% выгоднее",
   },
 ];
 
@@ -108,16 +107,16 @@ export default function PricingPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-black pt-20 pb-10">
+      <main className="min-h-screen bg-background pt-20 pb-10">
         <div className="max-w-5xl mx-auto px-4">
           {/* Заголовок */}
           <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-cream mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Выберите свой план
             </h1>
-            <p className="text-cream/60 max-w-2xl mx-auto">
+            <p className="text-foreground/60 max-w-2xl mx-auto">
               Создавайте стильные образы с помощью искусственного интеллекта.
-              Начните бесплатно или получите полный доступ с Premium.
+              Начните бесплатно или получите полный доступ с подпиской.
             </p>
           </div>
 
@@ -128,7 +127,7 @@ export default function PricingPage() {
               const isDisabled =
                 isCurrentPlan ||
                 (plan.id === "FREE") ||
-                (plan.id === "PREMIUM" && currentPlan === "LIFETIME");
+                (plan.id === "BASE" && (currentPlan === "PREMIUM" || currentPlan === "LIFETIME"));
 
               return (
                 <div
@@ -139,11 +138,11 @@ export default function PricingPage() {
                       : "glass-card"
                   }`}
                 >
-                  {/* Бейдж "Популярный" */}
-                  {plan.highlighted && (
+                  {/* Бейдж */}
+                  {plan.badge && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                       <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded-full">
-                        Популярный
+                        {plan.badge}
                       </span>
                     </div>
                   )}
@@ -160,19 +159,19 @@ export default function PricingPage() {
                   {/* Название и цена */}
                   <div className="mb-6">
                     <h3 className={`text-xl font-bold mb-2 ${
-                      plan.highlighted ? "text-gold" : "text-cream"
+                      plan.highlighted ? "text-gold" : "text-foreground"
                     }`}>
                       {plan.name}
                     </h3>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-bold text-cream">
+                      <span className="text-4xl font-bold text-foreground">
                         {plan.price === 0 ? "0" : plan.price.toLocaleString()}
                       </span>
-                      <span className="text-cream/60">
+                      <span className="text-foreground/60">
                         ₽{plan.period ? ` / ${plan.period}` : ""}
                       </span>
                     </div>
-                    <p className="text-cream/60 text-sm mt-2">
+                    <p className="text-foreground/60 text-sm mt-2">
                       {plan.description}
                     </p>
                   </div>
@@ -184,7 +183,7 @@ export default function PricingPage() {
                         <span className={plan.highlighted ? "text-gold" : "text-green-400"}>
                           ✓
                         </span>
-                        <span className="text-cream/80 text-sm">{feature}</span>
+                        <span className="text-foreground/80 text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -195,12 +194,10 @@ export default function PricingPage() {
                     disabled={isDisabled || loading === plan.id}
                     className={`w-full py-3 rounded-lg font-semibold transition-all ${
                       isCurrentPlan
-                        ? "bg-cream/10 text-cream/40 cursor-not-allowed"
+                        ? "bg-foreground/10 text-foreground/40 cursor-not-allowed"
                         : plan.highlighted
                           ? "bg-gold hover:bg-gold-600 text-black"
-                          : plan.id === "LIFETIME"
-                            ? "bg-purple-500 hover:bg-purple-600 text-white"
-                            : "bg-cream/10 hover:bg-cream/20 text-cream"
+                          : "bg-foreground/10 hover:bg-foreground/20 text-foreground"
                     } ${loading === plan.id ? "opacity-70 cursor-wait" : ""}`}
                   >
                     {loading === plan.id ? (
@@ -229,6 +226,16 @@ export default function PricingPage() {
                       plan.buttonText
                     )}
                   </button>
+
+                  {/* Кнопка "Поддержать проект" для Freemium */}
+                  {plan.id === "FREE" && isCurrentPlan && (
+                    <button
+                      onClick={() => handleSelectPlan("BASE")}
+                      className="w-full mt-3 py-2.5 rounded-lg font-medium text-sm bg-gold/20 text-gold hover:bg-gold/30 transition-all"
+                    >
+                      Поддержать проект
+                    </button>
+                  )}
                 </div>
               );
             })}
@@ -236,39 +243,39 @@ export default function PricingPage() {
 
           {/* FAQ секция */}
           <div className="mt-16">
-            <h2 className="text-2xl font-bold text-cream text-center mb-8">
+            <h2 className="text-2xl font-bold text-foreground text-center mb-8">
               Частые вопросы
             </h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="glass-card rounded-xl p-6">
-                <h3 className="text-cream font-semibold mb-2">
-                  Как работает подписка Premium?
+                <h3 className="text-foreground font-semibold mb-2">
+                  Чем отличается Base от Premium?
                 </h3>
-                <p className="text-cream/60 text-sm">
-                  Premium подписка даёт полный доступ ко всем функциям сервиса с лимитом до 100 генераций в месяц. Оплата списывается ежемесячно. Вы можете отменить подписку в любой момент.
+                <p className="text-foreground/60 text-sm">
+                  Base даёт 50 генераций в месяц, Premium — 100. При этом Premium на 20% выгоднее в пересчёте за одну генерацию (4.99₽ vs 5.98₽). Оба плана дают полный доступ ко всем стилям и локациям.
                 </p>
               </div>
               <div className="glass-card rounded-xl p-6">
-                <h3 className="text-cream font-semibold mb-2">
-                  Что значит Lifetime?
+                <h3 className="text-foreground font-semibold mb-2">
+                  Могу ли я сменить план?
                 </h3>
-                <p className="text-cream/60 text-sm">
-                  Lifetime — это единоразовый платёж, который даёт вам бессрочный доступ ко всем функциям Premium с лимитом до 200 генераций в месяц. Количество Lifetime подписок ограничено — всего 50 мест.
+                <p className="text-foreground/60 text-sm">
+                  Да, вы можете в любой момент перейти с Base на Premium. Неиспользованные генерации переносятся до конца текущего периода.
                 </p>
               </div>
               <div className="glass-card rounded-xl p-6">
-                <h3 className="text-cream font-semibold mb-2">
+                <h3 className="text-foreground font-semibold mb-2">
                   Могу ли я вернуть деньги?
                 </h3>
-                <p className="text-cream/60 text-sm">
+                <p className="text-foreground/60 text-sm">
                   Да, мы предлагаем возврат в течение 7 дней после покупки, если вы не воспользовались сервисом более 3 раз.
                 </p>
               </div>
               <div className="glass-card rounded-xl p-6">
-                <h3 className="text-cream font-semibold mb-2">
+                <h3 className="text-foreground font-semibold mb-2">
                   Как оплатить?
                 </h3>
-                <p className="text-cream/60 text-sm">
+                <p className="text-foreground/60 text-sm">
                   Мы принимаем банковские карты (Visa, MasterCard, МИР), а также оплату через YooMoney и SberPay.
                 </p>
               </div>
@@ -278,10 +285,10 @@ export default function PricingPage() {
           {/* CTA для незарегистрированных */}
           {!session && (
             <div className="mt-16 text-center glass-card rounded-xl p-8">
-              <h2 className="text-2xl font-bold text-cream mb-4">
+              <h2 className="text-2xl font-bold text-foreground mb-4">
                 Начните бесплатно уже сегодня
               </h2>
-              <p className="text-cream/60 mb-6">
+              <p className="text-foreground/60 mb-6">
                 Зарегистрируйтесь и создайте свой первый стильный образ за несколько секунд
               </p>
               <button

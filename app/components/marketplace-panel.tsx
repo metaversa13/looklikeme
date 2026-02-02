@@ -9,6 +9,7 @@ interface MarketplaceProduct {
   image: string;
   marketplace: string;
   icon: string;
+  price?: number | null;
 }
 
 interface MarketplacePanelProps {
@@ -19,7 +20,7 @@ interface MarketplacePanelProps {
   error: string | null;
 }
 
-const MARKETPLACE_TABS = ["Все", "Wildberries", "Ozon", "Яндекс Маркет", "AliExpress"];
+const MARKETPLACE_TABS = ["Все", "Wildberries", "Ozon", "Яндекс Маркет", "Lamoda", "AliExpress", "Quelle", "Otto"];
 
 export function MarketplacePanel({ isOpen, onClose, products, isLoading, error }: MarketplacePanelProps) {
   const [activeTab, setActiveTab] = useState("Все");
@@ -45,16 +46,16 @@ export function MarketplacePanel({ isOpen, onClose, products, isLoading, error }
 
       {/* Panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-96 bg-black/95 backdrop-blur-md border-l border-cream/10 z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-full sm:w-96 bg-background/95 backdrop-blur-md border-l border-foreground/10 z-50 transform transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-cream/10">
-          <h2 className="text-cream font-bold text-lg">Похожие товары</h2>
+        <div className="flex items-center justify-between px-4 py-4 border-b border-foreground/10">
+          <h2 className="text-foreground font-bold text-lg">Похожие товары</h2>
           <button
             onClick={onClose}
-            className="text-cream/60 hover:text-cream transition-colors text-xl"
+            className="text-foreground/60 hover:text-foreground transition-colors text-xl"
           >
             ✕
           </button>
@@ -62,7 +63,7 @@ export function MarketplacePanel({ isOpen, onClose, products, isLoading, error }
 
         {/* Tabs */}
         {!isLoading && !error && products.length > 0 && (
-          <div className="flex gap-2 px-4 py-3 overflow-x-auto border-b border-cream/10">
+          <div className="flex gap-2 px-4 py-3 overflow-x-auto border-b border-foreground/10">
             {availableTabs.map((tab) => (
               <button
                 key={tab}
@@ -70,7 +71,7 @@ export function MarketplacePanel({ isOpen, onClose, products, isLoading, error }
                 className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                   activeTab === tab
                     ? "bg-gold text-black"
-                    : "bg-cream/10 text-cream/60 hover:bg-cream/20"
+                    : "bg-foreground/10 text-foreground/60 hover:bg-foreground/20"
                 }`}
               >
                 {tab}
@@ -86,26 +87,26 @@ export function MarketplacePanel({ isOpen, onClose, products, isLoading, error }
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="glass-card rounded-lg p-3 animate-pulse">
                   <div className="flex gap-3">
-                    <div className="w-20 h-20 bg-cream/10 rounded-lg flex-shrink-0" />
+                    <div className="w-20 h-20 bg-foreground/10 rounded-lg flex-shrink-0" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-3 bg-cream/10 rounded w-3/4" />
-                      <div className="h-3 bg-cream/10 rounded w-1/2" />
-                      <div className="h-6 bg-cream/10 rounded w-24 mt-2" />
+                      <div className="h-3 bg-foreground/10 rounded w-3/4" />
+                      <div className="h-3 bg-foreground/10 rounded w-1/2" />
+                      <div className="h-6 bg-foreground/10 rounded w-24 mt-2" />
                     </div>
                   </div>
                 </div>
               ))}
-              <p className="text-cream/40 text-sm text-center mt-4">
+              <p className="text-foreground/40 text-sm text-center mt-4">
                 Ищем похожие товары...
               </p>
             </div>
           ) : error ? (
             <div className="text-center py-12">
               <div className="text-3xl mb-3">😔</div>
-              <p className="text-cream/60 text-sm">{error}</p>
+              <p className="text-foreground/60 text-sm">{error}</p>
               <button
                 onClick={onClose}
-                className="mt-4 px-4 py-2 bg-cream/10 hover:bg-cream/20 text-cream rounded-lg text-sm transition-colors"
+                className="mt-4 px-4 py-2 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded-lg text-sm transition-colors"
               >
                 Закрыть
               </button>
@@ -113,7 +114,7 @@ export function MarketplacePanel({ isOpen, onClose, products, isLoading, error }
           ) : filtered.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-3xl mb-3">🔍</div>
-              <p className="text-cream/60 text-sm">
+              <p className="text-foreground/60 text-sm">
                 {products.length === 0
                   ? "Похожие товары не найдены на маркетплейсах"
                   : "Нет товаров в этой категории"}
@@ -127,11 +128,11 @@ export function MarketplacePanel({ isOpen, onClose, products, isLoading, error }
                   href={product.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block glass-card rounded-lg p-3 hover:bg-cream/5 transition-colors group"
+                  className="block glass-card rounded-lg p-3 hover:bg-muted transition-colors group"
                 >
                   <div className="flex gap-3">
                     {/* Product image */}
-                    <div className="w-20 h-20 bg-cream/5 rounded-lg flex-shrink-0 overflow-hidden relative">
+                    <div className="w-20 h-20 bg-foreground/5 rounded-lg flex-shrink-0 overflow-hidden relative">
                       {product.image ? (
                         <Image
                           src={product.image}
@@ -149,22 +150,28 @@ export function MarketplacePanel({ isOpen, onClose, products, isLoading, error }
 
                     {/* Product info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-cream text-sm line-clamp-2 group-hover:text-gold transition-colors">
+                      <p className="text-foreground text-sm line-clamp-2 group-hover:text-gold transition-colors">
                         {product.title}
                       </p>
                       <div className="flex items-center gap-1.5 mt-2">
                         <span className="text-xs">{product.icon}</span>
-                        <span className="text-cream/50 text-xs">{product.marketplace}</span>
+                        <span className="text-foreground/50 text-xs">{product.marketplace}</span>
                       </div>
-                      <span className="inline-block mt-2 text-gold text-xs font-medium group-hover:underline">
-                        Перейти →
-                      </span>
+                      {product.price ? (
+                        <span className="inline-block mt-1 text-gold text-sm font-bold">
+                          {product.price.toLocaleString("ru-RU")} ₽
+                        </span>
+                      ) : (
+                        <span className="inline-block mt-2 text-gold text-xs font-medium group-hover:underline">
+                          Перейти →
+                        </span>
+                      )}
                     </div>
                   </div>
                 </a>
               ))}
 
-              <p className="text-cream/30 text-xs text-center mt-4">
+              <p className="text-foreground/30 text-xs text-center mt-4">
                 Найдено {products.length} товаров
               </p>
             </div>

@@ -35,34 +35,35 @@
     --radius: 0.5rem;
   }
 
-  .dark {
-    --background: 0 0% 0%;
-    --foreground: 60 29% 88%;
+  /* Светлая тема */
+  [data-theme="light"] {
+    --background: 40 20% 97%;
+    --foreground: 0 0% 10%;
 
-    --card: 0 0% 3%;
-    --card-foreground: 60 29% 88%;
+    --card: 40 20% 95%;
+    --card-foreground: 0 0% 10%;
 
-    --popover: 0 0% 3%;
-    --popover-foreground: 60 29% 88%;
+    --popover: 40 20% 95%;
+    --popover-foreground: 0 0% 10%;
 
-    --primary: 45 65% 52%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 45 65% 45%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 60 29% 88%;
-    --secondary-foreground: 0 0% 0%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 40 20% 97%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 60 29% 70%;
+    --muted: 40 10% 90%;
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 45 65% 52%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 45 65% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 60 29% 88%;
+    --destructive: 0 84% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 60 29% 20%;
-    --input: 60 29% 20%;
-    --ring: 45 65% 52%;
+    --border: 40 10% 82%;
+    --input: 40 10% 82%;
+    --ring: 45 65% 45%;
   }
 }
 
@@ -95,6 +96,12 @@
     background: rgba(245, 245, 220, 0.05);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(245, 245, 220, 0.1);
+  }
+
+  [data-theme="light"] .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   }
 
   /* Золотой shimmer эффект */
@@ -146,6 +153,18 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #B8952D;
+}
+
+[data-theme="light"]::-webkit-scrollbar-track {
+  background: #f5f3ee;
+}
+
+[data-theme="light"]::-webkit-scrollbar-thumb {
+  background: #B8952D;
+}
+
+[data-theme="light"]::-webkit-scrollbar-thumb:hover {
+  background: #9C7B24;
 }
 
 /* Глобальные transition */

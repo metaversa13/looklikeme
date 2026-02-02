@@ -252,7 +252,7 @@ export default function GeneratePage() {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-black pt-20 flex items-center justify-center">
+        <main className="min-h-screen bg-background pt-20 flex items-center justify-center">
           <div className="animate-pulse text-gold">Загрузка...</div>
         </main>
       </>
@@ -385,14 +385,14 @@ export default function GeneratePage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-black pt-20 pb-10">
+      <main className="min-h-screen bg-background pt-20 pb-10">
         <div className="max-w-6xl mx-auto px-4">
           {/* Заголовок */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-cream mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
               Создайте свой образ
             </h1>
-            <p className="text-cream/60">
+            <p className="text-foreground/60">
               Загрузите фото и выберите стиль для генерации
             </p>
           </div>
@@ -402,7 +402,7 @@ export default function GeneratePage() {
             <div className="space-y-6">
               {/* Загрузка фото */}
               <div className="glass-card rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-cream mb-4 flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                   <span className="text-2xl">📷</span> Ваше фото
                 </h2>
 
@@ -412,7 +412,7 @@ export default function GeneratePage() {
                     relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all
                     ${uploadedImage
                       ? "border-gold/50 bg-gold/5"
-                      : "border-cream/20 hover:border-gold/50 hover:bg-cream/5"
+                      : "border-foreground/20 hover:border-gold/50 hover:bg-muted"
                     }
                   `}
                 >
@@ -438,8 +438,8 @@ export default function GeneratePage() {
                   ) : (
                     <>
                       <div className="text-4xl mb-2">📤</div>
-                      <p className="text-cream/70">Нажмите для загрузки фото</p>
-                      <p className="text-cream/40 text-sm mt-1">JPG, PNG до 10MB</p>
+                      <p className="text-foreground/70">Нажмите для загрузки фото</p>
+                      <p className="text-foreground/40 text-sm mt-1">JPG, PNG до 10MB</p>
                     </>
                   )}
                   <input
@@ -455,10 +455,10 @@ export default function GeneratePage() {
               {/* Выбор стиля */}
               <div className="glass-card rounded-xl p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-cream flex items-center gap-2">
+                  <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
                     <span className="text-2xl">👗</span> Стиль
                   </h2>
-                  <span className="text-cream/40 text-xs">
+                  <span className="text-foreground/40 text-xs">
                     {styles.length} стилей доступно
                   </span>
                 </div>
@@ -484,8 +484,8 @@ export default function GeneratePage() {
                           ${isSelected
                             ? "border-gold bg-gold/10"
                             : isLocked
-                              ? "border-cream/10 bg-cream/5 opacity-60 cursor-not-allowed"
-                              : "border-cream/20 hover:border-gold/50"
+                              ? "border-foreground/10 bg-foreground/5 opacity-60 cursor-not-allowed"
+                              : "border-foreground/20 hover:border-gold/50"
                           }
                         `}
                       >
@@ -493,7 +493,7 @@ export default function GeneratePage() {
                           <div className="text-2xl">{style.emoji}</div>
                           {/* Гендерная иконка в правом верхнем углу */}
                           <div
-                            className="text-xs text-cream/40"
+                            className="text-xs text-foreground/40"
                             title={
                               style.gender === "male" ? "Только для мужчин" :
                               style.gender === "female" ? "Только для женщин" :
@@ -503,8 +503,8 @@ export default function GeneratePage() {
                             {genderIcon}
                           </div>
                         </div>
-                        <div className="text-cream text-sm font-medium">{style.name}</div>
-                        <div className="text-cream/40 text-xs mt-0.5">{style.description}</div>
+                        <div className="text-foreground text-sm font-medium">{style.name}</div>
+                        <div className="text-foreground/40 text-xs mt-0.5">{style.description}</div>
                         {isLocked && (
                           <div className="absolute top-2 right-2 text-xs bg-gold/20 text-gold px-2 py-0.5 rounded">
                             Premium
@@ -519,7 +519,7 @@ export default function GeneratePage() {
                 {styles.length > 6 && (
                   <button
                     onClick={() => setShowAllStyles(!showAllStyles)}
-                    className="w-full mt-4 py-2 text-cream/60 hover:text-gold text-sm transition-colors flex items-center justify-center gap-2"
+                    className="w-full mt-4 py-2 text-foreground/60 hover:text-gold text-sm transition-colors flex items-center justify-center gap-2"
                   >
                     {showAllStyles ? (
                       <>
@@ -538,7 +538,7 @@ export default function GeneratePage() {
 
               {/* Выбор локации */}
               <div className="glass-card rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-cream mb-4 flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                   <span className="text-2xl">🏞️</span> Локация
                 </h2>
 
@@ -557,13 +557,13 @@ export default function GeneratePage() {
                           ${isSelected
                             ? "border-gold bg-gold/10"
                             : isLocked
-                              ? "border-cream/10 bg-cream/5 opacity-60 cursor-not-allowed"
-                              : "border-cream/20 hover:border-gold/50"
+                              ? "border-foreground/10 bg-foreground/5 opacity-60 cursor-not-allowed"
+                              : "border-foreground/20 hover:border-gold/50"
                           }
                         `}
                       >
                         <div className="text-2xl mb-1">{location.emoji}</div>
-                        <div className="text-cream text-xs">{location.name}</div>
+                        <div className="text-foreground text-xs">{location.name}</div>
                         {isLocked && (
                           <div className="absolute top-1 right-1 text-[10px] bg-gold/20 text-gold px-1.5 py-0.5 rounded">
                             Premium
@@ -577,7 +577,7 @@ export default function GeneratePage() {
 
               {/* Цветовая палитра */}
               <div className="glass-card rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-cream mb-4 flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                   <span className="text-2xl">🎨</span> Цветовая палитра
                   <span className="text-xs bg-gold/20 text-gold px-2 py-0.5 rounded ml-2">Premium</span>
                 </h2>
@@ -599,8 +599,8 @@ export default function GeneratePage() {
                           ${isSelected
                             ? "border-gold bg-gold/10"
                             : isLocked
-                              ? "border-cream/10 bg-cream/5 opacity-60 cursor-not-allowed"
-                              : "border-cream/20 hover:border-gold/50"
+                              ? "border-foreground/10 bg-foreground/5 opacity-60 cursor-not-allowed"
+                              : "border-foreground/20 hover:border-gold/50"
                           }
                         `}
                       >
@@ -608,19 +608,19 @@ export default function GeneratePage() {
                           {palette.colors.map((color, i) => (
                             <div
                               key={i}
-                              className="w-4 h-4 rounded-full border border-cream/20"
+                              className="w-4 h-4 rounded-full border border-foreground/20"
                               style={{ backgroundColor: color }}
                             />
                           ))}
                         </div>
-                        <div className="text-cream text-xs text-center">{palette.name}</div>
+                        <div className="text-foreground text-xs text-center">{palette.name}</div>
                       </button>
                     );
                   })}
                 </div>
 
                 {!isPremium && (
-                  <p className="text-cream/40 text-xs mt-3 text-center">
+                  <p className="text-foreground/40 text-xs mt-3 text-center">
                     Цветовые палитры доступны для Premium подписки
                   </p>
                 )}
@@ -635,7 +635,7 @@ export default function GeneratePage() {
                       <span>Безлимитная генерация</span>
                     </div>
                   ) : limits.canGenerate ? (
-                    <div className="flex items-center justify-center gap-2 text-cream/60 text-sm">
+                    <div className="flex items-center justify-center gap-2 text-foreground/60 text-sm">
                       <span>Осталось {limits.remaining} из {limits.limit} генераций сегодня</span>
                     </div>
                   ) : (
@@ -662,7 +662,7 @@ export default function GeneratePage() {
                   w-full py-4 rounded-xl font-semibold text-lg transition-all
                   ${canGenerate && (!limits || limits.canGenerate)
                     ? "bg-gold hover:bg-gold-600 text-black"
-                    : "bg-cream/10 text-cream/40 cursor-not-allowed"
+                    : "bg-foreground/10 text-foreground/40 cursor-not-allowed"
                   }
                 `}
               >
@@ -694,7 +694,7 @@ export default function GeneratePage() {
 
             {/* Правая колонка - Результат */}
             <div className="glass-card rounded-xl p-6 h-fit lg:sticky lg:top-24">
-              <h2 className="text-lg font-semibold text-cream mb-4 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <span className="text-2xl">✨</span> Результат
               </h2>
 
@@ -704,7 +704,7 @@ export default function GeneratePage() {
                 </div>
               )}
 
-              <div className="aspect-[3/4] bg-cream/5 rounded-xl flex items-center justify-center overflow-hidden">
+              <div className="aspect-[3/4] bg-foreground/5 rounded-xl flex items-center justify-center overflow-hidden">
                 {generatedImage ? (
                   <div className="relative w-full h-full">
                     <Image
@@ -718,17 +718,17 @@ export default function GeneratePage() {
                 ) : isGenerating ? (
                   <div className="text-center px-4 w-full">
                     <div className="text-4xl mb-3 animate-pulse">🎨</div>
-                    <p className="text-cream/60 mb-4">Создаем ваш образ...</p>
+                    <p className="text-foreground/60 mb-4">Создаем ваш образ...</p>
 
                     {/* Прогресс-бар */}
                     <div className="w-full max-w-xs mx-auto mb-4">
-                      <div className="h-1.5 bg-cream/10 rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-foreground/10 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gold rounded-full transition-all duration-1000 ease-out"
                           style={{ width: `${progress}%` }}
                         />
                       </div>
-                      <p className="text-cream/30 text-xs mt-1">{Math.round(progress)}%</p>
+                      <p className="text-foreground/30 text-xs mt-1">{Math.round(progress)}%</p>
                     </div>
 
                     {/* Факт о моде */}
@@ -741,7 +741,7 @@ export default function GeneratePage() {
                 ) : (
                   <div className="text-center">
                     <div className="text-4xl mb-3 opacity-50">👗</div>
-                    <p className="text-cream/40">
+                    <p className="text-foreground/40">
                       {!uploadedImage
                         ? "Загрузите фото"
                         : !selectedStyle
@@ -783,7 +783,7 @@ export default function GeneratePage() {
                       className={`flex-1 py-3 rounded-lg transition-all font-semibold ${
                         isSaved
                           ? "bg-green-500/20 text-green-400 border border-green-500/50"
-                          : "bg-cream/10 hover:bg-cream/20 text-cream"
+                          : "bg-foreground/10 hover:bg-foreground/20 text-foreground"
                       }`}
                     >
                       {isSaving ? "Сохранение..." : isSaved ? "✓ В избранном" : "⭐ В избранное"}
@@ -793,7 +793,7 @@ export default function GeneratePage() {
                   {/* Кнопка поиска на маркетплейсах */}
                   <button
                     onClick={handleMarketplaceSearch}
-                    className="w-full py-3 glass-card hover:bg-cream/5 text-cream font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
                   >
                     🛍️ Найти на маркетплейсах
                   </button>
@@ -801,7 +801,7 @@ export default function GeneratePage() {
                   {/* Кнопка поделиться */}
                   <button
                     onClick={handleShare}
-                    className="w-full py-3 glass-card hover:bg-cream/5 text-cream font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
                   >
                     📤 Поделиться
                   </button>
@@ -809,7 +809,7 @@ export default function GeneratePage() {
                   {isSaved && (
                     <button
                       onClick={() => router.push("/gallery")}
-                      className="w-full py-2 text-cream/60 hover:text-gold text-sm transition-colors"
+                      className="w-full py-2 text-foreground/60 hover:text-gold text-sm transition-colors"
                     >
                       Перейти в галерею →
                     </button>
@@ -837,7 +837,7 @@ export default function GeneratePage() {
             >
               {/* Заголовок */}
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-cream">Поделиться образом</h2>
+                <h2 className="text-xl font-bold text-foreground">Поделиться образом</h2>
                 <button
                   onClick={() => {
                     setShowShareModal(false);
@@ -845,7 +845,7 @@ export default function GeneratePage() {
                       window.URL.revokeObjectURL(shareImageUrl);
                     }
                   }}
-                  className="text-cream/60 hover:text-cream text-2xl transition-colors"
+                  className="text-foreground/60 hover:text-foreground text-2xl transition-colors"
                 >
                   ✕
                 </button>
@@ -933,7 +933,7 @@ export default function GeneratePage() {
                       console.error("Download error:", err);
                     }
                   }}
-                  className="w-full py-3 glass-card hover:bg-cream/5 text-cream font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
+                  className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
                 >
                   📥 Скачать для шаринга
                 </button>

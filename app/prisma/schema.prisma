@@ -55,6 +55,7 @@ model User {
 
 enum SubscriptionType {
   FREE
+  BASE
   PREMIUM
   LIFETIME
 }

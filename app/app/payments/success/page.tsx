@@ -33,7 +33,7 @@ export default function PaymentSuccessPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-black pt-20 flex items-center justify-center">
+      <main className="min-h-screen bg-background pt-20 flex items-center justify-center">
         <div className="max-w-md mx-auto px-4 text-center">
           {/* Иконка успеха */}
           <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 border-2 border-green-500 flex items-center justify-center">
@@ -53,12 +53,12 @@ export default function PaymentSuccessPage() {
           </div>
 
           {/* Заголовок */}
-          <h1 className="text-3xl font-bold text-cream mb-4">
+          <h1 className="text-3xl font-bold text-foreground mb-4">
             Оплата прошла успешно!
           </h1>
 
           {/* Описание */}
-          <p className="text-cream/60 mb-8">
+          <p className="text-foreground/60 mb-8">
             Спасибо за покупку! Ваша подписка активирована.
             <br />
             Теперь вам доступны все премиум-функции.
@@ -66,27 +66,27 @@ export default function PaymentSuccessPage() {
 
           {/* Список возможностей */}
           <div className="glass-card rounded-xl p-6 mb-8 text-left">
-            <h3 className="text-cream font-semibold mb-4">Теперь вам доступно:</h3>
+            <h3 className="text-foreground font-semibold mb-4">Теперь вам доступно:</h3>
             <ul className="space-y-2">
               <li className="flex items-start gap-2">
                 <span className="text-gold">✓</span>
-                <span className="text-cream/80 text-sm">Все стили одежды</span>
+                <span className="text-foreground/80 text-sm">Все стили одежды</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-gold">✓</span>
-                <span className="text-cream/80 text-sm">Все локации и фоны</span>
+                <span className="text-foreground/80 text-sm">Все локации и фоны</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-gold">✓</span>
-                <span className="text-cream/80 text-sm">Все цветовые палитры</span>
+                <span className="text-foreground/80 text-sm">Все цветовые палитры</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-gold">✓</span>
-                <span className="text-cream/80 text-sm">Бессрочное хранение образов</span>
+                <span className="text-foreground/80 text-sm">Бессрочное хранение образов</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-gold">✓</span>
-                <span className="text-cream/80 text-sm">Без водяных знаков</span>
+                <span className="text-foreground/80 text-sm">Без водяных знаков</span>
               </li>
             </ul>
           </div>
@@ -101,14 +101,14 @@ export default function PaymentSuccessPage() {
             </button>
             <button
               onClick={() => router.push("/profile")}
-              className="w-full py-3 glass-card hover:bg-cream/5 text-cream font-semibold rounded-lg transition-all"
+              className="w-full py-3 glass-card hover:bg-foreground/5 text-foreground font-semibold rounded-lg transition-all"
             >
               Перейти в профиль
             </button>
           </div>
 
           {/* Автоматический редирект */}
-          <p className="text-cream/40 text-sm mt-6">
+          <p className="text-foreground/40 text-sm mt-6">
             Автоматический переход в профиль через {countdown} сек...
           </p>
         </div>

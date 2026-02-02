@@ -226,7 +226,7 @@ export default function GalleryPage() {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-black pt-20 flex items-center justify-center">
+        <main className="min-h-screen bg-background pt-20 flex items-center justify-center">
           <div className="animate-pulse text-gold">Загрузка...</div>
         </main>
       </>
@@ -241,14 +241,14 @@ export default function GalleryPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-black pt-20 pb-10">
+      <main className="min-h-screen bg-background pt-20 pb-10">
         <div className="max-w-6xl mx-auto px-4">
           {/* Заголовок */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-cream mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
               Мои образы
             </h1>
-            <p className="text-cream/60">
+            <p className="text-foreground/60">
               {generations.length > 0
                 ? `${generations.length} ${generations.length === 1 ? "образ" : "образов"}`
                 : "Здесь появятся ваши сгенерированные образы"}
@@ -258,7 +258,7 @@ export default function GalleryPage() {
           {generations.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-6xl mb-4 opacity-50">👗</div>
-              <p className="text-cream/60 mb-6">У вас пока нет сохранённых образов</p>
+              <p className="text-foreground/60 mb-6">У вас пока нет сохранённых образов</p>
               <button
                 onClick={() => router.push("/generate")}
                 className="bg-gold hover:bg-gold-600 text-black font-semibold py-3 px-6 rounded-lg transition-all"
@@ -271,7 +271,7 @@ export default function GalleryPage() {
               {generations.map((gen) => (
                 <div
                   key={gen.id}
-                  className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-cream/5 cursor-pointer"
+                  className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-foreground/5 cursor-pointer"
                   onClick={() => setSelectedImage(gen)}
                 >
                   <Image
@@ -285,10 +285,10 @@ export default function GalleryPage() {
                   {/* Overlay при наведении */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="absolute bottom-0 left-0 right-0 p-3">
-                      <p className="text-cream text-sm font-medium">
+                      <p className="text-foreground text-sm font-medium">
                         {gen.styleSlug ? styleNames[gen.styleSlug] || gen.styleSlug : "Образ"}
                       </p>
-                      <p className="text-cream/60 text-xs">
+                      <p className="text-foreground/60 text-xs">
                         {new Date(gen.createdAt).toLocaleDateString("ru-RU")}
                       </p>
                     </div>
@@ -331,7 +331,7 @@ export default function GalleryPage() {
               {/* Кнопка закрытия */}
               <button
                 onClick={() => setSelectedImage(null)}
-                className="absolute -top-10 right-0 text-cream/60 hover:text-cream text-2xl"
+                className="absolute -top-10 right-0 text-foreground/60 hover:text-foreground text-2xl"
               >
                 ✕
               </button>
@@ -361,7 +361,7 @@ export default function GalleryPage() {
                     className={`flex-1 py-3 rounded-lg transition-all flex items-center justify-center gap-2 font-semibold ${
                       selectedImage.favorite
                         ? "bg-red-500/20 text-red-400 border border-red-500/50"
-                        : "bg-cream/10 text-cream hover:bg-cream/20"
+                        : "bg-foreground/10 text-foreground hover:bg-foreground/20"
                     }`}
                   >
                     {selectedImage.favorite ? "💔 Убрать" : "❤️ В избранное"}
@@ -378,7 +378,7 @@ export default function GalleryPage() {
                 {/* Кнопка поиска на маркетплейсах */}
                 <button
                   onClick={() => handleMarketplaceSearch(selectedImage.resultImageUrl)}
-                  className="w-full py-3 glass-card hover:bg-cream/5 text-cream font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
                 >
                   🛍️ Найти на маркетплейсах
                 </button>
@@ -386,18 +386,18 @@ export default function GalleryPage() {
                 {/* Кнопка поделиться */}
                 <button
                   onClick={() => handleShare(selectedImage.resultImageUrl)}
-                  className="w-full py-3 glass-card hover:bg-cream/5 text-cream font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
                 >
                   📤 Поделиться
                 </button>
               </div>
 
               {/* Информация */}
-              <div className="mt-4 p-4 bg-cream/5 rounded-lg">
-                <p className="text-cream font-medium">
+              <div className="mt-4 p-4 bg-foreground/5 rounded-lg">
+                <p className="text-foreground font-medium">
                   {selectedImage.styleSlug ? styleNames[selectedImage.styleSlug] || selectedImage.styleSlug : "Образ"}
                 </p>
-                <p className="text-cream/60 text-sm">
+                <p className="text-foreground/60 text-sm">
                   Создано: {new Date(selectedImage.createdAt).toLocaleString("ru-RU")}
                 </p>
               </div>
@@ -422,7 +422,7 @@ export default function GalleryPage() {
             >
               {/* Заголовок */}
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-cream">Поделиться образом</h2>
+                <h2 className="text-xl font-bold text-foreground">Поделиться образом</h2>
                 <button
                   onClick={() => {
                     setShowShareModal(false);
@@ -430,7 +430,7 @@ export default function GalleryPage() {
                       window.URL.revokeObjectURL(shareImageUrl);
                     }
                   }}
-                  className="text-cream/60 hover:text-cream text-2xl transition-colors"
+                  className="text-foreground/60 hover:text-foreground text-2xl transition-colors"
                 >
                   ✕
                 </button>
@@ -516,7 +516,7 @@ export default function GalleryPage() {
                       console.error("Download error:", err);
                     }
                   }}
-                  className="w-full py-3 glass-card hover:bg-cream/5 text-cream font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
+                  className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
                 >
                   📥 Скачать для шаринга
                 </button>

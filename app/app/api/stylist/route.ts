@@ -1,10 +1,85 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import https from "https";
 
 // ГигаЧат API конфигурация
-const GIGACHAT_API_KEY = process.env.GIGACHAT_API_KEY || "ajecd13uns63kqevrgia";
+const GIGACHAT_AUTH_KEY = process.env.GIGACHAT_AUTH_KEY || "";
+const GIGACHAT_OAUTH_URL = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth";
 const GIGACHAT_API_URL = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions";
+
+// Кеш токена (живёт 30 минут)
+let cachedToken: { token: string; expiresAt: number } | null = null;
+
+// HTTPS запрос без проверки SSL (Сбер использует свой сертификат MinCifry)
+function sberFetch(url: string, options: RequestInit): Promise<Response> {
+  return new Promise((resolve, reject) => {
+    const parsed = new URL(url);
+    const body = options.body ? String(options.body) : undefined;
+    const headers = options.headers as Record<string, string>;
+
+    const req = https.request(
+      {
+        hostname: parsed.hostname,
+        port: parsed.port || 443,
+        path: parsed.pathname + parsed.search,
+        method: options.method || "GET",
+        headers,
+        rejectUnauthorized: false,
+      } as https.RequestOptions,
+      (res) => {
+        const chunks: Buffer[] = [];
+        res.on("data", (chunk: Buffer) => chunks.push(chunk));
+        res.on("end", () => {
+          const text = Buffer.concat(chunks).toString("utf-8");
+          resolve(new Response(text, {
+            status: res.statusCode || 500,
+            statusText: res.statusMessage || "",
+            headers: new Headers(res.headers as Record<string, string>),
+          }));
+        });
+      }
+    );
+
+    req.on("error", reject);
+    if (body) req.write(body);
+    req.end();
+  });
+}
+
+async function getGigaChatToken(): Promise<string> {
+  if (cachedToken && Date.now() < cachedToken.expiresAt - 60000) {
+    return cachedToken.token;
+  }
+
+  console.log("Requesting GigaChat OAuth token...");
+
+  const res = await sberFetch(GIGACHAT_OAUTH_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json",
+      Authorization: `Basic ${GIGACHAT_AUTH_KEY}`,
+      RqUID: crypto.randomUUID(),
+    },
+    body: "scope=GIGACHAT_API_PERS",
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    console.error("GigaChat OAuth failed:", res.status, err);
+    throw new Error(`GigaChat OAuth error: ${res.status} ${err}`);
+  }
+
+  const data = await res.json();
+  cachedToken = {
+    token: data.access_token,
+    expiresAt: data.expires_at,
+  };
+
+  console.log("GigaChat token obtained, expires:", new Date(cachedToken.expiresAt).toISOString());
+  return cachedToken.token;
+}
 
 // Системный промпт для AI стилиста
 const STYLIST_SYSTEM_PROMPT = `Ты — профессиональный AI стилист с многолетним опытом в индустрии моды.
@@ -102,12 +177,14 @@ export async function POST(request: NextRequest) {
     let answer = "";
 
     try {
+      const accessToken = await getGigaChatToken();
+
       // Вызываем ГигаЧат API
-      const response = await fetch(GIGACHAT_API_URL, {
+      const response = await sberFetch(GIGACHAT_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${GIGACHAT_API_KEY}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           model: "GigaChat",

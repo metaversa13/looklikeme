@@ -24,10 +24,10 @@ export default function StylistPage() {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-black text-cream flex items-center justify-center">
+        <main className="min-h-screen bg-background text-foreground flex items-center justify-center">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-cream/60">Загрузка...</p>
+            <p className="text-foreground/60">Загрузка...</p>
           </div>
         </main>
       </>
@@ -84,14 +84,14 @@ export default function StylistPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-black text-cream pt-20 px-4 pb-8">
+      <main className="min-h-screen bg-background text-foreground pt-20 px-4 pb-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="text-gold">AI Стилист</span>
             </h1>
-            <p className="text-cream/70">
+            <p className="text-foreground/70">
               Получите персональные советы от AI стилиста совершенно бесплатно
             </p>
           </div>
@@ -103,41 +103,73 @@ export default function StylistPage() {
               {messages.length === 0 && (
                 <div className="text-center py-12">
                   <div className="text-6xl mb-4">💬</div>
-                  <p className="text-cream/60 mb-6">
+                  <p className="text-foreground/60 mb-6">
                     Задайте вопрос AI стилисту о моде, стиле, цветовых сочетаниях
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto">
                     <button
                       onClick={() =>
-                        setQuestion("Какой стиль одежды мне подойдет для офиса?")
+                        setQuestion("Какой цвет одежды мне подходит? Помоги определить мой цветотип.")
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
                     >
-                      💼 Какой стиль для офиса?
+                      🎨 Какой цвет мне подходит?
                     </button>
                     <button
                       onClick={() =>
-                        setQuestion("Как подобрать цвета для моего образа?")
+                        setQuestion("Что мне носить, чтобы визуально скрыть живот и бёдра?")
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
                     >
-                      🎨 Как подобрать цвета?
+                      👗 Как скрыть недостатки фигуры?
                     </button>
                     <button
                       onClick={() =>
-                        setQuestion("С чем носить кожаную куртку?")
+                        setQuestion("С какими цветами лучше сочетать базовый гардероб?")
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
                     >
-                      🧥 С чем носить куртку?
+                      🌈 Как сочетать цвета?
                     </button>
                     <button
                       onClick={() =>
-                        setQuestion("Какие аксессуары сейчас в тренде?")
+                        setQuestion("Какой фасон одежды подходит по типу фигуры?")
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
                     >
-                      ✨ Что сейчас в тренде?
+                      📏 Фасон по типу фигуры
+                    </button>
+                    <button
+                      onClick={() =>
+                        setQuestion("Что сейчас модно и как это правильно носить?")
+                      }
+                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
+                    >
+                      🔥 Что сейчас в тренде?
+                    </button>
+                    <button
+                      onClick={() =>
+                        setQuestion("Как собрать капсульный гардероб из 15 вещей на месяц?")
+                      }
+                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
+                    >
+                      🧳 Капсульный гардероб
+                    </button>
+                    <button
+                      onClick={() =>
+                        setQuestion("Что купить, чтобы образ выглядел дороже?")
+                      }
+                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
+                    >
+                      💎 Как выглядеть дороже?
+                    </button>
+                    <button
+                      onClick={() =>
+                        setQuestion("Можно ли мне носить определённую вещь? Например, макси при маленьком росте или мини после 40?")
+                      }
+                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
+                    >
+                      ❓ Можно ли мне носить...?
                     </button>
                   </div>
                 </div>
@@ -183,7 +215,7 @@ export default function StylistPage() {
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleAskStylist()}
                 placeholder="Спросите AI стилиста о моде и стиле..."
-                className="flex-1 bg-cream/5 border border-cream/20 rounded-xl px-4 py-3 text-cream placeholder:text-cream/40 focus:outline-none focus:border-gold"
+                className="flex-1 bg-foreground/5 border border-foreground/20 rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-gold"
                 disabled={isLoading}
               />
               <button
@@ -197,7 +229,7 @@ export default function StylistPage() {
           </div>
 
           {/* Info */}
-          <div className="text-center text-cream/60 text-sm">
+          <div className="text-center text-foreground/60 text-sm">
             <p>
               AI стилист использует нейросеть для персональных рекомендаций.
             </p>

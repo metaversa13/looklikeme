@@ -32,14 +32,14 @@ export async function POST(request: NextRequest) {
 
     // Обновляем подписку пользователя
     const subscriptionData: {
-      subscriptionType: "PREMIUM" | "LIFETIME";
-      subscriptionEndDate?: Date;
+      subscriptionType: "BASE" | "PREMIUM" | "LIFETIME";
+      subscriptionEndDate?: Date | null;
       lifetimeAccess?: boolean;
     } = {
-      subscriptionType: planId as "PREMIUM" | "LIFETIME",
+      subscriptionType: planId as "BASE" | "PREMIUM" | "LIFETIME",
     };
 
-    if (planId === "PREMIUM") {
+    if (planId === "BASE" || planId === "PREMIUM") {
       // Подписка на месяц
       const endDate = new Date();
       endDate.setMonth(endDate.getMonth() + 1);
