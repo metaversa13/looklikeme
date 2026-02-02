@@ -93,6 +93,7 @@ export default function GeneratePage() {
   const [currentFact, setCurrentFact] = useState("");
   const [progress, setProgress] = useState(0);
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
+  const [showLimitModal, setShowLimitModal] = useState(false);
   const [showAllStyles, setShowAllStyles] = useState(false);
   const [showMarketplace, setShowMarketplace] = useState(false);
   const [marketplaceProducts, setMarketplaceProducts] = useState<Array<{ title: string; url: string; image: string; marketplace: string; icon: string }>>([]);
@@ -115,6 +116,19 @@ export default function GeneratePage() {
       }
     } catch {}
   }, []);
+
+  // Автоприменение реферального кода после авторизации
+  useEffect(() => {
+    if (!session?.user) return;
+    const code = localStorage.getItem("referral_code");
+    if (!code) return;
+    localStorage.removeItem("referral_code");
+    fetch("/api/referral", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    }).catch(() => {});
+  }, [session]);
 
   // Загружаем информацию о лимитах
   useEffect(() => {
@@ -354,7 +368,7 @@ export default function GeneratePage() {
       if (!response.ok) {
         // Специальная обработка для лимита
         if (response.status === 429) {
-          setError(data.message || "Достигнут дневной лимит");
+          setShowLimitModal(true);
           // Обновляем информацию о лимитах
           const limitsResponse = await fetch("/api/limits");
           if (limitsResponse.ok) {
@@ -753,7 +767,7 @@ export default function GeneratePage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center">
+                  <div className="text-center px-4">
                     <div className="text-4xl mb-3 opacity-50">👗</div>
                     <p className="text-foreground/40">
                       {!uploadedImage
@@ -763,6 +777,11 @@ export default function GeneratePage() {
                           : "Нажмите «Создать образ»"
                       }
                     </p>
+                    {!uploadedImage && (
+                      <p className="text-foreground/25 text-sm mt-2">
+                        Используйте качественное фото с хорошим освещением — от этого зависит результат
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
@@ -833,6 +852,55 @@ export default function GeneratePage() {
             </div>
           </div>
         </div>
+
+        {/* Модальное окно "Лимит исчерпан" */}
+        {showLimitModal && (
+          <div
+            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowLimitModal(false)}
+          >
+            <div
+              className="glass-card rounded-2xl p-6 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center mb-6">
+                <div className="text-5xl mb-4">🎨</div>
+                <h2 className="text-xl font-bold text-foreground mb-2">
+                  Генерации на этот месяц закончились
+                </h2>
+                <p className="text-foreground/60 text-sm">
+                  Вы использовали все {limits?.limit || 5} бесплатных генераций. Оформите подписку, чтобы продолжить создавать образы.
+                </p>
+              </div>
+
+              <div className="space-y-3 mb-4">
+                <Link
+                  href="/pricing"
+                  className="block w-full py-3 bg-foreground/10 hover:bg-foreground/20 text-foreground font-semibold rounded-lg transition-all text-center"
+                >
+                  Base — 299 ₽/мес
+                  <span className="block text-foreground/50 text-xs font-normal mt-0.5">50 генераций, все стили и локации</span>
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="block w-full py-3 bg-gold hover:bg-gold-600 text-black font-semibold rounded-lg transition-all text-center"
+                >
+                  Premium — 499 ₽/мес
+                  <span className="block text-black/60 text-xs font-normal mt-0.5">100 генераций, приоритет, все функции</span>
+                </Link>
+              </div>
+
+              <div className="text-center">
+                <button
+                  onClick={() => setShowLimitModal(false)}
+                  className="text-foreground/40 hover:text-foreground/60 text-sm transition-colors"
+                >
+                  Закрыть
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Модальное окно "Поделиться" */}
         {showShareModal && shareImageUrl && (

@@ -44,6 +44,7 @@ export default function AdminPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cleanupResult, setCleanupResult] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -170,6 +171,31 @@ export default function AdminPage() {
                 </div>
               </div>
             )}
+          </section>
+
+          {/* Действия */}
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4">Действия</h2>
+            <div className="flex gap-4 items-center">
+              <button
+                onClick={async () => {
+                  setCleanupResult(null);
+                  const res = await fetch("/api/admin/cleanup", { method: "POST" });
+                  const data = await res.json();
+                  if (data.success) {
+                    setCleanupResult(`Удалено ${data.deletedCount} просроченных генераций`);
+                  } else {
+                    setCleanupResult(`Ошибка: ${data.error}`);
+                  }
+                }}
+                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm font-medium transition-colors"
+              >
+                Очистить просроченные
+              </button>
+              {cleanupResult && (
+                <span className="text-foreground/60 text-sm">{cleanupResult}</span>
+              )}
+            </div>
           </section>
 
           {/* Последние пользователи */}

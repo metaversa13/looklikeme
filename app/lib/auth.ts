@@ -48,6 +48,24 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (dbUser) {
+          // Проверяем истечение подписки и даунгрейдим до FREE
+          const isExpired =
+            dbUser.subscriptionEndDate &&
+            !dbUser.lifetimeAccess &&
+            new Date(dbUser.subscriptionEndDate) < new Date();
+
+          if (isExpired) {
+            await prisma.user.update({
+              where: { id: token.sub },
+              data: {
+                subscriptionType: "FREE",
+                subscriptionEndDate: null,
+              },
+            });
+            dbUser.subscriptionType = "FREE";
+            dbUser.subscriptionEndDate = null;
+          }
+
           session.user.subscriptionType = dbUser.subscriptionType;
           session.user.lifetimeAccess = dbUser.lifetimeAccess;
           session.user.subscriptionEndDate = dbUser.subscriptionEndDate;

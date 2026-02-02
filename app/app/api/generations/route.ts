@@ -15,6 +15,10 @@ export async function GET() {
       where: {
         userId: session.user.id,
         status: "COMPLETED",
+        OR: [
+          { expiresAt: null },
+          { expiresAt: { gt: new Date() } },
+        ],
       },
       orderBy: {
         createdAt: "desc",

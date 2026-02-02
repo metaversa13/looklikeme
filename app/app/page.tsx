@@ -1,10 +1,15 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { Header } from "@/components/header";
+import { ReferralCapture } from "@/components/referral-capture";
 
 export default function Home() {
   return (
     <>
       <Header />
+      <Suspense fallback={null}>
+        <ReferralCapture />
+      </Suspense>
       <main className="min-h-screen bg-background text-foreground">
         {/* Hero Section */}
         <div className="relative min-h-screen flex items-center justify-center px-4 pt-16">
