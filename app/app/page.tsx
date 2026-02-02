@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Header } from "@/components/header";
 import { ReferralCapture } from "@/components/referral-capture";
+import { Sparkles, Shirt, Palette, ShoppingBag, MessageCircle, Gift } from "lucide-react";
 
 export default function Home() {
   return (
@@ -50,48 +51,60 @@ export default function Home() {
 
             {/* Features */}
             <div id="features" className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="glass-card p-6 rounded-xl">
-                <div className="text-4xl mb-4">✨</div>
+              <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
+                <div className="w-14 h-14 rounded-lg bg-gold/10 flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="w-7 h-7 text-gold" strokeWidth={1.5} />
+                </div>
                 <h3 className="text-gold font-semibold mb-2">AI Генерация</h3>
                 <p className="text-foreground/70 text-sm">
                   Личный AI стилист создает реалистичные модные образы за секунды
                 </p>
               </div>
 
-              <div className="glass-card p-6 rounded-xl">
-                <div className="text-4xl mb-4">👗</div>
+              <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
+                <div className="w-14 h-14 rounded-lg bg-gold/10 flex items-center justify-center mx-auto mb-4">
+                  <Shirt className="w-7 h-7 text-gold" strokeWidth={1.5} />
+                </div>
                 <h3 className="text-gold font-semibold mb-2">20 Стилей</h3>
                 <p className="text-foreground/70 text-sm">
                   От casual до glamour — найдите свой идеальный стиль
                 </p>
               </div>
 
-              <div className="glass-card p-6 rounded-xl">
-                <div className="text-4xl mb-4">🎨</div>
+              <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
+                <div className="w-14 h-14 rounded-lg bg-gold/10 flex items-center justify-center mx-auto mb-4">
+                  <Palette className="w-7 h-7 text-gold" strokeWidth={1.5} />
+                </div>
                 <h3 className="text-gold font-semibold mb-2">Цветовые палитры и фоны</h3>
                 <p className="text-foreground/70 text-sm">
                   8 палитр и 8 локаций для создания идеального образа
                 </p>
               </div>
 
-              <div className="glass-card p-6 rounded-xl">
-                <div className="text-4xl mb-4">🛍️</div>
+              <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
+                <div className="w-14 h-14 rounded-lg bg-gold/10 flex items-center justify-center mx-auto mb-4">
+                  <ShoppingBag className="w-7 h-7 text-gold" strokeWidth={1.5} />
+                </div>
                 <h3 className="text-gold font-semibold mb-2">Поиск на маркетплейсах</h3>
                 <p className="text-foreground/70 text-sm">
                   Находите похожую одежду на популярных маркетплейсах
                 </p>
               </div>
 
-              <div className="glass-card p-6 rounded-xl">
-                <div className="text-4xl mb-4">💬</div>
+              <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
+                <div className="w-14 h-14 rounded-lg bg-gold/10 flex items-center justify-center mx-auto mb-4">
+                  <MessageCircle className="w-7 h-7 text-gold" strokeWidth={1.5} />
+                </div>
                 <h3 className="text-gold font-semibold mb-2">AI Стилист</h3>
                 <p className="text-foreground/70 text-sm">
                   Персональные советы от AI стилиста — бесплатно
                 </p>
               </div>
 
-              <div className="glass-card p-6 rounded-xl">
-                <div className="text-4xl mb-4">🎁</div>
+              <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
+                <div className="w-14 h-14 rounded-lg bg-gold/10 flex items-center justify-center mx-auto mb-4">
+                  <Gift className="w-7 h-7 text-gold" strokeWidth={1.5} />
+                </div>
                 <h3 className="text-gold font-semibold mb-2">5 бесплатных образов</h3>
                 <p className="text-foreground/70 text-sm">
                   Начните прямо сейчас — первые 5 генераций бесплатно

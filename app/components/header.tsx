@@ -4,6 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "@/components/theme-provider";
+import { Sun, Moon } from "lucide-react";
 
 export function Header() {
   const { data: session, status } = useSession();
@@ -47,7 +48,7 @@ export function Header() {
             className="w-9 h-9 rounded-full flex items-center justify-center bg-foreground/10 hover:bg-foreground/20 transition-colors text-lg"
             title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
           >
-            {theme === "dark" ? "☀️" : "🌙"}
+            {theme === "dark" ? <Sun className="w-5 h-5 text-gold" strokeWidth={1.5} /> : <Moon className="w-5 h-5 text-gold" strokeWidth={1.5} />}
           </button>
           {status === "loading" ? (
             <div className="w-8 h-8 rounded-full bg-foreground/10 animate-pulse" />
@@ -79,7 +80,7 @@ export function Header() {
                 </button>
 
                 {/* Dropdown */}
-                <div className="absolute right-0 top-full mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                <div className="absolute right-0 top-full mt-2 w-48 z-[60] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                   <div className="glass-card rounded-lg py-2 mt-2">
                     <div className="px-4 py-2 border-b border-border">
                       <p className="text-foreground text-sm font-medium truncate">

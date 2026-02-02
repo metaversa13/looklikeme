@@ -8,43 +8,65 @@ import Image from "next/image";
 import Link from "next/link";
 import { fashionFacts } from "@/lib/fashion-facts";
 import { MarketplacePanel } from "@/components/marketplace-panel";
+import {
+  Shirt, Briefcase, Dumbbell, MapPin, Heart, Circle, Flower2, Link2,
+  GraduationCap, Disc3, Crown, Snowflake, Lasso, Building2, Moon, Gem,
+  Guitar, Palmtree, Clock, Sparkles, Camera, Upload, Palette, ImageIcon,
+  ShoppingBag, Sun, SunMoon, Star, Waves, Coffee, TreePine, Factory,
+  type LucideIcon,
+} from "lucide-react";
+
+// Иконки для стилей
+const styleIcons: Record<string, LucideIcon> = {
+  casual: Shirt, business: Briefcase, sport: Dumbbell, street: MapPin,
+  romantic: Heart, minimalism: Circle, boho: Flower2, grunge: Link2,
+  preppy: GraduationCap, disco: Disc3, ladylike: Crown, scandinavian: Snowflake,
+  gaucho: Lasso, "urban-chic": Building2, "evening-elegant": Moon, glamour: Gem,
+  rock: Guitar, resort: Palmtree, "vintage-50s": Clock, "trends-2026": Sparkles,
+};
 
 // Все 20 стилей одежды
 const styles = [
   // FREE стили (4 шт)
-  { id: "casual", name: "Casual", emoji: "👕", description: "Повседневный стиль", isPremium: false, gender: "universal" },
-  { id: "business", name: "Business", emoji: "💼", description: "Деловой образ", isPremium: false, gender: "universal" },
-  { id: "sport", name: "Sport", emoji: "🏃", description: "Спортивный стиль", isPremium: false, gender: "universal" },
-  { id: "street", name: "Street", emoji: "🧢", description: "Уличная мода", isPremium: false, gender: "universal" },
+  { id: "casual", name: "Casual", description: "Повседневный стиль", isPremium: false, gender: "universal" },
+  { id: "business", name: "Business", description: "Деловой образ", isPremium: false, gender: "universal" },
+  { id: "sport", name: "Sport", description: "Спортивный стиль", isPremium: false, gender: "universal" },
+  { id: "street", name: "Street", description: "Уличная мода", isPremium: false, gender: "universal" },
 
   // PREMIUM стили (16 шт)
-  { id: "romantic", name: "Romantic", emoji: "💐", description: "Романтичный стиль", isPremium: true, gender: "universal" },
-  { id: "minimalism", name: "Minimalism", emoji: "⚪", description: "Минимализм", isPremium: true, gender: "universal" },
-  { id: "boho", name: "Boho", emoji: "🌸", description: "Богемный стиль", isPremium: true, gender: "universal" },
-  { id: "grunge", name: "Grunge", emoji: "🔗", description: "Гранж стиль", isPremium: true, gender: "universal" },
-  { id: "preppy", name: "Preppy", emoji: "🎓", description: "Преппи стиль", isPremium: true, gender: "universal" },
-  { id: "disco", name: "Disco", emoji: "🪩", description: "Диско стиль", isPremium: true, gender: "universal" },
-  { id: "ladylike", name: "Ladylike", emoji: "👗", description: "Леди стиль", isPremium: true, gender: "female" },
-  { id: "scandinavian", name: "Scandinavian", emoji: "🇸🇪", description: "Скандинавский стиль", isPremium: true, gender: "universal" },
-  { id: "gaucho", name: "Gaucho", emoji: "🤠", description: "Гаучо вестерн", isPremium: true, gender: "universal" },
-  { id: "urban-chic", name: "Urban Chic", emoji: "🖤", description: "Городской шик", isPremium: true, gender: "universal" },
-  { id: "evening-elegant", name: "Evening Elegant", emoji: "🌙", description: "Вечерний элегантный", isPremium: true, gender: "universal" },
-  { id: "glamour", name: "Glamour", emoji: "💎", description: "Гламурный стиль", isPremium: true, gender: "universal" },
-  { id: "rock", name: "Rock", emoji: "🎸", description: "Рок стиль", isPremium: true, gender: "universal" },
-  { id: "resort", name: "Resort", emoji: "🏖️", description: "Курортный стиль", isPremium: true, gender: "universal" },
-  { id: "vintage-50s", name: "Vintage 50s", emoji: "🕰️", description: "Винтаж 50-х", isPremium: true, gender: "universal" },
-  { id: "trends-2026", name: "Trends 2026", emoji: "✨", description: "Тренды 2026", isPremium: true, gender: "universal" },
+  { id: "romantic", name: "Romantic", description: "Романтичный стиль", isPremium: true, gender: "universal" },
+  { id: "minimalism", name: "Minimalism", description: "Минимализм", isPremium: true, gender: "universal" },
+  { id: "boho", name: "Boho", description: "Богемный стиль", isPremium: true, gender: "universal" },
+  { id: "grunge", name: "Grunge", description: "Гранж стиль", isPremium: true, gender: "universal" },
+  { id: "preppy", name: "Preppy", description: "Преппи стиль", isPremium: true, gender: "universal" },
+  { id: "disco", name: "Disco", description: "Диско стиль", isPremium: true, gender: "universal" },
+  { id: "ladylike", name: "Ladylike", description: "Леди стиль", isPremium: true, gender: "female" },
+  { id: "scandinavian", name: "Scandinavian", description: "Скандинавский стиль", isPremium: true, gender: "universal" },
+  { id: "gaucho", name: "Gaucho", description: "Гаучо вестерн", isPremium: true, gender: "universal" },
+  { id: "urban-chic", name: "Urban Chic", description: "Городской шик", isPremium: true, gender: "universal" },
+  { id: "evening-elegant", name: "Evening Elegant", description: "Вечерний элегантный", isPremium: true, gender: "universal" },
+  { id: "glamour", name: "Glamour", description: "Гламурный стиль", isPremium: true, gender: "universal" },
+  { id: "rock", name: "Rock", description: "Рок стиль", isPremium: true, gender: "universal" },
+  { id: "resort", name: "Resort", description: "Курортный стиль", isPremium: true, gender: "universal" },
+  { id: "vintage-50s", name: "Vintage 50s", description: "Винтаж 50-х", isPremium: true, gender: "universal" },
+  { id: "trends-2026", name: "Trends 2026", description: "Тренды 2026", isPremium: true, gender: "universal" },
 ];
 
+// Иконки для локаций
+const locationIcons: Record<string, LucideIcon> = {
+  studio: Palette, "city-day": Sun, "city-night": Moon, runway: Star,
+  beach: Waves, cafe: Coffee, nature: TreePine, loft: Factory,
+};
+
 const locations = [
-  { id: "studio", name: "Студия", emoji: "🎨", isPremium: false },
-  { id: "city-day", name: "Город (день)", emoji: "🌆", isPremium: false },
-  { id: "city-night", name: "Город (ночь)", emoji: "🌃", isPremium: true },
-  { id: "runway", name: "Подиум", emoji: "✨", isPremium: true },
-  { id: "beach", name: "Пляж", emoji: "🏖️", isPremium: true },
-  { id: "cafe", name: "Кафе", emoji: "☕", isPremium: true },
-  { id: "nature", name: "Природа", emoji: "🌳", isPremium: true },
-  { id: "loft", name: "Лофт", emoji: "🏗️", isPremium: true },
+  { id: "studio", name: "Студия", isPremium: false },
+  { id: "city-day", name: "Город (день)", isPremium: false },
+  { id: "city-night", name: "Город (ночь)", isPremium: true },
+  { id: "runway", name: "Подиум", isPremium: true },
+  { id: "beach", name: "Пляж", isPremium: true },
+  { id: "cafe", name: "Кафе", isPremium: true },
+  { id: "nature", name: "Природа", isPremium: true },
+  { id: "loft", name: "Лофт", isPremium: true },
 ];
 
 const palettes = [
@@ -445,9 +467,9 @@ export default function GeneratePage() {
             {/* Левая колонка - Настройки */}
             <div className="space-y-6">
               {/* Загрузка фото */}
-              <div className="glass-card rounded-xl p-6">
+              <div className="glass-card rounded-xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
                 <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <span className="text-2xl">📷</span> Ваше фото
+                  <Camera className="w-5 h-5 text-gold" strokeWidth={1.5} /> Ваше фото
                 </h2>
 
                 <div
@@ -456,7 +478,7 @@ export default function GeneratePage() {
                     relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all
                     ${uploadedImage
                       ? "border-gold/50 bg-gold/5"
-                      : "border-foreground/20 hover:border-gold/50 hover:bg-muted"
+                      : "border-foreground/20 hover:border-gold/50 hover:bg-muted hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
                     }
                   `}
                 >
@@ -482,7 +504,7 @@ export default function GeneratePage() {
                     </div>
                   ) : (
                     <>
-                      <div className="text-4xl mb-2">📤</div>
+                      <Shirt className="w-10 h-10 text-gold/60 mx-auto mb-2" strokeWidth={1.5} />
                       <p className="text-foreground/70">Нажмите для загрузки фото</p>
                       <p className="text-foreground/40 text-sm mt-1">JPG, PNG до 10MB</p>
                     </>
@@ -498,10 +520,10 @@ export default function GeneratePage() {
               </div>
 
               {/* Выбор стиля */}
-              <div className="glass-card rounded-xl p-6">
+              <div className="glass-card rounded-xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                    <span className="text-2xl">👗</span> Стиль
+                    <Gem className="w-5 h-5 text-gold" strokeWidth={1.5} /> Стиль
                   </h2>
                   <span className="text-foreground/40 text-xs">
                     {styles.length} стилей доступно
@@ -524,12 +546,12 @@ export default function GeneratePage() {
                             ? "border-gold bg-gold/10"
                             : isLocked
                               ? "border-foreground/10 bg-foreground/5 opacity-60 cursor-not-allowed"
-                              : "border-foreground/20 hover:border-gold/50"
+                              : "border-foreground/20 hover:border-gold/50 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
                           }
                         `}
                       >
                         <div className="mb-1">
-                          <div className="text-2xl">{style.emoji}</div>
+                          {(() => { const Icon = styleIcons[style.id] || Shirt; return <Icon className="w-7 h-7 text-gold" strokeWidth={1.5} />; })()}
                         </div>
                         <div className="text-foreground text-sm font-medium">{style.name}</div>
                         <div className="text-foreground/40 text-xs mt-0.5">{style.description}</div>
@@ -565,9 +587,9 @@ export default function GeneratePage() {
               </div>
 
               {/* Выбор локации */}
-              <div className="glass-card rounded-xl p-6">
+              <div className="glass-card rounded-xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
                 <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <span className="text-2xl">🏞️</span> Локация
+                  <ImageIcon className="w-5 h-5 text-gold" strokeWidth={1.5} /> Локация
                 </h2>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -586,11 +608,11 @@ export default function GeneratePage() {
                             ? "border-gold bg-gold/10"
                             : isLocked
                               ? "border-foreground/10 bg-foreground/5 opacity-60 cursor-not-allowed"
-                              : "border-foreground/20 hover:border-gold/50"
+                              : "border-foreground/20 hover:border-gold/50 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
                           }
                         `}
                       >
-                        <div className="text-2xl mb-1">{location.emoji}</div>
+                        <div className="mb-1">{(() => { const Icon = locationIcons[location.id] || Palette; return <Icon className="w-7 h-7 text-gold" strokeWidth={1.5} />; })()}</div>
                         <div className="text-foreground text-xs">{location.name}</div>
                         {isLocked && (
                           <div className="absolute top-1 right-1 text-[10px] bg-gold/20 text-gold px-1.5 py-0.5 rounded">
@@ -604,9 +626,9 @@ export default function GeneratePage() {
               </div>
 
               {/* Цветовая палитра */}
-              <div className="glass-card rounded-xl p-6">
+              <div className="glass-card rounded-xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
                 <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <span className="text-2xl">🎨</span> Цветовая палитра
+                  <Palette className="w-5 h-5 text-gold" strokeWidth={1.5} /> Цветовая палитра
                   <span className="text-xs bg-gold/20 text-gold px-2 py-0.5 rounded ml-2">Premium</span>
                 </h2>
 
@@ -628,7 +650,7 @@ export default function GeneratePage() {
                             ? "border-gold bg-gold/10"
                             : isLocked
                               ? "border-foreground/10 bg-foreground/5 opacity-60 cursor-not-allowed"
-                              : "border-foreground/20 hover:border-gold/50"
+                              : "border-foreground/20 hover:border-gold/50 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
                           }
                         `}
                       >
@@ -723,7 +745,7 @@ export default function GeneratePage() {
             {/* Правая колонка - Результат */}
             <div className="glass-card rounded-xl p-6 h-fit lg:sticky lg:top-24">
               <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                <span className="text-2xl">✨</span> Результат
+                <Sparkles className="w-5 h-5 text-gold" strokeWidth={1.5} /> Результат
               </h2>
 
               {error && (
@@ -745,7 +767,7 @@ export default function GeneratePage() {
                   </div>
                 ) : isGenerating ? (
                   <div className="text-center px-4 w-full">
-                    <div className="text-4xl mb-3 animate-pulse">🎨</div>
+                    <Palette className="w-10 h-10 text-gold mx-auto mb-3 animate-pulse" strokeWidth={1.5} />
                     <p className="text-foreground/60 mb-4">Создаем ваш образ...</p>
 
                     {/* Прогресс-бар */}
@@ -768,7 +790,7 @@ export default function GeneratePage() {
                   </div>
                 ) : (
                   <div className="text-center px-4">
-                    <div className="text-4xl mb-3 opacity-50">👗</div>
+                    <Gem className="w-10 h-10 text-gold/50 mx-auto mb-3" strokeWidth={1.5} />
                     <p className="text-foreground/40">
                       {!uploadedImage
                         ? "Загрузите фото"
@@ -864,7 +886,9 @@ export default function GeneratePage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="text-center mb-6">
-                <div className="text-5xl mb-4">🎨</div>
+                <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4">
+                  <Palette className="w-8 h-8 text-gold" strokeWidth={1.5} />
+                </div>
                 <h2 className="text-xl font-bold text-foreground mb-2">
                   Генерации на этот месяц закончились
                 </h2>

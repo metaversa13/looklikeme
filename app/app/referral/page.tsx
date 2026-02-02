@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
+import { Gift, Copy, Share2, Link2, UserPlus, Sparkles } from "lucide-react";
 
 interface ReferralData {
   referralCode: string;
@@ -80,7 +81,9 @@ export default function ReferralPage() {
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-5xl mb-4">🎁</div>
+          <div className="w-24 h-24 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4">
+            <Gift className="w-12 h-12 text-gold" strokeWidth={1.5} />
+          </div>
           <h1 className="text-3xl font-bold text-foreground mb-2">
             Пригласи друга
           </h1>
@@ -90,7 +93,7 @@ export default function ReferralPage() {
         </div>
 
         {/* Referral Link Card */}
-        <div className="glass-card rounded-2xl p-6 mb-6">
+        <div className="glass-card rounded-2xl p-6 mb-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
           <p className="text-foreground/50 text-sm mb-2">Твоя реферальная ссылка</p>
           <div className="flex gap-2">
             <input
@@ -109,14 +112,14 @@ export default function ReferralPage() {
 
           <button
             onClick={handleShare}
-            className="w-full mt-3 px-4 py-3 bg-foreground/10 hover:bg-foreground/15 text-foreground rounded-lg font-medium text-sm transition-colors"
+            className="w-full mt-3 px-4 py-3 bg-foreground/10 hover:bg-foreground/15 text-foreground rounded-lg font-medium text-sm transition-all duration-300 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] flex items-center justify-center gap-2"
           >
-            Поделиться ссылкой
+            <Share2 className="w-5 h-5 text-gold" strokeWidth={1.5} /> Поделиться ссылкой
           </button>
         </div>
 
         {/* Stats Card */}
-        <div className="glass-card rounded-2xl p-6 mb-6">
+        <div className="glass-card rounded-2xl p-6 mb-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
           <h2 className="text-foreground font-bold text-lg mb-4">Твоя статистика</h2>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
@@ -149,25 +152,31 @@ export default function ReferralPage() {
         </div>
 
         {/* How it works */}
-        <div className="glass-card rounded-2xl p-6">
+        <div className="glass-card rounded-2xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
           <h2 className="text-foreground font-bold text-lg mb-4">Как это работает</h2>
           <div className="space-y-4">
             <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-gold/20 text-gold flex items-center justify-center text-sm font-bold flex-shrink-0">1</div>
+              <div className="w-9 h-9 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
+                <Link2 className="w-5 h-5 text-gold" strokeWidth={1.5} />
+              </div>
               <div>
                 <p className="text-foreground text-sm font-medium">Поделись ссылкой</p>
                 <p className="text-foreground/50 text-xs">Отправь реферальную ссылку друзьям</p>
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-gold/20 text-gold flex items-center justify-center text-sm font-bold flex-shrink-0">2</div>
+              <div className="w-9 h-9 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
+                <UserPlus className="w-5 h-5 text-gold" strokeWidth={1.5} />
+              </div>
               <div>
                 <p className="text-foreground text-sm font-medium">Друг регистрируется</p>
                 <p className="text-foreground/50 text-xs">Переходит по ссылке и создаёт аккаунт</p>
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-gold/20 text-gold flex items-center justify-center text-sm font-bold flex-shrink-0">3</div>
+              <div className="w-9 h-9 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-5 h-5 text-gold" strokeWidth={1.5} />
+              </div>
               <div>
                 <p className="text-foreground text-sm font-medium">Получи +{data.bonusPerReferral} генераций</p>
                 <p className="text-foreground/50 text-xs">Бонус начисляется автоматически, без срока годности</p>
@@ -248,7 +257,7 @@ export default function ReferralPage() {
               }}
               className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
             >
-              📋 Скопировать ссылку
+              <Copy className="w-5 h-5 text-gold" strokeWidth={1.5} /> Скопировать ссылку
             </button>
           </div>
         </div>

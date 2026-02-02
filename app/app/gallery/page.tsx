@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import Image from "next/image";
 import { MarketplacePanel } from "@/components/marketplace-panel";
+import { Heart, HeartOff, Trash2, Download, ShoppingBag, Share2, Sparkles, Gem } from "lucide-react";
 
 interface Generation {
   id: string;
@@ -257,7 +258,7 @@ export default function GalleryPage() {
 
           {generations.length === 0 ? (
             <div className="text-center py-20">
-              <div className="text-6xl mb-4 opacity-50">👗</div>
+              <Gem className="w-16 h-16 text-gold/50 mx-auto mb-4" strokeWidth={1.5} />
               <p className="text-foreground/60 mb-6">У вас пока нет сохранённых образов</p>
               <button
                 onClick={() => router.push("/generate")}
@@ -297,7 +298,7 @@ export default function GalleryPage() {
                   {/* Иконка избранного */}
                   {gen.favorite && (
                     <div className="absolute top-2 right-2">
-                      <span className="text-red-500 text-xl">❤️</span>
+                      <Heart className="w-5 h-5 text-red-500 fill-red-500" strokeWidth={1.5} />
                     </div>
                   )}
 
@@ -310,7 +311,7 @@ export default function GalleryPage() {
                     className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-red-500/80 hover:bg-red-500 text-white p-2 rounded-lg"
                     title="Удалить образ"
                   >
-                    🗑️
+                    <Trash2 className="w-4 h-4" strokeWidth={1.5} />
                   </button>
                 </div>
               ))}
@@ -353,43 +354,43 @@ export default function GalleryPage() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => handleDownload(selectedImage.resultImageUrl, selectedImage.id)}
-                    className="flex-1 py-3 bg-gold hover:bg-gold-600 text-black font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                    className="flex-1 py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] flex items-center justify-center gap-2"
                   >
-                    📥 Скачать
+                    <Download className="w-5 h-5 text-gold" strokeWidth={1.5} /> Скачать
                   </button>
                   <button
                     onClick={() => toggleFavorite(selectedImage.id)}
-                    className={`flex-1 py-3 rounded-lg transition-all flex items-center justify-center gap-2 font-semibold ${
+                    className={`flex-1 py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 font-semibold ${
                       selectedImage.favorite
-                        ? "bg-red-500/20 text-red-400 border border-red-500/50"
-                        : "bg-foreground/10 text-foreground hover:bg-foreground/20"
+                        ? "bg-red-500/20 text-red-400 border border-red-500/50 hover:shadow-[0_0_25px_rgba(239,68,68,0.25)]"
+                        : "glass-card text-foreground hover:bg-muted hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]"
                     }`}
                   >
-                    {selectedImage.favorite ? "💔 Убрать" : "❤️ В избранное"}
+                    {selectedImage.favorite ? <><HeartOff className="w-5 h-5 text-red-400" strokeWidth={1.5} /> Убрать</> : <><Heart className="w-5 h-5 text-gold" strokeWidth={1.5} /> В избранное</>}
                   </button>
                   <button
                     onClick={() => deleteGeneration(selectedImage.id)}
-                    className="py-3 px-4 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-lg transition-all flex items-center justify-center"
+                    className="py-3 px-4 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-lg transition-all duration-300 hover:shadow-[0_0_25px_rgba(239,68,68,0.25)] flex items-center justify-center"
                     title="Удалить"
                   >
-                    🗑️
+                    <Trash2 className="w-5 h-5" strokeWidth={1.5} />
                   </button>
                 </div>
 
                 {/* Кнопка поиска на маркетплейсах */}
                 <button
                   onClick={() => handleMarketplaceSearch(selectedImage.resultImageUrl)}
-                  className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] flex items-center justify-center gap-2"
                 >
-                  🛍️ Найти на маркетплейсах
+                  <ShoppingBag className="w-5 h-5 text-gold" strokeWidth={1.5} /> Найти на маркетплейсах
                 </button>
 
                 {/* Кнопка поделиться */}
                 <button
                   onClick={() => handleShare(selectedImage.resultImageUrl)}
-                  className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] flex items-center justify-center gap-2"
                 >
-                  📤 Поделиться
+                  <Share2 className="w-5 h-5 text-gold" strokeWidth={1.5} /> Поделиться
                 </button>
               </div>
 
@@ -451,7 +452,7 @@ export default function GalleryPage() {
               {!isPremium && (
                 <div className="mb-4 p-3 bg-gold/10 border border-gold/20 rounded-lg">
                   <p className="text-gold text-xs text-center">
-                    ✨ Premium пользователи делятся образами без watermark
+                    <span className="inline-flex items-center gap-1"><Sparkles className="w-4 h-4 inline" strokeWidth={1.5} /> Premium пользователи делятся образами без watermark</span>
                   </p>
                 </div>
               )}
@@ -519,7 +520,7 @@ export default function GalleryPage() {
                   }}
                   className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
                 >
-                  📥 Скачать для шаринга
+                  <Download className="w-5 h-5" strokeWidth={1.5} /> Скачать для шаринга
                 </button>
               </div>
             </div>

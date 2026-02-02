@@ -66,7 +66,7 @@ const plans: PricingPlan[] = [
     ],
     highlighted: true,
     buttonText: "Оформить подписку",
-    badge: "На 20% выгоднее",
+    badge: "На 20% дешевле",
   },
 ];
 
@@ -137,7 +137,7 @@ export default function PricingPage() {
               return (
                 <div
                   key={plan.id}
-                  className={`relative rounded-2xl p-6 ${
+                  className={`relative rounded-2xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] ${
                     plan.highlighted
                       ? "bg-gradient-to-b from-gold/20 to-gold/5 border-2 border-gold"
                       : "glass-card"
@@ -252,7 +252,7 @@ export default function PricingPage() {
               Частые вопросы
             </h2>
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="glass-card rounded-xl p-6">
+              <div className="glass-card rounded-xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
                 <h3 className="text-foreground font-semibold mb-2">
                   Чем отличается Base от Premium?
                 </h3>
@@ -260,7 +260,7 @@ export default function PricingPage() {
                   Base даёт 50 генераций в месяц, Premium — 100. При этом Premium на 20% выгоднее в пересчёте за одну генерацию (4.99₽ vs 5.98₽). Оба плана дают полный доступ ко всем стилям и локациям.
                 </p>
               </div>
-              <div className="glass-card rounded-xl p-6">
+              <div className="glass-card rounded-xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
                 <h3 className="text-foreground font-semibold mb-2">
                   Могу ли я сменить план?
                 </h3>
@@ -268,7 +268,7 @@ export default function PricingPage() {
                   Да, вы можете в любой момент перейти с Base на Premium. Неиспользованные генерации переносятся до конца текущего периода.
                 </p>
               </div>
-              <div className="glass-card rounded-xl p-6">
+              <div className="glass-card rounded-xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
                 <h3 className="text-foreground font-semibold mb-2">
                   Могу ли я вернуть деньги?
                 </h3>
@@ -276,7 +276,7 @@ export default function PricingPage() {
                   Да, мы предлагаем возврат в течение 7 дней после покупки, если вы не воспользовались сервисом более 3 раз.
                 </p>
               </div>
-              <div className="glass-card rounded-xl p-6">
+              <div className="glass-card rounded-xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
                 <h3 className="text-foreground font-semibold mb-2">
                   Как оплатить?
                 </h3>
@@ -289,7 +289,7 @@ export default function PricingPage() {
 
           {/* CTA для незарегистрированных */}
           {!session && (
-            <div className="mt-16 text-center glass-card rounded-xl p-8">
+            <div className="mt-16 text-center glass-card rounded-xl p-8 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
               <h2 className="text-2xl font-bold text-foreground mb-4">
                 Начните бесплатно уже сегодня
               </h2>
