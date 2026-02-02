@@ -34,10 +34,11 @@ export default function StylistPage() {
     );
   }
 
-  const handleAskStylist = async () => {
-    if (!question.trim() || isLoading) return;
+  const handleAskStylist = async (directQuestion?: string) => {
+    const text = directQuestion || question;
+    if (!text.trim() || isLoading) return;
 
-    const userMessage = { role: "user" as const, content: question };
+    const userMessage = { role: "user" as const, content: text };
     setMessages((prev) => [...prev, userMessage]);
     setQuestion("");
     setIsLoading(true);
@@ -99,7 +100,7 @@ export default function StylistPage() {
           {/* Chat Container */}
           <div className="glass-card rounded-2xl p-6 mb-6">
             {/* Messages */}
-            <div className="space-y-4 mb-6 min-h-[400px] max-h-[600px] overflow-y-auto">
+            <div className="space-y-4 mb-6 min-h-[400px] max-h-[600px] overflow-y-auto pr-3">
               {messages.length === 0 && (
                 <div className="text-center py-12">
                   <div className="text-6xl mb-4">💬</div>
@@ -109,7 +110,7 @@ export default function StylistPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto">
                     <button
                       onClick={() =>
-                        setQuestion("Какой цвет одежды мне подходит? Помоги определить мой цветотип.")
+                        handleAskStylist("Какой цвет одежды мне подходит? Помоги определить мой цветотип.")
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
                     >
@@ -117,7 +118,7 @@ export default function StylistPage() {
                     </button>
                     <button
                       onClick={() =>
-                        setQuestion("Что мне носить, чтобы визуально скрыть живот и бёдра?")
+                        handleAskStylist("Что мне носить, чтобы визуально скрыть живот и бёдра?")
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
                     >
@@ -125,7 +126,7 @@ export default function StylistPage() {
                     </button>
                     <button
                       onClick={() =>
-                        setQuestion("С какими цветами лучше сочетать базовый гардероб?")
+                        handleAskStylist("С какими цветами лучше сочетать базовый гардероб?")
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
                     >
@@ -133,7 +134,7 @@ export default function StylistPage() {
                     </button>
                     <button
                       onClick={() =>
-                        setQuestion("Какой фасон одежды подходит по типу фигуры?")
+                        handleAskStylist("Какой фасон одежды подходит по типу фигуры?")
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
                     >
@@ -141,7 +142,7 @@ export default function StylistPage() {
                     </button>
                     <button
                       onClick={() =>
-                        setQuestion("Что сейчас модно и как это правильно носить?")
+                        handleAskStylist("Что сейчас модно и как это правильно носить?")
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
                     >
@@ -149,7 +150,7 @@ export default function StylistPage() {
                     </button>
                     <button
                       onClick={() =>
-                        setQuestion("Как собрать капсульный гардероб из 15 вещей на месяц?")
+                        handleAskStylist("Как собрать капсульный гардероб из 15 вещей на месяц?")
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
                     >
@@ -157,7 +158,7 @@ export default function StylistPage() {
                     </button>
                     <button
                       onClick={() =>
-                        setQuestion("Что купить, чтобы образ выглядел дороже?")
+                        handleAskStylist("Что купить, чтобы образ выглядел дороже?")
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
                     >
@@ -165,7 +166,7 @@ export default function StylistPage() {
                     </button>
                     <button
                       onClick={() =>
-                        setQuestion("Можно ли мне носить определённую вещь? Например, макси при маленьком росте или мини после 40?")
+                        handleAskStylist("Можно ли мне носить определённую вещь? Например, макси при маленьком росте или мини после 40?")
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
                     >
@@ -209,6 +210,15 @@ export default function StylistPage() {
 
             {/* Input */}
             <div className="flex gap-2">
+              {messages.length > 0 && (
+                <button
+                  onClick={() => setMessages([])}
+                  className="px-3 py-3 rounded-xl bg-gold hover:bg-gold-600 text-black font-semibold btn-gold-hover transition-all"
+                  title="Новый чат"
+                >
+                  ↺
+                </button>
+              )}
               <input
                 type="text"
                 value={question}

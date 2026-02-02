@@ -20,26 +20,26 @@ const styleNames: Record<string, string> = {
   // FREE стили
   "casual": "Casual",
   "business": "Business",
-  "streetwear": "Streetwear",
+  "sport": "Sport",
 
   // PREMIUM стили
+  "street": "Street",
   "romantic": "Romantic",
-  "athleisure": "Athleisure",
-  "elegant-evening": "Elegant Evening",
+  "minimalism": "Minimalism",
   "boho": "Boho",
-  "minimalist": "Minimalist",
-  "vintage-retro": "Vintage Retro",
-  "smart-casual": "Smart Casual",
-  "glamorous": "Glamorous",
+  "grunge": "Grunge",
   "preppy": "Preppy",
-  "edgy-rock": "Edgy Rock",
-  "feminine": "Feminine",
-  "avant-garde": "Avant-garde",
-  "resort-vacation": "Resort",
-  "monochrome": "Monochrome",
-  "layered": "Layered",
-  "classic-timeless": "Classic",
-  "trendy-2026": "Trendy 2026",
+  "disco": "Disco",
+  "ladylike": "Ladylike",
+  "scandinavian": "Scandinavian",
+  "gaucho": "Gaucho",
+  "urban-chic": "Urban Chic",
+  "evening-elegant": "Evening Elegant",
+  "glamour": "Glamour",
+  "rock": "Rock",
+  "resort": "Resort",
+  "vintage-50s": "Vintage 50s",
+  "trends-2026": "Trends 2026",
 };
 
 export default function GalleryPage() {
@@ -321,28 +321,29 @@ export default function GalleryPage() {
         {/* Модальное окно просмотра */}
         {selectedImage && (
           <div
-            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/90 z-50 overflow-y-auto p-4"
             onClick={() => setSelectedImage(null)}
           >
             <div
-              className="relative max-w-2xl w-full"
+              className="relative max-w-2xl w-full mx-auto my-4"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Кнопка закрытия */}
               <button
                 onClick={() => setSelectedImage(null)}
-                className="absolute -top-10 right-0 text-foreground/60 hover:text-foreground text-2xl"
+                className="absolute -top-10 right-0 text-foreground/60 hover:text-foreground text-2xl z-10"
               >
                 ✕
               </button>
 
               {/* Изображение */}
-              <div className="relative aspect-[3/4] rounded-xl overflow-hidden">
+              <div className="relative rounded-xl overflow-hidden" style={{ maxHeight: "65vh" }}>
                 <Image
                   src={selectedImage.resultImageUrl}
                   alt="Generated look"
-                  fill
-                  className="object-cover"
+                  width={768}
+                  height={1024}
+                  className="object-contain w-full h-auto max-h-[65vh]"
                   unoptimized
                 />
               </div>

@@ -36,10 +36,10 @@ export default function Home() {
                 Начать бесплатно
               </Link>
               <Link
-                href="#features"
+                href="/referral"
                 className="border-2 border-foreground/20 hover:border-gold text-foreground font-semibold px-8 py-4 rounded-lg transition-all inline-block"
               >
-                Узнать больше
+                Получи +5 образов
               </Link>
             </div>
 
@@ -73,7 +73,7 @@ export default function Home() {
                 <div className="text-4xl mb-4">🛍️</div>
                 <h3 className="text-gold font-semibold mb-2">Поиск на маркетплейсах</h3>
                 <p className="text-foreground/70 text-sm">
-                  Находите похожую одежду на популярных маркетплейсах (скоро)
+                  Находите похожую одежду на популярных маркетплейсах
                 </p>
               </div>
 

@@ -170,36 +170,9 @@ export async function POST(request: NextRequest) {
 
     console.log("Parsed results:", allResults.length, "total");
 
-    // Сначала ищем товары на маркетплейсах
-    let products = filterByMarketplaces(allResults, MARKETPLACES);
-
-    if (products.length === 0) {
-      products = filterByMarketplaces(allResults, FALLBACK_MARKETPLACES);
-    }
-
-    // Если товаров на маркетплейсах не нашлось — показываем все результаты как "Похожие"
-    if (products.length === 0 && allResults.length > 0) {
-      products = allResults.slice(0, 10).map((r) => {
-        let hostname = "";
-        try { hostname = new URL(r.url).hostname.replace("www.", ""); } catch { /* ignore */ }
-        return {
-          title: r.title || "Похожий товар",
-          url: r.url,
-          image: r.image,
-          marketplace: hostname,
-          icon: "🔗",
-          price: extractPrice(r.title),
-        };
-      });
-    }
-
-    // Сортировка: товары с ценой первые (от дешёвых к дорогим), без цены — в конце
-    products.sort((a, b) => {
-      if (a.price && b.price) return a.price - b.price;
-      if (a.price) return -1;
-      if (b.price) return 1;
-      return 0;
-    });
+    // Фильтруем по всем известным маркетплейсам сразу, в порядке приоритета
+    const ALL_KNOWN = [...MARKETPLACES, ...FALLBACK_MARKETPLACES];
+    const products = filterByMarketplaces(allResults, ALL_KNOWN);
 
     return NextResponse.json({
       success: true,

@@ -9,36 +9,36 @@ import Link from "next/link";
 import { fashionFacts } from "@/lib/fashion-facts";
 import { MarketplacePanel } from "@/components/marketplace-panel";
 
-// Все 20 стилей одежды с гендерными метаданными
+// Все 20 стилей одежды
 const styles = [
-  // FREE стили (3 шт)
+  // FREE стили (4 шт)
   { id: "casual", name: "Casual", emoji: "👕", description: "Повседневный стиль", isPremium: false, gender: "universal" },
   { id: "business", name: "Business", emoji: "💼", description: "Деловой образ", isPremium: false, gender: "universal" },
-  { id: "streetwear", name: "Streetwear", emoji: "🧢", description: "Уличная мода", isPremium: false, gender: "universal" },
+  { id: "sport", name: "Sport", emoji: "🏃", description: "Спортивный стиль", isPremium: false, gender: "universal" },
+  { id: "street", name: "Street", emoji: "🧢", description: "Уличная мода", isPremium: false, gender: "universal" },
 
-  // PREMIUM стили (17 шт)
+  // PREMIUM стили (16 шт)
   { id: "romantic", name: "Romantic", emoji: "💐", description: "Романтичный стиль", isPremium: true, gender: "universal" },
-  { id: "athleisure", name: "Athleisure", emoji: "🏃", description: "Спортивный шик", isPremium: true, gender: "universal" },
-  { id: "elegant-evening", name: "Elegant Evening", emoji: "🌙", description: "Вечерний элегантный", isPremium: true, gender: "universal" },
+  { id: "minimalism", name: "Minimalism", emoji: "⚪", description: "Минимализм", isPremium: true, gender: "universal" },
   { id: "boho", name: "Boho", emoji: "🌸", description: "Богемный стиль", isPremium: true, gender: "universal" },
-  { id: "minimalist", name: "Minimalist", emoji: "⚪", description: "Минималистичный", isPremium: true, gender: "universal" },
-  { id: "vintage-retro", name: "Vintage Retro", emoji: "🕰️", description: "Винтажный 50-х", isPremium: true, gender: "universal" },
-  { id: "smart-casual", name: "Smart Casual", emoji: "👔", description: "Деловой-повседневный", isPremium: true, gender: "universal" },
-  { id: "glamorous", name: "Glamorous", emoji: "💎", description: "Гламурный стиль", isPremium: true, gender: "universal" },
+  { id: "grunge", name: "Grunge", emoji: "🔗", description: "Гранж стиль", isPremium: true, gender: "universal" },
   { id: "preppy", name: "Preppy", emoji: "🎓", description: "Преппи стиль", isPremium: true, gender: "universal" },
-  { id: "edgy-rock", name: "Edgy Rock", emoji: "🎸", description: "Рок стиль", isPremium: true, gender: "universal" },
-  { id: "feminine", name: "Feminine", emoji: "🎀", description: "Ультра-женственный", isPremium: true, gender: "female" },
-  { id: "avant-garde", name: "Avant-garde", emoji: "🎨", description: "Авангардный", isPremium: true, gender: "universal" },
-  { id: "resort-vacation", name: "Resort", emoji: "🏖️", description: "Курортный стиль", isPremium: true, gender: "universal" },
-  { id: "monochrome", name: "Monochrome", emoji: "⚫", description: "Монохромный", isPremium: true, gender: "universal" },
-  { id: "layered", name: "Layered", emoji: "🧥", description: "Многослойный", isPremium: true, gender: "universal" },
-  { id: "classic-timeless", name: "Classic", emoji: "👗", description: "Классический", isPremium: true, gender: "universal" },
-  { id: "trendy-2026", name: "Trendy 2026", emoji: "✨", description: "Актуальные тренды", isPremium: true, gender: "universal" },
+  { id: "disco", name: "Disco", emoji: "🪩", description: "Диско стиль", isPremium: true, gender: "universal" },
+  { id: "ladylike", name: "Ladylike", emoji: "👗", description: "Леди стиль", isPremium: true, gender: "female" },
+  { id: "scandinavian", name: "Scandinavian", emoji: "🇸🇪", description: "Скандинавский стиль", isPremium: true, gender: "universal" },
+  { id: "gaucho", name: "Gaucho", emoji: "🤠", description: "Гаучо вестерн", isPremium: true, gender: "universal" },
+  { id: "urban-chic", name: "Urban Chic", emoji: "🖤", description: "Городской шик", isPremium: true, gender: "universal" },
+  { id: "evening-elegant", name: "Evening Elegant", emoji: "🌙", description: "Вечерний элегантный", isPremium: true, gender: "universal" },
+  { id: "glamour", name: "Glamour", emoji: "💎", description: "Гламурный стиль", isPremium: true, gender: "universal" },
+  { id: "rock", name: "Rock", emoji: "🎸", description: "Рок стиль", isPremium: true, gender: "universal" },
+  { id: "resort", name: "Resort", emoji: "🏖️", description: "Курортный стиль", isPremium: true, gender: "universal" },
+  { id: "vintage-50s", name: "Vintage 50s", emoji: "🕰️", description: "Винтаж 50-х", isPremium: true, gender: "universal" },
+  { id: "trends-2026", name: "Trends 2026", emoji: "✨", description: "Тренды 2026", isPremium: true, gender: "universal" },
 ];
 
 const locations = [
   { id: "studio", name: "Студия", emoji: "🎨", isPremium: false },
-  { id: "city-day", name: "Город (день)", emoji: "🌆", isPremium: true },
+  { id: "city-day", name: "Город (день)", emoji: "🌆", isPremium: false },
   { id: "city-night", name: "Город (ночь)", emoji: "🌃", isPremium: true },
   { id: "runway", name: "Подиум", emoji: "✨", isPremium: true },
   { id: "beach", name: "Пляж", emoji: "🏖️", isPremium: true },
@@ -55,7 +55,7 @@ const palettes = [
   { id: "winter", name: "Зима", colors: ["#000000", "#FFFFFF", "#000080", "#DC143C"], isPremium: true },
 
   // Стилистические палитры (4 шт)
-  { id: "classic-neutrals", name: "Классика", colors: ["#F5E6D3", "#D4C5B9", "#8B7355", "#2C2C2C"], isPremium: true },
+  { id: "classic-neutrals", name: "Классика", colors: ["#F5E6D3", "#D4C5B9", "#8B7355", "#2C2C2C"], isPremium: false },
   { id: "nature-earth", name: "Природные", colors: ["#8B7355", "#6B8E23", "#D2691E", "#556B2F"], isPremium: true },
   { id: "soft-pastels", name: "Пастель", colors: ["#FFB6C1", "#E6E6FA", "#B0E0E6", "#FFDAB9"], isPremium: true },
   { id: "rich-bold", name: "Насыщенные", colors: ["#8B0000", "#000080", "#2F4F4F", "#1C1C1C"], isPremium: true },
@@ -100,6 +100,21 @@ export default function GeneratePage() {
   const [marketplaceError, setMarketplaceError] = useState<string | null>(null);
 
   const isPremium = session?.user?.subscriptionType !== "FREE";
+
+  // Восстанавливаем последнюю генерацию из sessionStorage
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("lastGeneration");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setGeneratedImage(parsed.generatedImage);
+        setLastGenerationData(parsed.lastGenerationData);
+        if (parsed.selectedStyle) setSelectedStyle(parsed.selectedStyle);
+        if (parsed.selectedLocation) setSelectedLocation(parsed.selectedLocation);
+        if (parsed.selectedPalette) setSelectedPalette(parsed.selectedPalette);
+      }
+    } catch {}
+  }, []);
 
   // Загружаем информацию о лимитах
   useEffect(() => {
@@ -305,6 +320,7 @@ export default function GeneratePage() {
       const compressed = await compressImage(file);
       setUploadedImage(compressed);
       setGeneratedImage(null);
+      sessionStorage.removeItem("lastGeneration");
     }
   };
 
@@ -314,6 +330,7 @@ export default function GeneratePage() {
     setIsGenerating(true);
     setError(null);
     setGeneratedImage(null);
+    sessionStorage.removeItem("lastGeneration");
     setLastGenerationData(null);
     setIsSaved(false);
     const startTime = Date.now();
@@ -356,15 +373,28 @@ export default function GeneratePage() {
 
       setGeneratedImage(data.imageUrl);
       // Сохраняем данные для возможного сохранения в галерею
-      setLastGenerationData({
+      const genData = {
         resultImageUrl: data.imageUrl,
         prompt: data.prompt,
         styleSlug: selectedStyle,
         locationSlug: selectedLocation,
         paletteSlug: selectedPalette,
         generationTime: Date.now() - startTime,
-      });
+      };
+      setLastGenerationData(genData);
       setIsSaved(false);
+
+      // Сохраняем в sessionStorage чтобы не потерять при навигации
+      try {
+        sessionStorage.setItem("lastGeneration", JSON.stringify({
+          generatedImage: data.imageUrl,
+          lastGenerationData: genData,
+          selectedStyle,
+          selectedLocation,
+          selectedPalette,
+        }));
+      } catch {}
+
 
       // Обновляем лимиты после успешной генерации
       const limitsResponse = await fetch("/api/limits");
@@ -429,6 +459,7 @@ export default function GeneratePage() {
                           e.stopPropagation();
                           setUploadedImage(null);
                           setGeneratedImage(null);
+                          sessionStorage.removeItem("lastGeneration");
                         }}
                         className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-sm"
                       >
@@ -468,12 +499,6 @@ export default function GeneratePage() {
                     const isLocked = style.isPremium && !isPremium;
                     const isSelected = selectedStyle === style.id;
 
-                    // Определяем иконку гендера
-                    const genderIcon =
-                      style.gender === "male" ? "♂" :
-                      style.gender === "female" ? "♀" :
-                      "⚥"; // ⚥ или 👥 для универсального
-
                     return (
                       <button
                         key={style.id}
@@ -489,19 +514,8 @@ export default function GeneratePage() {
                           }
                         `}
                       >
-                        <div className="flex items-start justify-between mb-1">
+                        <div className="mb-1">
                           <div className="text-2xl">{style.emoji}</div>
-                          {/* Гендерная иконка в правом верхнем углу */}
-                          <div
-                            className="text-xs text-foreground/40"
-                            title={
-                              style.gender === "male" ? "Только для мужчин" :
-                              style.gender === "female" ? "Только для женщин" :
-                              "Для всех"
-                            }
-                          >
-                            {genderIcon}
-                          </div>
                         </div>
                         <div className="text-foreground text-sm font-medium">{style.name}</div>
                         <div className="text-foreground/40 text-xs mt-0.5">{style.description}</div>
