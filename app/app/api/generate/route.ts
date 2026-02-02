@@ -8,11 +8,11 @@ const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
 
-// Лимиты генераций в день
-const DAILY_LIMITS = {
+// Лимиты генераций в месяц
+const MONTHLY_LIMITS = {
   FREE: 5,
-  PREMIUM: -1, // безлимит
-  LIFETIME: -1, // безлимит
+  PREMIUM: 100,
+  LIFETIME: 200,
 };
 
 // Промпты для стилей (для Kontext - инструкции по редактированию)
@@ -127,35 +127,32 @@ export async function POST(request: NextRequest) {
     });
 
     const subscriptionType = user?.subscriptionType || "FREE";
-    const dailyLimit = DAILY_LIMITS[subscriptionType];
+    const monthlyLimit = MONTHLY_LIMITS[subscriptionType];
 
-    // Проверяем лимит для FREE пользователей
-    if (dailyLimit !== -1) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+    // Проверяем месячный лимит генераций
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-      const dailyUsage = await prisma.dailyLimit.findUnique({
-        where: {
-          userId_date: {
-            userId: session.user.id,
-            date: today,
-          },
+    const monthlyUsage = await prisma.dailyLimit.aggregate({
+      where: {
+        userId: session.user.id,
+        date: { gte: monthStart },
+      },
+      _sum: { generationsCount: true },
+    });
+
+    const used = monthlyUsage._sum.generationsCount || 0;
+
+    if (used >= monthlyLimit) {
+      return NextResponse.json(
+        {
+          error: "Monthly limit reached",
+          message: `Вы исчерпали месячный лимит (${monthlyLimit} генераций). ${subscriptionType === "FREE" ? "Оформите Premium для увеличения лимита." : subscriptionType === "PREMIUM" ? "Оформите Lifetime для 200 генераций в месяц." : "Лимит обновится в следующем месяце."}`,
+          limit: monthlyLimit,
+          used,
         },
-      });
-
-      const used = dailyUsage?.generationsCount || 0;
-
-      if (used >= dailyLimit) {
-        return NextResponse.json(
-          {
-            error: "Daily limit reached",
-            message: `Вы исчерпали дневной лимит (${dailyLimit} генераций). Обновитесь до Premium для безлимитного доступа.`,
-            limit: dailyLimit,
-            used,
-          },
-          { status: 429 }
-        );
-      }
+        { status: 429 }
+      );
     }
 
     const body = await request.json();
@@ -224,8 +221,23 @@ export async function POST(request: NextRequest) {
     const palettePrompt = palette && palettePrompts[palette] ? palettePrompts[palette] : "";
 
     // Kontext работает с инструкциями по редактированию
-    // Структура: Определение гендера + Действие + Цвет (если выбран) + Контекст + Сохранение идентичности
-    const fullPrompt = `${genderDetectionPrefix}${stylePrompt} ${palettePrompt} ${locationPrompt} ${preservationPrompt} High quality fashion photography, professional lighting, sharp focus, photorealistic.`;
+    // Структура: четкие пронумерованные инструкции, чтобы модель выполнила ВСЕ
+    const parts: string[] = [
+      genderDetectionPrefix,
+      `STEP 1 - CLOTHING: ${stylePrompt}`,
+    ];
+
+    if (palettePrompt) {
+      parts.push(`STEP 2 - COLORS: ${palettePrompt}`);
+      parts.push(`STEP 3 - BACKGROUND: ${locationPrompt}`);
+    } else {
+      parts.push(`STEP 2 - BACKGROUND: ${locationPrompt}`);
+    }
+
+    parts.push(`FINAL STEP - IDENTITY: ${preservationPrompt}`);
+    parts.push("ALL STEPS ABOVE ARE MANDATORY. Apply clothing, colors, and background changes SIMULTANEOUSLY. High quality fashion photography, professional lighting, sharp focus, photorealistic.");
+
+    const fullPrompt = parts.join("\n\n");
 
     console.log("Prompt:", fullPrompt);
 

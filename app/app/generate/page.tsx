@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import Image from "next/image";
 import Link from "next/link";
+import { fashionFacts } from "@/lib/fashion-facts";
 
 // Все 20 стилей одежды с гендерными метаданными
 const styles = [
@@ -88,6 +89,8 @@ export default function GeneratePage() {
     subscriptionType: string;
   } | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [currentFact, setCurrentFact] = useState("");
+  const [progress, setProgress] = useState(0);
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
   const [showAllStyles, setShowAllStyles] = useState(false);
 
@@ -111,6 +114,33 @@ export default function GeneratePage() {
       fetchLimits();
     }
   }, [session]);
+
+  // Ротация фактов и прогресс-бар во время генерации
+  useEffect(() => {
+    if (isGenerating) {
+      setProgress(0);
+      const randomFact = () => fashionFacts[Math.floor(Math.random() * fashionFacts.length)];
+      setCurrentFact(randomFact());
+      const factInterval = setInterval(() => setCurrentFact(randomFact()), 4000);
+      // Прогресс-бар: плавно до 90% за ~30 сек, последние 10% ждут завершения
+      const progressInterval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 90) return 90;
+          return prev + 3;
+        });
+      }, 1000);
+      return () => {
+        clearInterval(factInterval);
+        clearInterval(progressInterval);
+      };
+    } else {
+      // При завершении — заполняем до 100%
+      if (progress > 0) {
+        setProgress(100);
+        setTimeout(() => setProgress(0), 500);
+      }
+    }
+  }, [isGenerating]);
 
   // Сохранить в галерею
   const handleSaveToGallery = async () => {
@@ -268,6 +298,9 @@ export default function GeneratePage() {
 
     setIsGenerating(true);
     setError(null);
+    setGeneratedImage(null);
+    setLastGenerationData(null);
+    setIsSaved(false);
     const startTime = Date.now();
 
     try {
@@ -668,10 +701,27 @@ export default function GeneratePage() {
                     />
                   </div>
                 ) : isGenerating ? (
-                  <div className="text-center">
+                  <div className="text-center px-4 w-full">
                     <div className="text-4xl mb-3 animate-pulse">🎨</div>
-                    <p className="text-cream/60">Создаем ваш образ...</p>
-                    <p className="text-cream/40 text-sm mt-1">Это займет 20-30 секунд</p>
+                    <p className="text-cream/60 mb-4">Создаем ваш образ...</p>
+
+                    {/* Прогресс-бар */}
+                    <div className="w-full max-w-xs mx-auto mb-4">
+                      <div className="h-1.5 bg-cream/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gold rounded-full transition-all duration-1000 ease-out"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                      <p className="text-cream/30 text-xs mt-1">{Math.round(progress)}%</p>
+                    </div>
+
+                    {/* Факт о моде */}
+                    <div className="min-h-[60px] flex items-center justify-center">
+                      <p className="text-gold/80 text-sm italic transition-opacity duration-500">
+                        {currentFact}
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center">
@@ -721,7 +771,7 @@ export default function GeneratePage() {
                           : "bg-cream/10 hover:bg-cream/20 text-cream"
                       }`}
                     >
-                      {isSaving ? "Сохранение..." : isSaved ? "✓ Сохранено" : "💾 Сохранить"}
+                      {isSaving ? "Сохранение..." : isSaved ? "✓ В избранном" : "⭐ В избранное"}
                     </button>
                   </div>
 

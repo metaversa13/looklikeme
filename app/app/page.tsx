@@ -24,7 +24,7 @@ export default function Home() {
 
             {/* Tagline */}
             <p className="text-xl md:text-2xl text-cream/80 mb-12 font-light">
-              Создайте свой идеальный модный образ с помощью AI
+              Создайте свой идеальный модный образ с помощью AI и найдите его на маркетплейсах
             </p>
 
             {/* CTA Buttons */}

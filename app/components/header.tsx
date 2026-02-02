@@ -27,7 +27,7 @@ export function Header() {
           </Link>
           {session && (
             <Link href="/gallery" className="text-cream/70 hover:text-gold transition-colors">
-              Мои образы
+              Избранное
             </Link>
           )}
           <Link href="/pricing" className="text-cream/70 hover:text-gold transition-colors">
@@ -87,7 +87,7 @@ export function Header() {
                       href="/gallery"
                       className="block px-4 py-2 text-cream/70 hover:text-gold hover:bg-cream/5 transition-colors"
                     >
-                      Мои образы
+                      Избранное
                     </Link>
                     <button
                       onClick={() => signOut({ callbackUrl: "/" })}
