@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import Image from "next/image";
+import { MarketplacePanel } from "@/components/marketplace-panel";
 
 interface Generation {
   id: string;
@@ -49,6 +50,10 @@ export default function GalleryPage() {
   const [selectedImage, setSelectedImage] = useState<Generation | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
+  const [showMarketplace, setShowMarketplace] = useState(false);
+  const [marketplaceProducts, setMarketplaceProducts] = useState<Array<{ title: string; url: string; image: string; marketplace: string; icon: string }>>([]);
+  const [marketplaceLoading, setMarketplaceLoading] = useState(false);
+  const [marketplaceError, setMarketplaceError] = useState<string | null>(null);
 
   const isPremium = session?.user?.subscriptionType !== "FREE";
 
@@ -174,36 +179,46 @@ export default function GalleryPage() {
     }
   };
 
-  // Поиск на Wildberries
-  const handleSearchOnWB = async (imageUrl: string) => {
-    try {
-      // Получаем изображение как blob
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
+  // Конвертация изображения в base64
+  const imageToBase64 = async (url: string): Promise<string> => {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
 
-      // Пытаемся скопировать в буфер обмена
-      try {
-        const item = new ClipboardItem({ [blob.type]: blob });
-        await navigator.clipboard.write([item]);
-        console.log("Image copied to clipboard");
-      } catch (clipboardErr) {
-        // Fallback: скачиваем файл
-        console.log("Clipboard not supported, will download instead");
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `looklikeme-wb-${Date.now()}.jpg`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+  // Поиск на маркетплейсах через Yandex Search API
+  const handleMarketplaceSearch = async (imageUrl: string) => {
+    setShowMarketplace(true);
+    setMarketplaceLoading(true);
+    setMarketplaceError(null);
+    setMarketplaceProducts([]);
+
+    try {
+      const base64 = await imageToBase64(imageUrl);
+
+      const response = await fetch("/api/marketplace-search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: base64 }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Ошибка поиска");
       }
 
-      // Открываем главную страницу WB
-      window.open("https://www.wildberries.ru/", "_blank");
+      setMarketplaceProducts(data.products || []);
     } catch (err) {
-      console.error("WB search error:", err);
-      alert("Произошла ошибка. Попробуйте скачать изображение вручную.");
+      console.error("Marketplace search error:", err);
+      setMarketplaceError("Не удалось выполнить поиск. Попробуйте позже.");
+    } finally {
+      setMarketplaceLoading(false);
     }
   };
 
@@ -360,12 +375,12 @@ export default function GalleryPage() {
                   </button>
                 </div>
 
-                {/* Кнопка поиска на Wildberries */}
+                {/* Кнопка поиска на маркетплейсах */}
                 <button
-                  onClick={() => handleSearchOnWB(selectedImage.resultImageUrl)}
+                  onClick={() => handleMarketplaceSearch(selectedImage.resultImageUrl)}
                   className="w-full py-3 glass-card hover:bg-cream/5 text-cream font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
                 >
-                  🔍 Найти похожее на Wildberries
+                  🛍️ Найти на маркетплейсах
                 </button>
 
                 {/* Кнопка поделиться */}
@@ -511,6 +526,15 @@ export default function GalleryPage() {
         )}
 
       </main>
+
+      {/* Панель маркетплейсов */}
+      <MarketplacePanel
+        isOpen={showMarketplace}
+        onClose={() => setShowMarketplace(false)}
+        products={marketplaceProducts}
+        isLoading={marketplaceLoading}
+        error={marketplaceError}
+      />
     </>
   );
 }
