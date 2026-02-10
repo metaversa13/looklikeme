@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       .toBuffer();
 
     // Возвращаем изображение с watermark
-    return new NextResponse(imageWithWatermark, {
+    return new NextResponse(new Uint8Array(imageWithWatermark), {
       headers: {
         "Content-Type": "image/jpeg",
         "Cache-Control": "public, max-age=31536000, immutable",

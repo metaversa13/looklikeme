@@ -425,7 +425,7 @@ export default function GeneratePage() {
       const genData = {
         resultImageUrl: data.imageUrl,
         prompt: data.prompt,
-        styleSlug: selectedStyle,
+        styleSlug: selectedStyle || "",
         locationSlug: selectedLocation,
         generationTime: Date.now() - startTime,
       };
@@ -590,7 +590,7 @@ export default function GeneratePage() {
 
                     // Проверка на соответствие пола
                     const isGenderMismatch = selectedGender && style.gender !== "universal" && style.gender !== selectedGender.toLowerCase();
-                    const isLocked = isPremiumLocked || isGenderMismatch;
+                    const isLocked = !!(isPremiumLocked || isGenderMismatch);
 
                     const isSelected = selectedStyle === style.id;
 

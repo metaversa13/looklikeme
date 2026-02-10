@@ -4,8 +4,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db/prisma";
 
 // Лимиты для разных типов подписок
-const LIMITS = {
+const LIMITS: Record<string, number> = {
   FREE: 5, // 5 генераций в день
+  BASE: 25, // 25 генераций в день
   PREMIUM: -1, // безлимит
   LIFETIME: -1, // безлимит
 };

@@ -90,7 +90,7 @@ export default function ProfilePage() {
     LIFETIME: { name: "Lifetime", color: "text-purple-400" },
   };
 
-  const subscription = subscriptionLabels[session.user.subscriptionType] || subscriptionLabels.FREE;
+  const subscription = subscriptionLabels[session.user.subscriptionType as string] || subscriptionLabels.FREE;
 
   return (
     <>

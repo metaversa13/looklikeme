@@ -238,7 +238,7 @@ export default function StylistPage() {
                 disabled={isLoading}
               />
               <button
-                onClick={handleAskStylist}
+                onClick={() => handleAskStylist()}
                 disabled={!question.trim() || isLoading}
                 className="bg-gold hover:bg-gold-600 text-black font-semibold px-6 py-3 rounded-xl btn-gold-hover disabled:opacity-50 disabled:cursor-not-allowed"
               >
