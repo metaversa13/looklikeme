@@ -77,7 +77,7 @@ export default function AdminPage() {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-background pt-20 flex items-center justify-center">
+        <main className="min-h-screen bg-background pt-20 flex items-center justify-center relative z-0">
           <div className="text-foreground/60">Загрузка...</div>
         </main>
       </>
@@ -88,7 +88,7 @@ export default function AdminPage() {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-background pt-20 flex items-center justify-center">
+        <main className="min-h-screen bg-background pt-20 flex items-center justify-center relative z-0">
           <div className="text-red-400 text-lg">{error}</div>
         </main>
       </>
@@ -104,7 +104,7 @@ export default function AdminPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background text-foreground pt-20 px-4 pb-8">
+      <main className="min-h-screen bg-background text-foreground pt-20 px-4 pb-8 relative z-0">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl font-bold mb-8">
             <span className="text-gold">Админ-панель</span>

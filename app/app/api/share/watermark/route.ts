@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
         </style>
         <rect width="${width}" height="${Math.floor(fontSize * 3)}" fill="rgba(245, 245, 220, 0.95)"/>
         <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" class="watermark">
-          Создано в Looklikeme.ru ✨
+          Создано в looklike-me.ru ✨
         </text>
       </svg>
     `;

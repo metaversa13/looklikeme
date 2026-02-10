@@ -28,6 +28,7 @@ const plans: PricingPlan[] = [
       "4 стиля одежды (Casual, Business, Sport, Street)",
       "2 локации (Студия, Город)",
       "1 палитра (Классика)",
+      "AI Стилист: 3 вопроса в день",
       "Образы хранятся 30 дней",
       "Водяной знак на изображениях",
     ],
@@ -44,6 +45,7 @@ const plans: PricingPlan[] = [
       "Все 20 стилей одежды",
       "Все 8 локаций",
       "Все 8 цветовых палитр",
+      "AI Стилист: безлимитно",
       "Образы хранятся бессрочно",
       "Без водяных знаков",
     ],
@@ -60,6 +62,7 @@ const plans: PricingPlan[] = [
       "Все 20 стилей одежды",
       "Все 8 локаций",
       "Все 8 цветовых палитр",
+      "AI Стилист: безлимитно",
       "Приоритетная генерация",
       "Образы хранятся бессрочно",
       "Без водяных знаков",
@@ -112,7 +115,7 @@ export default function PricingPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background pt-20 pb-10">
+      <main className="min-h-screen bg-background pt-20 pb-10 relative z-0">
         <div className="max-w-5xl mx-auto px-4">
           {/* Заголовок */}
           <div className="text-center mb-12">
@@ -137,7 +140,7 @@ export default function PricingPage() {
               return (
                 <div
                   key={plan.id}
-                  className={`relative rounded-2xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] ${
+                  className={`relative z-0 rounded-2xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] ${
                     plan.highlighted
                       ? "bg-gradient-to-b from-gold/20 to-gold/5 border-2 border-gold"
                       : "glass-card"
@@ -145,7 +148,7 @@ export default function PricingPage() {
                 >
                   {/* Бейдж */}
                   {plan.badge && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-0">
                       <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded-full">
                         {plan.badge}
                       </span>
@@ -154,7 +157,7 @@ export default function PricingPage() {
 
                   {/* Текущий план */}
                   {isCurrentPlan && (
-                    <div className="absolute -top-3 right-4">
+                    <div className="absolute -top-3 right-4 z-0">
                       <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
                         Ваш план
                       </span>

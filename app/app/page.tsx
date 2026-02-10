@@ -11,7 +11,7 @@ export default function Home() {
       <Suspense fallback={null}>
         <ReferralCapture />
       </Suspense>
-      <main className="min-h-screen bg-background text-foreground">
+      <main className="min-h-screen bg-background text-foreground relative z-0">
         {/* Hero Section */}
         <div className="relative min-h-screen flex items-center justify-center px-4 pt-16">
           {/* Gradient Background */}
@@ -43,9 +43,9 @@ export default function Home() {
               </Link>
               <Link
                 href="/referral"
-                className="border-2 border-foreground/20 hover:border-gold text-foreground font-semibold px-8 py-4 rounded-lg transition-all inline-block"
+                className="border-2 border-foreground/20 hover:border-gold text-foreground font-semibold px-8 py-4 rounded-lg transition-all duration-300 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] inline-block"
               >
-                Получи +5 образов
+                Получи +3 образа
               </Link>
             </div>
 

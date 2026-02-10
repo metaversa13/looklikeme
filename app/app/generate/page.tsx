@@ -12,7 +12,8 @@ import {
   Shirt, Briefcase, Dumbbell, MapPin, Heart, Circle, Flower2, Link2,
   GraduationCap, Disc3, Crown, Snowflake, Lasso, Building2, Moon, Gem,
   Guitar, Palmtree, Clock, Sparkles, Camera, Upload, Palette, ImageIcon,
-  ShoppingBag, Sun, SunMoon, Star, Waves, Coffee, TreePine, Factory,
+  ShoppingBag, Sun, SunMoon, Store, Waves, Coffee, TreePine, Factory,
+  Download, Share2, Gift, Users, Copy, Check, X,
   type LucideIcon,
 } from "lucide-react";
 
@@ -54,7 +55,7 @@ const styles = [
 
 // Иконки для локаций
 const locationIcons: Record<string, LucideIcon> = {
-  studio: Palette, "city-day": Sun, "city-night": Moon, runway: Star,
+  studio: Palette, "city-day": Sun, "city-night": Moon, boutique: Store,
   beach: Waves, cafe: Coffee, nature: TreePine, loft: Factory,
 };
 
@@ -62,7 +63,7 @@ const locations = [
   { id: "studio", name: "Студия", isPremium: false },
   { id: "city-day", name: "Город (день)", isPremium: false },
   { id: "city-night", name: "Город (ночь)", isPremium: true },
-  { id: "runway", name: "Подиум", isPremium: true },
+  { id: "boutique", name: "Бутик", isPremium: true },
   { id: "beach", name: "Пляж", isPremium: true },
   { id: "cafe", name: "Кафе", isPremium: true },
   { id: "nature", name: "Природа", isPremium: true },
@@ -89,9 +90,12 @@ export default function GeneratePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [selectedGender, setSelectedGender] = useState<"MALE" | "FEMALE" | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<string>("studio");
   const [selectedPalette, setSelectedPalette] = useState<string | null>(null);
+  const [useCustomText, setUseCustomText] = useState(false);
+  const [customOutfitText, setCustomOutfitText] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -121,6 +125,8 @@ export default function GeneratePage() {
   const [marketplaceProducts, setMarketplaceProducts] = useState<Array<{ title: string; url: string; image: string; marketplace: string; icon: string }>>([]);
   const [marketplaceLoading, setMarketplaceLoading] = useState(false);
   const [marketplaceError, setMarketplaceError] = useState<string | null>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [referralCopied, setReferralCopied] = useState(false);
 
   const isPremium = session?.user?.subscriptionType !== "FREE";
 
@@ -170,6 +176,26 @@ export default function GeneratePage() {
       fetchLimits();
     }
   }, [session]);
+
+  // Загружаем реферальный код при открытии модалки лимита
+  useEffect(() => {
+    if (showLimitModal && !referralCode) {
+      fetch("/api/referral")
+        .then(res => res.json())
+        .then(data => setReferralCode(data.referralCode))
+        .catch(() => {});
+    }
+  }, [showLimitModal, referralCode]);
+
+  // Сброс выбранного стиля если он не подходит по полу
+  useEffect(() => {
+    if (selectedGender && selectedStyle) {
+      const currentStyle = styles.find(s => s.id === selectedStyle);
+      if (currentStyle && currentStyle.gender !== "universal" && currentStyle.gender !== selectedGender.toLowerCase()) {
+        setSelectedStyle(null);
+      }
+    }
+  }, [selectedGender, selectedStyle]);
 
   // Ротация фактов и прогресс-бар во время генерации
   useEffect(() => {
@@ -303,7 +329,7 @@ export default function GeneratePage() {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-background pt-20 flex items-center justify-center">
+        <main className="min-h-screen bg-background pt-20 flex items-center justify-center relative z-0">
           <div className="animate-pulse text-gold">Загрузка...</div>
         </main>
       </>
@@ -361,7 +387,10 @@ export default function GeneratePage() {
   };
 
   const handleGenerate = async () => {
-    if (!uploadedImage || !selectedStyle) return;
+    // Валидация зависит от режима (готовый стиль или пользовательский текст)
+    if (!uploadedImage || !selectedGender) return;
+    if (useCustomText && !customOutfitText.trim()) return;
+    if (!useCustomText && !selectedStyle) return;
 
     setIsGenerating(true);
     setError(null);
@@ -379,9 +408,11 @@ export default function GeneratePage() {
         },
         body: JSON.stringify({
           image: uploadedImage,
-          style: selectedStyle,
+          style: useCustomText ? null : selectedStyle,
           location: selectedLocation,
           palette: selectedPalette,
+          gender: selectedGender,
+          customOutfit: useCustomText ? customOutfitText : null,
         }),
       });
 
@@ -446,12 +477,13 @@ export default function GeneratePage() {
     }
   };
 
-  const canGenerate = uploadedImage && selectedStyle && !isGenerating;
+  const canGenerate = uploadedImage && selectedGender && !isGenerating &&
+    (useCustomText ? customOutfitText.trim().length > 0 : selectedStyle !== null);
 
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background pt-20 pb-10">
+      <main className="min-h-screen bg-background pt-20 pb-10 relative z-0">
         <div className="max-w-6xl mx-auto px-4">
           {/* Заголовок */}
           <div className="text-center mb-8">
@@ -519,20 +551,67 @@ export default function GeneratePage() {
                 </div>
               </div>
 
-              {/* Выбор стиля */}
+              {/* Выбор пола */}
               <div className="glass-card rounded-xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
+                <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-gold" strokeWidth={1.5} /> Пол
+                </h2>
+                <p className="text-foreground/60 text-sm mb-4">
+                  Выберите пол для генерации образа
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setSelectedGender("MALE")}
+                    className={`
+                      p-4 rounded-xl border-2 transition-all text-center
+                      ${selectedGender === "MALE"
+                        ? "border-gold bg-gold/10"
+                        : "border-foreground/20 hover:border-gold/50 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                      }
+                    `}
+                  >
+                    <div className="text-2xl mb-2 text-gold">♂</div>
+                    <div className="text-foreground text-sm font-medium">Мужской</div>
+                  </button>
+                  <button
+                    onClick={() => setSelectedGender("FEMALE")}
+                    className={`
+                      p-4 rounded-xl border-2 transition-all text-center
+                      ${selectedGender === "FEMALE"
+                        ? "border-gold bg-gold/10"
+                        : "border-foreground/20 hover:border-gold/50 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                      }
+                    `}
+                  >
+                    <div className="text-2xl mb-2 text-gold">♀</div>
+                    <div className="text-foreground text-sm font-medium">Женский</div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Выбор стиля */}
+              <div className={`glass-card rounded-xl p-6 transition-all duration-300 ${
+                useCustomText
+                  ? "opacity-50 pointer-events-none"
+                  : "hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]"
+              }`}>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
                     <Gem className="w-5 h-5 text-gold" strokeWidth={1.5} /> Стиль
                   </h2>
                   <span className="text-foreground/40 text-xs">
-                    {styles.length} стилей доступно
+                    {useCustomText ? "Используется своё описание" : `${styles.length} стилей доступно`}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {(showAllStyles ? styles : styles.slice(0, 6)).map((style) => {
-                    const isLocked = style.isPremium && !isPremium;
+                    const isPremiumLocked = style.isPremium && !isPremium;
+
+                    // Проверка на соответствие пола
+                    const isGenderMismatch = selectedGender && style.gender !== "universal" && style.gender !== selectedGender.toLowerCase();
+                    const isLocked = isPremiumLocked || isGenderMismatch;
+
                     const isSelected = selectedStyle === style.id;
 
                     return (
@@ -555,9 +634,14 @@ export default function GeneratePage() {
                         </div>
                         <div className="text-foreground text-sm font-medium">{style.name}</div>
                         <div className="text-foreground/40 text-xs mt-0.5">{style.description}</div>
-                        {isLocked && (
+                        {isPremiumLocked && (
                           <div className="absolute top-2 right-2 text-xs bg-gold/20 text-gold px-2 py-0.5 rounded">
                             Premium
+                          </div>
+                        )}
+                        {isGenderMismatch && (
+                          <div className="absolute top-2 right-2 text-xs bg-foreground/20 text-foreground/60 px-2 py-0.5 rounded">
+                            {style.gender === "female" ? "♀" : "♂"}
                           </div>
                         )}
                       </button>
@@ -583,6 +667,53 @@ export default function GeneratePage() {
                       </>
                     )}
                   </button>
+                )}
+              </div>
+
+              {/* Пользовательское описание одежды */}
+              <div className="glass-card rounded-xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-gold" strokeWidth={1.5} /> Описание одежды
+                  </h2>
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors">Сам напишу</span>
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={useCustomText}
+                        onChange={(e) => {
+                          setUseCustomText(e.target.checked);
+                          if (e.target.checked) {
+                            setSelectedStyle(null);
+                          } else {
+                            setCustomOutfitText("");
+                          }
+                        }}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-foreground/20 rounded-full peer-checked:bg-gold transition-all duration-300 peer-focus:ring-2 peer-focus:ring-gold/50"></div>
+                      <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5 shadow-md"></div>
+                    </div>
+                  </label>
+                </div>
+                {useCustomText ? (
+                  <div>
+                    <textarea
+                      value={customOutfitText}
+                      onChange={(e) => setCustomOutfitText(e.target.value)}
+                      placeholder="Опишите желаемую одежду, например: черная кожаная куртка, синие джинсы, белые кроссовки"
+                      className="w-full p-4 bg-background border-2 border-foreground/20 rounded-xl text-foreground placeholder:text-foreground/40 focus:border-gold focus:outline-none transition-all resize-none"
+                      rows={4}
+                    />
+                    <p className="text-foreground/60 text-xs mt-2">
+                      💡 Опишите одежду на английском или русском языке. Будьте конкретны: укажите цвета, типы одежды и обуви.
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-foreground/60 text-sm">
+                    Используйте готовые стили или включите "Сам напишу" для создания своего описания
+                  </p>
                 )}
               </div>
 
@@ -706,13 +837,21 @@ export default function GeneratePage() {
 
               {/* Кнопка генерации */}
               <button
-                onClick={handleGenerate}
-                disabled={!canGenerate || !!(limits && !limits.canGenerate)}
+                onClick={() => {
+                  if (limits && !limits.canGenerate) {
+                    setShowLimitModal(true);
+                    return;
+                  }
+                  handleGenerate();
+                }}
+                disabled={!canGenerate && !(limits && !limits.canGenerate)}
                 className={`
                   w-full py-4 rounded-xl font-semibold text-lg transition-all
-                  ${canGenerate && (!limits || limits.canGenerate)
-                    ? "bg-gold hover:bg-gold-600 text-black"
-                    : "bg-foreground/10 text-foreground/40 cursor-not-allowed"
+                  ${limits && !limits.canGenerate
+                    ? "bg-gold/80 hover:bg-gold text-black cursor-pointer"
+                    : canGenerate
+                      ? "bg-gold hover:bg-gold-600 text-black"
+                      : "bg-foreground/10 text-foreground/40 cursor-not-allowed"
                   }
                 `}
               >
@@ -743,7 +882,7 @@ export default function GeneratePage() {
             </div>
 
             {/* Правая колонка - Результат */}
-            <div className="glass-card rounded-xl p-6 h-fit lg:sticky lg:top-24">
+            <div className="glass-card rounded-xl p-6 h-fit lg:sticky lg:top-24 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
               <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-gold" strokeWidth={1.5} /> Результат
               </h2>
@@ -828,37 +967,37 @@ export default function GeneratePage() {
                           console.error("Download error:", err);
                         }
                       }}
-                      className="flex-1 py-3 bg-gold hover:bg-gold-600 text-black font-semibold rounded-lg transition-all"
+                      className="flex-1 py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] flex items-center justify-center gap-2"
                     >
-                      📥 Скачать
+                      <Download className="w-5 h-5 text-gold" strokeWidth={1.5} /> Скачать
                     </button>
                     <button
                       onClick={handleSaveToGallery}
                       disabled={isSaved || isSaving}
-                      className={`flex-1 py-3 rounded-lg transition-all font-semibold ${
+                      className={`flex-1 py-3 rounded-lg transition-all duration-300 font-semibold flex items-center justify-center gap-2 ${
                         isSaved
-                          ? "bg-green-500/20 text-green-400 border border-green-500/50"
-                          : "bg-foreground/10 hover:bg-foreground/20 text-foreground"
+                          ? "bg-green-500/20 text-green-400 border border-green-500/50 hover:shadow-[0_0_25px_rgba(34,197,94,0.25)]"
+                          : "glass-card text-foreground hover:bg-muted hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]"
                       }`}
                     >
-                      {isSaving ? "Сохранение..." : isSaved ? "✓ В избранном" : "⭐ В избранное"}
+                      {isSaving ? "Сохранение..." : isSaved ? <><Heart className="w-5 h-5 fill-green-400" strokeWidth={1.5} /> В избранном</> : <><Heart className="w-5 h-5 text-gold" strokeWidth={1.5} /> В избранное</>}
                     </button>
                   </div>
 
                   {/* Кнопка поиска на маркетплейсах */}
                   <button
                     onClick={handleMarketplaceSearch}
-                    className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] flex items-center justify-center gap-2"
                   >
-                    🛍️ Найти на маркетплейсах
+                    <ShoppingBag className="w-5 h-5 text-gold" strokeWidth={1.5} /> Найти на маркетплейсах
                   </button>
 
                   {/* Кнопка поделиться */}
                   <button
                     onClick={handleShare}
-                    className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] flex items-center justify-center gap-2"
                   >
-                    📤 Поделиться
+                    <Share2 className="w-5 h-5 text-gold" strokeWidth={1.5} /> Поделиться
                   </button>
 
                   {isSaved && (
@@ -882,45 +1021,111 @@ export default function GeneratePage() {
             onClick={() => setShowLimitModal(false)}
           >
             <div
-              className="glass-card rounded-2xl p-6 max-w-md w-full"
+              className="glass-card rounded-2xl p-6 max-w-md w-full relative"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Кнопка закрыть */}
+              <button
+                onClick={() => setShowLimitModal(false)}
+                className="absolute top-4 right-4 text-foreground/40 hover:text-foreground transition-colors"
+              >
+                <X className="w-5 h-5" strokeWidth={1.5} />
+              </button>
+
+              {/* Заголовок */}
               <div className="text-center mb-6">
                 <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4">
-                  <Palette className="w-8 h-8 text-gold" strokeWidth={1.5} />
+                  <Camera className="w-8 h-8 text-gold" strokeWidth={1.5} />
                 </div>
                 <h2 className="text-xl font-bold text-foreground mb-2">
-                  Генерации на этот месяц закончились
+                  Хочется ещё?
                 </h2>
                 <p className="text-foreground/60 text-sm">
-                  Вы использовали все {limits?.limit || 5} бесплатных генераций. Оформите подписку, чтобы продолжить создавать образы.
+                  Бесплатные генерации закончились, но есть два способа продолжить
                 </p>
               </div>
 
-              <div className="space-y-3 mb-4">
-                <Link
-                  href="/pricing"
-                  className="block w-full py-3 bg-foreground/10 hover:bg-foreground/20 text-foreground font-semibold rounded-lg transition-all text-center"
-                >
-                  Base — 299 ₽/мес
-                  <span className="block text-foreground/50 text-xs font-normal mt-0.5">50 генераций, все стили и локации</span>
-                </Link>
-                <Link
-                  href="/pricing"
-                  className="block w-full py-3 bg-gold hover:bg-gold-600 text-black font-semibold rounded-lg transition-all text-center"
-                >
-                  Premium — 499 ₽/мес
-                  <span className="block text-black/60 text-xs font-normal mt-0.5">100 генераций, приоритет, все функции</span>
-                </Link>
+              {/* Блок реферала */}
+              <div className="border border-gold/30 rounded-xl p-4 mb-4 bg-gold/5">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center flex-shrink-0">
+                    <Gift className="w-5 h-5 text-gold" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <h3 className="text-foreground font-semibold text-sm">Пригласи подругу — получи +2</h3>
+                    <p className="text-foreground/50 text-xs">Вы обе получите по 2 генерации</p>
+                  </div>
+                </div>
+                <p className="text-foreground/60 text-xs mb-3">
+                  Отправь ссылку подруге или другу. Когда они зарегистрируются, вы оба получите бонусные генерации.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={async () => {
+                      if (!referralCode) return;
+                      const link = `${window.location.origin}/?ref=${referralCode}`;
+                      await navigator.clipboard.writeText(link);
+                      setReferralCopied(true);
+                      setTimeout(() => setReferralCopied(false), 2000);
+                    }}
+                    className={`flex-1 py-2.5 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 ${
+                      referralCopied
+                        ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                        : "bg-gold/10 border border-gold/30 text-gold hover:bg-gold/20"
+                    }`}
+                  >
+                    {referralCopied ? (
+                      <><Check className="w-4 h-4" strokeWidth={1.5} /> Скопировано</>
+                    ) : (
+                      <><Copy className="w-4 h-4" strokeWidth={1.5} /> Скопировать ссылку</>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (!referralCode) return;
+                      const link = `${window.location.origin}/?ref=${referralCode}`;
+                      if (navigator.share) {
+                        navigator.share({
+                          title: "LookLikeMe — AI Fashion",
+                          text: "Создавай модные образы с AI! Регистрируйся по моей ссылке и получи +2 генерации:",
+                          url: link,
+                        }).catch(() => {});
+                      } else {
+                        const text = encodeURIComponent("Создавай модные образы с AI! Регистрируйся по моей ссылке: " + link);
+                        window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${text}`, "_blank");
+                      }
+                    }}
+                    className="py-2.5 px-4 rounded-lg bg-gold/10 border border-gold/30 text-gold hover:bg-gold/20 transition-all"
+                  >
+                    <Share2 className="w-4 h-4" strokeWidth={1.5} />
+                  </button>
+                </div>
               </div>
 
-              <div className="text-center">
-                <button
-                  onClick={() => setShowLimitModal(false)}
-                  className="text-foreground/40 hover:text-foreground/60 text-sm transition-colors"
+              {/* Разделитель */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1 h-px bg-foreground/10" />
+                <span className="text-foreground/30 text-xs">или</span>
+                <div className="flex-1 h-px bg-foreground/10" />
+              </div>
+
+              {/* Блок тарифов */}
+              <div className="border border-foreground/10 rounded-xl p-4 bg-foreground/5">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="w-5 h-5 text-gold" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <h3 className="text-foreground font-semibold text-sm">Безлимитные генерации</h3>
+                    <p className="text-foreground/50 text-xs">Все стили, локации и палитры</p>
+                  </div>
+                </div>
+                <Link
+                  href="/pricing"
+                  className="block w-full py-2.5 bg-gold hover:bg-gold/90 text-black font-semibold rounded-lg transition-all text-center text-sm"
                 >
-                  Закрыть
-                </button>
+                  Выбрать тариф
+                </Link>
               </div>
             </div>
           </div>
@@ -971,7 +1176,7 @@ export default function GeneratePage() {
               {!isPremium && (
                 <div className="mb-4 p-3 bg-gold/10 border border-gold/20 rounded-lg">
                   <p className="text-gold text-xs text-center">
-                    ✨ Premium пользователи делятся образами без watermark
+                    <span className="inline-flex items-center gap-1"><Sparkles className="w-4 h-4 inline" strokeWidth={1.5} /> Premium пользователи делятся образами без watermark</span>
                   </p>
                 </div>
               )}
@@ -980,7 +1185,7 @@ export default function GeneratePage() {
               <div className="space-y-3">
                 <button
                   onClick={() => {
-                    const text = encodeURIComponent("Создал(а) свой образ на Looklikeme.ru ✨");
+                    const text = encodeURIComponent("Создал(а) свой образ на looklike-me.ru ✨");
                     // VK не поддерживает прямую загрузку изображений через URL параметры
                     // Поэтому просто открываем страницу для постинга
                     window.open(
@@ -998,7 +1203,7 @@ export default function GeneratePage() {
 
                 <button
                   onClick={() => {
-                    const text = encodeURIComponent("Создал(а) свой образ на Looklikeme.ru ✨\n\nПопробуй сам: " + window.location.origin);
+                    const text = encodeURIComponent("Создал(а) свой образ на looklike-me.ru ✨\n\nПопробуй сам: " + window.location.origin);
                     window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.origin)}&text=${text}`, "_blank");
                   }}
                   className="w-full py-3 bg-[#0088cc] hover:bg-[#0077bb] text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
@@ -1011,7 +1216,7 @@ export default function GeneratePage() {
 
                 <button
                   onClick={() => {
-                    const text = encodeURIComponent("Создал(а) свой образ на Looklikeme.ru ✨\n\nПопробуй сам: " + window.location.origin);
+                    const text = encodeURIComponent("Создал(а) свой образ на looklike-me.ru ✨\n\nПопробуй сам: " + window.location.origin);
                     window.open(`https://wa.me/?text=${text}`, "_blank");
                   }}
                   className="w-full py-3 bg-[#25D366] hover:bg-[#20BD5A] text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
@@ -1020,28 +1225,6 @@ export default function GeneratePage() {
                     <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.97.58 3.83 1.58 5.39L2 22l4.91-1.63c1.48.83 3.16 1.26 4.92 1.26 5.46 0 9.91-4.45 9.91-9.91C21.74 6.45 17.5 2 12.04 2zm5.8 13.96c-.24.67-1.4 1.24-1.92 1.29-.53.05-1.03.24-3.47-.73-2.96-1.18-4.86-4.18-5.01-4.37-.15-.19-1.19-1.59-1.19-3.04 0-1.44.76-2.16 1.03-2.45.27-.29.59-.36.79-.36.2 0 .4.01.57.01.18.01.43-.07.67.51.24.59.83 2.03.9 2.18.07.15.12.33.02.53-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.61.17.29.76 1.25 1.64 2.03 1.13.99 2.09 1.31 2.39 1.45.29.15.46.12.63-.07.17-.19.73-.85.92-1.15.19-.29.39-.24.65-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.12.07.67-.17 1.34z"/>
                   </svg>
                   Поделиться в WhatsApp
-                </button>
-
-                <button
-                  onClick={async () => {
-                    try {
-                      const response = await fetch(shareImageUrl);
-                      const blob = await response.blob();
-                      const url = window.URL.createObjectURL(blob);
-                      const a = document.createElement("a");
-                      a.href = url;
-                      a.download = `looklikeme-share-${Date.now()}.jpg`;
-                      document.body.appendChild(a);
-                      a.click();
-                      document.body.removeChild(a);
-                      window.URL.revokeObjectURL(url);
-                    } catch (err) {
-                      console.error("Download error:", err);
-                    }
-                  }}
-                  className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
-                >
-                  📥 Скачать для шаринга
                 </button>
               </div>
             </div>

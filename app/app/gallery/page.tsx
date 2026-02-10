@@ -55,6 +55,7 @@ export default function GalleryPage() {
   const [marketplaceProducts, setMarketplaceProducts] = useState<Array<{ title: string; url: string; image: string; marketplace: string; icon: string }>>([]);
   const [marketplaceLoading, setMarketplaceLoading] = useState(false);
   const [marketplaceError, setMarketplaceError] = useState<string | null>(null);
+  const [bonusMessage, setBonusMessage] = useState<string | null>(null);
 
   const isPremium = session?.user?.subscriptionType !== "FREE";
 
@@ -149,6 +150,22 @@ export default function GalleryPage() {
     }
   };
 
+  // Начислить бонус за публикацию в соцсетях
+  const grantSocialBonus = async () => {
+    try {
+      const response = await fetch("/api/social-bonus", { method: "POST" });
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setBonusMessage(data.message);
+        setTimeout(() => setBonusMessage(null), 5000); // Скрываем через 5 секунд
+      }
+      // Если уже получал бонус (alreadyGranted: true) - ничего не показываем
+    } catch (error) {
+      console.error("Social bonus error:", error);
+    }
+  };
+
   // Поделиться в соцсетях
   const handleShare = async (imageUrl: string) => {
     try {
@@ -227,7 +244,7 @@ export default function GalleryPage() {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-background pt-20 flex items-center justify-center">
+        <main className="min-h-screen bg-background pt-20 flex items-center justify-center relative z-0">
           <div className="animate-pulse text-gold">Загрузка...</div>
         </main>
       </>
@@ -242,7 +259,20 @@ export default function GalleryPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background pt-20 pb-10">
+
+      {/* Уведомление о бонусе */}
+      {bonusMessage && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top duration-300">
+          <div className="glass-card px-6 py-4 rounded-xl border-gold/50 shadow-[0_0_30px_rgba(212,175,55,0.4)]">
+            <div className="flex items-center gap-3">
+              <Sparkles className="w-6 h-6 text-gold flex-shrink-0" strokeWidth={1.5} />
+              <p className="text-foreground font-semibold">{bonusMessage}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <main className="min-h-screen bg-background pt-20 pb-10 relative z-0">
         <div className="max-w-6xl mx-auto px-4">
           {/* Заголовок */}
           <div className="text-center mb-8">
@@ -461,7 +491,8 @@ export default function GalleryPage() {
               <div className="space-y-3">
                 <button
                   onClick={() => {
-                    const text = encodeURIComponent("Создал(а) свой образ на Looklikeme.ru ✨");
+                    grantSocialBonus(); // Начисляем бонус
+                    const text = encodeURIComponent("Создал(а) свой образ на looklike-me.ru ✨");
                     window.open(
                       `https://vk.com/share.php?url=${encodeURIComponent(window.location.origin)}&title=${text}`,
                       "_blank"
@@ -477,7 +508,8 @@ export default function GalleryPage() {
 
                 <button
                   onClick={() => {
-                    const text = encodeURIComponent("Создал(а) свой образ на Looklikeme.ru ✨\n\nПопробуй сам: " + window.location.origin);
+                    grantSocialBonus(); // Начисляем бонус
+                    const text = encodeURIComponent("Создал(а) свой образ на looklike-me.ru ✨\n\nПопробуй сам: " + window.location.origin);
                     window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.origin)}&text=${text}`, "_blank");
                   }}
                   className="w-full py-3 bg-[#0088cc] hover:bg-[#0077bb] text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
@@ -490,7 +522,8 @@ export default function GalleryPage() {
 
                 <button
                   onClick={() => {
-                    const text = encodeURIComponent("Создал(а) свой образ на Looklikeme.ru ✨\n\nПопробуй сам: " + window.location.origin);
+                    grantSocialBonus(); // Начисляем бонус
+                    const text = encodeURIComponent("Создал(а) свой образ на looklike-me.ru ✨\n\nПопробуй сам: " + window.location.origin);
                     window.open(`https://wa.me/?text=${text}`, "_blank");
                   }}
                   className="w-full py-3 bg-[#25D366] hover:bg-[#20BD5A] text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
@@ -499,28 +532,6 @@ export default function GalleryPage() {
                     <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.97.58 3.83 1.58 5.39L2 22l4.91-1.63c1.48.83 3.16 1.26 4.92 1.26 5.46 0 9.91-4.45 9.91-9.91C21.74 6.45 17.5 2 12.04 2zm5.8 13.96c-.24.67-1.4 1.24-1.92 1.29-.53.05-1.03.24-3.47-.73-2.96-1.18-4.86-4.18-5.01-4.37-.15-.19-1.19-1.59-1.19-3.04 0-1.44.76-2.16 1.03-2.45.27-.29.59-.36.79-.36.2 0 .4.01.57.01.18.01.43-.07.67.51.24.59.83 2.03.9 2.18.07.15.12.33.02.53-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.61.17.29.76 1.25 1.64 2.03 1.13.99 2.09 1.31 2.39 1.45.29.15.46.12.63-.07.17-.19.73-.85.92-1.15.19-.29.39-.24.65-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.12.07.67-.17 1.34z"/>
                   </svg>
                   Поделиться в WhatsApp
-                </button>
-
-                <button
-                  onClick={async () => {
-                    try {
-                      const response = await fetch(shareImageUrl);
-                      const blob = await response.blob();
-                      const url = window.URL.createObjectURL(blob);
-                      const a = document.createElement("a");
-                      a.href = url;
-                      a.download = `looklikeme-share-${Date.now()}.jpg`;
-                      document.body.appendChild(a);
-                      a.click();
-                      document.body.removeChild(a);
-                      window.URL.revokeObjectURL(url);
-                    } catch (err) {
-                      console.error("Download error:", err);
-                    }
-                  }}
-                  className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
-                >
-                  <Download className="w-5 h-5" strokeWidth={1.5} /> Скачать для шаринга
                 </button>
               </div>
             </div>

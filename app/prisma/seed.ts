@@ -260,12 +260,12 @@ async function main() {
       sortOrder: 2,
     },
     {
-      name: 'Подиум',
-      slug: 'runway',
-      description: 'Профессиональный модный показ с подиумом',
-      promptTemplate: 'BACKGROUND MUST BE: Fashion runway catwalk stage, professional spotlights, fashion show setting, dramatic runway lighting, haute couture presentation atmosphere',
+      name: 'Бутик',
+      slug: 'boutique',
+      description: 'Элегантный модный бутик',
+      promptTemplate: 'BACKGROUND MUST BE: Elegant fashion boutique interior, soft warm lighting, luxury shopping atmosphere',
       isPremium: true,
-      iconEmoji: '✨',
+      iconEmoji: '🛍️',
       sortOrder: 3,
     },
     {

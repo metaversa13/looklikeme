@@ -33,7 +33,7 @@ export default function PaymentSuccessPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background pt-20 flex items-center justify-center">
+      <main className="min-h-screen bg-background pt-20 flex items-center justify-center relative z-0">
         <div className="max-w-md mx-auto px-4 text-center">
           {/* Иконка успеха */}
           <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 border-2 border-green-500 flex items-center justify-center">

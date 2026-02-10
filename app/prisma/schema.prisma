@@ -20,6 +20,7 @@ model User {
   emailVerified DateTime?
   name          String?
   image         String?
+  gender        UserGender @default(NOT_SPECIFIED) // Пол пользователя
 
   // Подписка
   subscriptionType     SubscriptionType @default(FREE)
@@ -36,6 +37,9 @@ model User {
   referredBy           String?
   bonusGenerations     Int              @default(0)
   bonusExpiresAt       DateTime?
+
+  // Бонус за публикацию в соцсетях
+  socialShareBonusGranted Boolean       @default(false)
 
   // Связи
   accounts             Account[]
@@ -58,6 +62,12 @@ enum SubscriptionType {
   BASE
   PREMIUM
   LIFETIME
+}
+
+enum UserGender {
+  MALE
+  FEMALE
+  NOT_SPECIFIED
 }
 
 // NextAuth.js tables
@@ -309,12 +319,13 @@ model CollectionItem {
 // ============================================
 
 model DailyLimit {
-  id               String   @id @default(cuid())
-  userId           String
-  date             DateTime @db.Date
-  generationsCount Int      @default(0)
+  id                    String   @id @default(cuid())
+  userId                String
+  date                  DateTime @db.Date
+  generationsCount      Int      @default(0)
+  stylistQuestionsCount Int      @default(0) // Количество вопросов AI стилисту за день
 
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
   @@index([userId, date])

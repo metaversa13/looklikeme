@@ -77,7 +77,7 @@ export default function ReferralPage() {
   return (
     <>
     <Header />
-    <div className="min-h-screen bg-background pt-20 pb-12 px-4">
+    <div className="min-h-screen bg-background pt-20 pb-12 px-4 relative z-0">
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

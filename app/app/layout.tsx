@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { ReferralHandler } from "@/components/referral-handler";
 import { ThemeProvider } from "@/components/theme-provider";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
@@ -20,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang="ru" data-theme="dark" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
         <ThemeProvider>
           <SessionProvider>
@@ -29,6 +30,12 @@ export default function RootLayout({
           </SessionProvider>
         </ThemeProvider>
         <Toaster position="top-right" richColors />
+
+        {/* Cloudflare Turnstile */}
+        <Script
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );

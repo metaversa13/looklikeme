@@ -12,11 +12,15 @@ interface UserStats {
   favorites: number;
 }
 
+type Gender = "MALE" | "FEMALE" | "NOT_SPECIFIED";
+
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [gender, setGender] = useState<Gender>("NOT_SPECIFIED");
+  const [savingGender, setSavingGender] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -31,6 +35,9 @@ export default function ProfilePage() {
       if (data.stats) {
         setStats(data.stats);
       }
+      if (data.gender) {
+        setGender(data.gender);
+      }
     } catch (error) {
       console.error("Error fetching stats:", error);
     } finally {
@@ -38,11 +45,33 @@ export default function ProfilePage() {
     }
   };
 
+  const saveGender = async (newGender: Gender) => {
+    setSavingGender(true);
+    try {
+      const response = await fetch("/api/user/update-gender", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gender: newGender }),
+      });
+
+      if (response.ok) {
+        setGender(newGender);
+      } else {
+        alert("Ошибка при сохранении");
+      }
+    } catch (error) {
+      console.error("Error saving gender:", error);
+      alert("Ошибка при сохранении");
+    } finally {
+      setSavingGender(false);
+    }
+  };
+
   if (status === "loading" || loading) {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-background pt-20 flex items-center justify-center">
+        <main className="min-h-screen bg-background pt-20 flex items-center justify-center relative z-0">
           <div className="animate-pulse text-gold">Загрузка...</div>
         </main>
       </>
@@ -66,7 +95,7 @@ export default function ProfilePage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background pt-20 pb-10">
+      <main className="min-h-screen bg-background pt-20 pb-10 relative z-0">
         <div className="max-w-2xl mx-auto px-4">
           {/* Заголовок */}
           <div className="text-center mb-8">
@@ -191,6 +220,43 @@ export default function ProfilePage() {
                   </p>
                 )}
               </div>
+            )}
+          </div>
+
+          {/* Пол пользователя */}
+          <div className="glass-card rounded-xl p-6 mb-6">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Пол</h3>
+            <p className="text-foreground/60 text-sm mb-4">
+              Укажите ваш пол для более точной генерации образов
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => saveGender("MALE")}
+                disabled={savingGender}
+                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                  gender === "MALE"
+                    ? "bg-gold text-black border-2 border-gold"
+                    : "glass-card text-foreground hover:bg-muted border-2 border-transparent"
+                } ${savingGender ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                <span className={gender === "MALE" ? "text-black" : "text-gold"}>♂</span> Мужской
+              </button>
+              <button
+                onClick={() => saveGender("FEMALE")}
+                disabled={savingGender}
+                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                  gender === "FEMALE"
+                    ? "bg-gold text-black border-2 border-gold"
+                    : "glass-card text-foreground hover:bg-muted border-2 border-transparent"
+                } ${savingGender ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                <span className={gender === "FEMALE" ? "text-black" : "text-gold"}>♀</span> Женский
+              </button>
+            </div>
+            {gender === "NOT_SPECIFIED" && (
+              <p className="text-gold/80 text-xs mt-3 text-center">
+                ⚠️ Пожалуйста, укажите ваш пол для корректной работы генератора
+              </p>
             )}
           </div>
 

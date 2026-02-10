@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import Link from "next/link";
+import { Palette, Ruler, TrendingUp, ShoppingBag, Gem, HelpCircle, Shirt } from "lucide-react";
 
 export default function StylistPage() {
   const { data: session, status } = useSession();
@@ -24,7 +25,7 @@ export default function StylistPage() {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <main className="min-h-screen bg-background text-foreground flex items-center justify-center relative z-0">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-foreground/60">Загрузка...</p>
@@ -85,7 +86,7 @@ export default function StylistPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background text-foreground pt-20 px-4 pb-8">
+      <main className="min-h-screen bg-background text-foreground pt-20 px-4 pb-8 relative z-0">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
@@ -112,65 +113,73 @@ export default function StylistPage() {
                       onClick={() =>
                         handleAskStylist("Какой цвет одежды мне подходит? Помоги определить мой цветотип.")
                       }
-                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
+                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg flex items-center gap-2"
                     >
-                      🎨 Какой цвет мне подходит?
+                      <Palette className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={1.5} />
+                      <span>Какой цвет мне подходит?</span>
                     </button>
                     <button
                       onClick={() =>
                         handleAskStylist("Что мне носить, чтобы визуально скрыть живот и бёдра?")
                       }
-                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
+                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg flex items-center gap-2"
                     >
-                      👗 Как скрыть недостатки фигуры?
+                      <Shirt className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={1.5} />
+                      <span>Как скрыть недостатки фигуры?</span>
                     </button>
                     <button
                       onClick={() =>
                         handleAskStylist("С какими цветами лучше сочетать базовый гардероб?")
                       }
-                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
+                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg flex items-center gap-2"
                     >
-                      🌈 Как сочетать цвета?
+                      <Palette className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={1.5} />
+                      <span>Как сочетать цвета?</span>
                     </button>
                     <button
                       onClick={() =>
                         handleAskStylist("Какой фасон одежды подходит по типу фигуры?")
                       }
-                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
+                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg flex items-center gap-2"
                     >
-                      📏 Фасон по типу фигуры
+                      <Ruler className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={1.5} />
+                      <span>Фасон по типу фигуры</span>
                     </button>
                     <button
                       onClick={() =>
                         handleAskStylist("Что сейчас модно и как это правильно носить?")
                       }
-                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
+                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg flex items-center gap-2"
                     >
-                      🔥 Что сейчас в тренде?
+                      <TrendingUp className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={1.5} />
+                      <span>Что сейчас в тренде?</span>
                     </button>
                     <button
                       onClick={() =>
                         handleAskStylist("Как собрать капсульный гардероб из 15 вещей на месяц?")
                       }
-                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
+                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg flex items-center gap-2"
                     >
-                      🧳 Капсульный гардероб
+                      <ShoppingBag className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={1.5} />
+                      <span>Капсульный гардероб</span>
                     </button>
                     <button
                       onClick={() =>
                         handleAskStylist("Что купить, чтобы образ выглядел дороже?")
                       }
-                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
+                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg flex items-center gap-2"
                     >
-                      💎 Как выглядеть дороже?
+                      <Gem className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={1.5} />
+                      <span>Как выглядеть дороже?</span>
                     </button>
                     <button
                       onClick={() =>
                         handleAskStylist("Можно ли мне носить определённую вещь? Например, макси при маленьком росте или мини после 40?")
                       }
-                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg"
+                      className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg flex items-center gap-2"
                     >
-                      ❓ Можно ли мне носить...?
+                      <HelpCircle className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={1.5} />
+                      <span>Можно ли мне носить...?</span>
                     </button>
                   </div>
                 </div>

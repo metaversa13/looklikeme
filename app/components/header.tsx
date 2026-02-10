@@ -11,7 +11,7 @@ export function Header() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <header className="fixed top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="text-2xl font-bold tracking-tight">
@@ -80,8 +80,8 @@ export function Header() {
                 </button>
 
                 {/* Dropdown */}
-                <div className="absolute right-0 top-full mt-2 w-48 z-[60] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                  <div className="glass-card rounded-lg py-2 mt-2">
+                <div className="absolute right-0 top-full mt-2 w-48 z-[9999] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                  <div className="bg-background border border-border rounded-lg py-2 mt-2 shadow-xl">
                     <div className="px-4 py-2 border-b border-border">
                       <p className="text-foreground text-sm font-medium truncate">
                         {session.user.name}

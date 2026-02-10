@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/db/prisma";
 import https from "https";
 
 // ГигаЧат API конфигурация
@@ -153,6 +154,46 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Получаем тип подписки пользователя
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { subscriptionType: true },
+    });
+
+    const subscriptionType = user?.subscriptionType || "FREE";
+    const isPremium = subscriptionType !== "FREE";
+
+    // Проверяем лимиты для FREE пользователей (3 вопроса в день)
+    if (!isPremium) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const dailyUsage = await prisma.dailyLimit.findUnique({
+        where: {
+          userId_date: {
+            userId: session.user.id,
+            date: today,
+          },
+        },
+        select: { stylistQuestionsCount: true },
+      });
+
+      const questionsToday = dailyUsage?.stylistQuestionsCount || 0;
+      const limit = 3;
+
+      if (questionsToday >= limit) {
+        return NextResponse.json(
+          {
+            error: "Daily limit reached",
+            message: `Вы исчерпали дневной лимит AI стилиста (${limit} вопросов). Оформите подписку Base или Premium для безлимитного доступа.`,
+            limit,
+            used: questionsToday,
+          },
+          { status: 429 }
+        );
+      }
+    }
+
     const body = await request.json();
     const { messages } = body;
 
@@ -220,6 +261,30 @@ export async function POST(request: NextRequest) {
       } else {
         answer = "Спасибо за вопрос! Как AI стилист, я помогу вам с:\n\n- Подбором стилей для разных случаев (офис, вечеринка, casual)\n- Цветовыми сочетаниями и палитрами\n- Актуальными трендами 2026\n- Созданием гармоничных образов\n\nЯ знаю все 20 стилей на платформе LookLikeme: от Casual до Glamorous, от Boho до Avant-garde.\n\nЗадайте мне более конкретный вопрос о стиле, и я дам подробные рекомендации!";
       }
+    }
+
+    // Увеличиваем счетчик вопросов для FREE пользователей
+    if (!isPremium) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      await prisma.dailyLimit.upsert({
+        where: {
+          userId_date: {
+            userId: session.user.id,
+            date: today,
+          },
+        },
+        create: {
+          userId: session.user.id,
+          date: today,
+          generationsCount: 0,
+          stylistQuestionsCount: 1,
+        },
+        update: {
+          stylistQuestionsCount: { increment: 1 },
+        },
+      });
     }
 
     return NextResponse.json({

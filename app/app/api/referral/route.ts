@@ -3,8 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db/prisma";
 
-const BONUS_PER_REFERRAL = 5;
-const MAX_BONUS = 100;
+const BONUS_PER_REFERRAL = 3;
+const MAX_BONUS = 30;
 
 // GET — получить свой реферальный код и статистику
 export async function GET() {

@@ -10,10 +10,10 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Получаем данные пользователя с totalGenerations
+    // Получаем данные пользователя с totalGenerations и gender
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { totalGenerations: true },
+      select: { totalGenerations: true, gender: true },
     });
 
     // Считаем сохранённые образы
@@ -37,6 +37,7 @@ export async function GET() {
         savedImages,
         favorites,
       },
+      gender: user?.gender || "NOT_SPECIFIED",
     });
   } catch (error) {
     console.error("Error fetching user stats:", error);

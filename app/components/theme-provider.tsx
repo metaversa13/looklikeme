@@ -25,6 +25,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (saved === "light" || saved === "dark") {
       setTheme(saved);
       document.documentElement.setAttribute("data-theme", saved);
+    } else {
+      // По умолчанию — тёмная тема
+      document.documentElement.setAttribute("data-theme", "dark");
     }
     setMounted(true);
   }, []);
