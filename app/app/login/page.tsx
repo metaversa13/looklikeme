@@ -87,6 +87,10 @@ export default function LoginPage() {
               <a href="/terms" className="text-gold hover:underline">
                 условиями использования
               </a>
+              {" "}и{" "}
+              <a href="/privacy" className="text-gold hover:underline">
+                политикой конфиденциальности
+              </a>
             </p>
           </div>
         </div>

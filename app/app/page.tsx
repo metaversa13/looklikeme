@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Header } from "@/components/header";
 import { ReferralCapture } from "@/components/referral-capture";
-import { Sparkles, Shirt, Palette, ShoppingBag, MessageCircle, Gift } from "lucide-react";
+import { Sparkles, Shirt, MapPin, ShoppingBag, MessageCircle, Gift } from "lucide-react";
 
 export default function Home() {
   return (
@@ -73,11 +73,11 @@ export default function Home() {
 
               <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
                 <div className="w-14 h-14 rounded-lg bg-gold/10 flex items-center justify-center mx-auto mb-4">
-                  <Palette className="w-7 h-7 text-gold" strokeWidth={1.5} />
+                  <MapPin className="w-7 h-7 text-gold" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-gold font-semibold mb-2">Цветовые палитры и фоны</h3>
+                <h3 className="text-gold font-semibold mb-2">8 Локаций</h3>
                 <p className="text-foreground/70 text-sm">
-                  8 палитр и 8 локаций для создания идеального образа
+                  Студия, город, пляж, кафе и другие фоны для ваших образов
                 </p>
               </div>
 

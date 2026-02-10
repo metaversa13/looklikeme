@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { resultImageUrl, prompt, styleSlug, locationSlug, paletteSlug, generationTime } = body;
+    const { resultImageUrl, prompt, styleSlug, locationSlug, generationTime } = body;
 
     if (!resultImageUrl) {
       return NextResponse.json(
@@ -64,7 +64,6 @@ export async function POST(request: NextRequest) {
         prompt: prompt || "",
         styleSlug,
         locationSlug,
-        paletteSlug,
         generationTime,
         status: "COMPLETED",
         // Для FREE пользователей - истекает через 30 дней

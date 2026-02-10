@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import Link from "next/link";
-import { Palette, Ruler, TrendingUp, ShoppingBag, Gem, HelpCircle, Shirt } from "lucide-react";
+import { Palette, Ruler, TrendingUp, ShoppingBag, Gem, HelpCircle, Shirt, Pipette } from "lucide-react";
 
 export default function StylistPage() {
   const { data: session, status } = useSession();
@@ -133,7 +133,7 @@ export default function StylistPage() {
                       }
                       className="glass-card p-3 text-left text-sm hover:border-gold/50 transition-all rounded-lg flex items-center gap-2"
                     >
-                      <Palette className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={1.5} />
+                      <Pipette className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={1.5} />
                       <span>Как сочетать цвета?</span>
                     </button>
                     <button

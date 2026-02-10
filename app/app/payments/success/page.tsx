@@ -78,10 +78,6 @@ export default function PaymentSuccessPage() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-gold">✓</span>
-                <span className="text-foreground/80 text-sm">Все цветовые палитры</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-gold">✓</span>
                 <span className="text-foreground/80 text-sm">Бессрочное хранение образов</span>
               </li>
               <li className="flex items-start gap-2">

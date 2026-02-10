@@ -70,20 +70,6 @@ const locations = [
   { id: "loft", name: "Лофт", isPremium: true },
 ];
 
-const palettes = [
-  // Сезонные палитры (4 шт)
-  { id: "spring", name: "Весна", colors: ["#FFB6C1", "#FFE4E1", "#DDA0DD", "#F0E68C"], isPremium: true },
-  { id: "summer", name: "Лето", colors: ["#87CEEB", "#FFB6D9", "#D3D3D3", "#E6E6FA"], isPremium: true },
-  { id: "autumn", name: "Осень", colors: ["#CD853F", "#D2691E", "#DAA520", "#8B4513"], isPremium: true },
-  { id: "winter", name: "Зима", colors: ["#000000", "#FFFFFF", "#000080", "#DC143C"], isPremium: true },
-
-  // Стилистические палитры (4 шт)
-  { id: "classic-neutrals", name: "Классика", colors: ["#F5E6D3", "#D4C5B9", "#8B7355", "#2C2C2C"], isPremium: false },
-  { id: "nature-earth", name: "Природные", colors: ["#8B7355", "#6B8E23", "#D2691E", "#556B2F"], isPremium: true },
-  { id: "soft-pastels", name: "Пастель", colors: ["#FFB6C1", "#E6E6FA", "#B0E0E6", "#FFDAB9"], isPremium: true },
-  { id: "rich-bold", name: "Насыщенные", colors: ["#8B0000", "#000080", "#2F4F4F", "#1C1C1C"], isPremium: true },
-];
-
 export default function GeneratePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -93,7 +79,6 @@ export default function GeneratePage() {
   const [selectedGender, setSelectedGender] = useState<"MALE" | "FEMALE" | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<string>("studio");
-  const [selectedPalette, setSelectedPalette] = useState<string | null>(null);
   const [useCustomText, setUseCustomText] = useState(false);
   const [customOutfitText, setCustomOutfitText] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -106,7 +91,6 @@ export default function GeneratePage() {
     prompt: string;
     styleSlug: string;
     locationSlug: string;
-    paletteSlug: string | null;
     generationTime: number;
   } | null>(null);
   const [limits, setLimits] = useState<{
@@ -140,7 +124,6 @@ export default function GeneratePage() {
         setLastGenerationData(parsed.lastGenerationData);
         if (parsed.selectedStyle) setSelectedStyle(parsed.selectedStyle);
         if (parsed.selectedLocation) setSelectedLocation(parsed.selectedLocation);
-        if (parsed.selectedPalette) setSelectedPalette(parsed.selectedPalette);
       }
     } catch {}
   }, []);
@@ -410,7 +393,6 @@ export default function GeneratePage() {
           image: uploadedImage,
           style: useCustomText ? null : selectedStyle,
           location: selectedLocation,
-          palette: selectedPalette,
           gender: selectedGender,
           customOutfit: useCustomText ? customOutfitText : null,
         }),
@@ -445,7 +427,6 @@ export default function GeneratePage() {
         prompt: data.prompt,
         styleSlug: selectedStyle,
         locationSlug: selectedLocation,
-        paletteSlug: selectedPalette,
         generationTime: Date.now() - startTime,
       };
       setLastGenerationData(genData);
@@ -458,7 +439,6 @@ export default function GeneratePage() {
           lastGenerationData: genData,
           selectedStyle,
           selectedLocation,
-          selectedPalette,
         }));
       } catch {}
 
@@ -756,57 +736,6 @@ export default function GeneratePage() {
                 </div>
               </div>
 
-              {/* Цветовая палитра */}
-              <div className="glass-card rounded-xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
-                <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <Palette className="w-5 h-5 text-gold" strokeWidth={1.5} /> Цветовая палитра
-                  <span className="text-xs bg-gold/20 text-gold px-2 py-0.5 rounded ml-2">Premium</span>
-                </h2>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {palettes.map((palette) => {
-                    const isLocked = palette.isPremium && !isPremium;
-                    const isSelected = selectedPalette === palette.id;
-
-                    return (
-                      <button
-                        key={palette.id}
-                        onClick={() => !isLocked && setSelectedPalette(
-                          selectedPalette === palette.id ? null : palette.id
-                        )}
-                        disabled={isLocked}
-                        className={`
-                          relative p-3 rounded-xl border-2 transition-all
-                          ${isSelected
-                            ? "border-gold bg-gold/10"
-                            : isLocked
-                              ? "border-foreground/10 bg-foreground/5 opacity-60 cursor-not-allowed"
-                              : "border-foreground/20 hover:border-gold/50 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
-                          }
-                        `}
-                      >
-                        <div className="flex gap-1 mb-2 justify-center">
-                          {palette.colors.map((color, i) => (
-                            <div
-                              key={i}
-                              className="w-4 h-4 rounded-full border border-foreground/20"
-                              style={{ backgroundColor: color }}
-                            />
-                          ))}
-                        </div>
-                        <div className="text-foreground text-xs text-center">{palette.name}</div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {!isPremium && (
-                  <p className="text-foreground/40 text-xs mt-3 text-center">
-                    Цветовые палитры доступны для Premium подписки
-                  </p>
-                )}
-              </div>
-
               {/* Информация о лимитах */}
               {limits && (
                 <div className="mb-4">
@@ -906,7 +835,7 @@ export default function GeneratePage() {
                   </div>
                 ) : isGenerating ? (
                   <div className="text-center px-4 w-full">
-                    <Palette className="w-10 h-10 text-gold mx-auto mb-3 animate-pulse" strokeWidth={1.5} />
+                    <Sparkles className="w-10 h-10 text-gold mx-auto mb-3 animate-pulse" strokeWidth={1.5} />
                     <p className="text-foreground/60 mb-4">Создаем ваш образ...</p>
 
                     {/* Прогресс-бар */}
@@ -1117,7 +1046,7 @@ export default function GeneratePage() {
                   </div>
                   <div>
                     <h3 className="text-foreground font-semibold text-sm">Безлимитные генерации</h3>
-                    <p className="text-foreground/50 text-xs">Все стили, локации и палитры</p>
+                    <p className="text-foreground/50 text-xs">Все стили и локации</p>
                   </div>
                 </div>
                 <Link

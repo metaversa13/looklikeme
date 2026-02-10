@@ -34,37 +34,6 @@
 
     --radius: 0.5rem;
   }
-
-  /* Светлая тема — белый фон, серые карточки */
-  [data-theme="light"] {
-    --background: 0 0% 100%; /* Чисто белый фон */
-    --foreground: 0 0% 10%; /* Чёрный текст */
-
-    --card: 220 10% 96%; /* Светло-серые карточки с лёгким синим оттенком */
-    --card-foreground: 0 0% 10%;
-
-    --popover: 0 0% 100%; /* Белый для dropdown */
-    --popover-foreground: 0 0% 10%;
-
-    --primary: 43 80% 45%; /* Яркий золотой */
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 220 10% 94%;
-    --muted-foreground: 0 0% 45%; /* Серый для второстепенного текста */
-
-    --accent: 43 80% 45%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 84% 50%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 220 10% 90%; /* Светло-серая граница */
-    --input: 220 10% 94%;
-    --ring: 43 80% 45%;
-  }
 }
 
 @layer base {
@@ -83,11 +52,6 @@
     background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
   }
 
-  /* В светлой теме убираем тёмный градиент */
-  [data-theme="light"] .vogue-gradient {
-    background: transparent;
-  }
-
   .gold-gradient {
     background: linear-gradient(135deg, #D4AF37 0%, #B8952D 100%);
   }
@@ -101,42 +65,6 @@
     background: rgba(245, 245, 220, 0.05);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(245, 245, 220, 0.1);
-  }
-
-  [data-theme="light"] .glass-card {
-    background: hsl(220 10% 96%); /* Светло-серый фон карточек */
-    border: 1px solid hsl(220 10% 90%);
-    box-shadow: none;
-  }
-
-  /* Золотой для светлой темы — насыщенный */
-  [data-theme="light"] .text-gold {
-    color: #B8952D !important;
-  }
-
-  [data-theme="light"] .border-gold {
-    border-color: #C9A227 !important;
-  }
-
-  [data-theme="light"] .bg-gold {
-    background-color: #D4AF37 !important;
-  }
-
-  /* Текст в светлой теме — чёрный с разной прозрачностью */
-  [data-theme="light"] .text-foreground\/70 {
-    color: rgba(0, 0, 0, 0.7) !important;
-  }
-
-  [data-theme="light"] .text-foreground\/60 {
-    color: rgba(0, 0, 0, 0.6) !important;
-  }
-
-  [data-theme="light"] .text-foreground\/50 {
-    color: rgba(0, 0, 0, 0.5) !important;
-  }
-
-  [data-theme="light"] .text-foreground\/80 {
-    color: rgba(0, 0, 0, 0.8) !important;
   }
 
   /* Золотой shimmer эффект */
@@ -187,19 +115,6 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #B8952D;
-}
-
-[data-theme="light"]::-webkit-scrollbar-track {
-  background: #ffffff;
-}
-
-[data-theme="light"]::-webkit-scrollbar-thumb {
-  background: #D4AF37;
-  border: 2px solid #ffffff;
-}
-
-[data-theme="light"]::-webkit-scrollbar-thumb:hover {
   background: #B8952D;
 }
 

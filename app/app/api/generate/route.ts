@@ -20,11 +20,10 @@ const MONTHLY_LIMITS: Record<string, number> = {
 };
 
 // =============================================================================
-// СИСТЕМА ПРОМПТОВ (4 шаблона)
+// СИСТЕМА ПРОМПТОВ (3 шаблона)
 // Шаблон 1: Только стиль → студийный фон
 // Шаблон 2: Стиль + Локация → кастомный фон
-// Шаблон 3: Стиль + Палитра → студийный фон + цвета
-// Шаблон 4: Стиль + Локация + Палитра → кастомный фон + цвета
+// Шаблон 3: Пользовательское описание одежды
 // =============================================================================
 
 // =============================================================================
@@ -1559,17 +1558,6 @@ function getRandomStudioBackground(): string {
   return studioBackgrounds[Math.floor(Math.random() * studioBackgrounds.length)];
 }
 
-// Цветовые палитры
-const paletteDescriptions: Record<string, string> = {
-  "spring": "soft blush pink, warm peach, light lavender, pale yellow",
-  "summer": "sky blue, soft rose pink, light gray, cool lavender",
-  "autumn": "burnt terracotta, chocolate brown, mustard yellow, chestnut",
-  "winter": "jet black, crisp white, navy blue, crimson red",
-  "classic-neutrals": "warm beige, soft cream, taupe, charcoal gray",
-  "nature-earth": "brown, olive green, terracotta, khaki",
-  "soft-pastels": "baby pink, lavender, powder blue, peach",
-  "rich-bold": "burgundy, navy blue, dark slate, black",
-};
 
 // =============================================================================
 // ФУНКЦИИ ПОСТРОЕНИЯ ПРОМПТОВ (4 шаблона)
@@ -1590,7 +1578,7 @@ function buildPromptStyleOnly(style: string, gender?: string): string {
   const clothing = getClothingForStyle(style, gender);
   const studio = getRandomStudioBackground();
 
-  return `Wear ${clothing}. ${studio}. Keep face unchanged`;
+  return `Replace all clothing with ${clothing}. ${studio}. Keep face unchanged`;
 }
 
 /**
@@ -1602,49 +1590,16 @@ function buildPromptStyleLocation(style: string, location: string, gender?: stri
 
   if (!loc) return buildPromptStyleOnly(style, gender);
 
-  return `Wear ${clothing}. Background: ${loc.background}, ${loc.lighting}. Keep face unchanged`;
+  return `Replace all clothing with ${clothing}. Background: ${loc.background}, ${loc.lighting}. Keep face unchanged`;
 }
 
 /**
- * Шаблон 3: Стиль + Палитра (без локации)
+ * Шаблон 3: Пользовательское описание одежды
  */
-function buildPromptStylePalette(style: string, palette: string, gender?: string): string {
-  const clothing = getClothingForStyle(style, gender);
-  const colors = paletteDescriptions[palette] || "";
-  const studio = getRandomStudioBackground();
-
-  return `Wear ${clothing} in ${colors}. ${studio}. Keep face unchanged`;
-}
-
-/**
- * Шаблон 4: Стиль + Локация + Палитра
- */
-function buildPromptFull(style: string, location: string, palette: string, gender?: string): string {
-  const clothing = getClothingForStyle(style, gender);
-  const colors = paletteDescriptions[palette] || "";
-  const loc = locationData[location];
-
-  if (!loc) return buildPromptStylePalette(style, palette, gender);
-
-  return `Wear ${clothing} in ${colors}. Background: ${loc.background}, ${loc.lighting}. Keep face unchanged`;
-}
-
-/**
- * Шаблон 5: Пользовательское описание одежды
- */
-function buildPromptCustom(customOutfit: string, location?: string, palette?: string, gender?: string): string {
+function buildPromptCustom(customOutfit: string, location?: string): string {
   const hasLocation = location && location !== "studio";
-  const hasPalette = !!palette;
 
-  let prompt = `Wear ${customOutfit}.`;
-
-  // Добавляем цвета если есть палитра
-  if (hasPalette) {
-    const colors = paletteDescriptions[palette!] || "";
-    if (colors) {
-      prompt += ` Colors: ${colors}.`;
-    }
-  }
+  let prompt = `Replace all clothing with ${customOutfit}.`;
 
   // Добавляем фон (локация или студия)
   if (hasLocation) {
@@ -1665,30 +1620,17 @@ function buildPromptCustom(customOutfit: string, location?: string, palette?: st
 /**
  * Главная функция выбора шаблона
  */
-function buildPrompt(style: string, location?: string, palette?: string, customOutfit?: string, gender?: string): string {
-  // Шаблон 5: Пользовательское описание одежды (приоритет)
+function buildPrompt(style: string, location?: string, customOutfit?: string, gender?: string): string {
+  // Шаблон 3: Пользовательское описание одежды (приоритет)
   if (customOutfit) {
-    console.log("Template 5: Custom outfit text", gender ? `(gender: ${gender})` : "");
-    return buildPromptCustom(customOutfit, location, palette, gender);
+    console.log("Template 3: Custom outfit text");
+    return buildPromptCustom(customOutfit, location);
   }
 
   const hasLocation = location && location !== "studio";
-  const hasPalette = !!palette;
 
-  // Шаблон 4: Стиль + Локация + Палитра
-  if (hasLocation && hasPalette) {
-    console.log("Template 4: Style + Location + Palette", gender ? `(gender: ${gender})` : "");
-    return buildPromptFull(style, location, palette, gender);
-  }
-
-  // Шаблон 3: Стиль + Палитра (без локации)
-  if (hasPalette && !hasLocation) {
-    console.log("Template 3: Style + Palette", gender ? `(gender: ${gender})` : "");
-    return buildPromptStylePalette(style, palette, gender);
-  }
-
-  // Шаблон 2: Стиль + Локация (без палитры)
-  if (hasLocation && !hasPalette) {
+  // Шаблон 2: Стиль + Локация
+  if (hasLocation) {
     console.log("Template 2: Style + Location", gender ? `(gender: ${gender})` : "");
     return buildPromptStyleLocation(style, location, gender);
   }
@@ -1706,7 +1648,6 @@ const premiumStyles = [
   "vintage-50s", "trends-2026"
 ];
 const premiumLocations = ["city-night", "boutique", "beach", "cafe", "nature", "loft"];
-const premiumPalettes = ["spring", "summer", "autumn", "winter", "nature-earth", "soft-pastels", "rich-bold"];
 
 export async function POST(request: NextRequest) {
   try {
@@ -1753,7 +1694,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { image, style, location, palette, gender, customOutfit } = body;
+    const { image, style, location, gender, customOutfit } = body;
 
     // TODO: Вернуть позже
     // // Проверка Cloudflare Turnstile (защита от ботов)
@@ -1817,16 +1758,6 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Проверяем палитру
-      if (palette && premiumPalettes.includes(palette)) {
-        return NextResponse.json(
-          {
-            error: "Premium feature",
-            message: `Цветовая палитра "${palette}" доступна только для Premium подписки`,
-          },
-          { status: 403 }
-        );
-      }
     }
 
     // Проверяем API токен
@@ -1842,18 +1773,16 @@ export async function POST(request: NextRequest) {
     console.log("Image size:", Math.round(image.length / 1024), "KB");
 
     if (customOutfit) {
-      console.log("Custom outfit:", customOutfit, "| Location:", location || "studio (default)", "| Palette:", palette || "none");
+      console.log("Custom outfit:", customOutfit, "| Location:", location || "studio (default)");
     } else {
-      console.log("Style:", style, "| Location:", location || "studio (default)", "| Palette:", palette || "none");
+      console.log("Style:", style, "| Location:", location || "studio (default)");
     }
 
-    // Собираем промпт через систему из 5 шаблонов
+    // Собираем промпт через систему из 3 шаблонов
     // Шаблон 1: Только стиль (студийный фон - случайный из 5)
     // Шаблон 2: Стиль + Локация (не studio)
-    // Шаблон 3: Стиль + Палитра (без локации)
-    // Шаблон 4: Стиль + Локация + Палитра
-    // Шаблон 5: Пользовательское описание одежды (приоритет)
-    const fullPrompt = buildPrompt(style || "", location, palette, customOutfit, gender);
+    // Шаблон 3: Пользовательское описание одежды (приоритет)
+    const fullPrompt = buildPrompt(style || "", location, customOutfit, gender);
 
     console.log("Generated prompt:", fullPrompt);
 

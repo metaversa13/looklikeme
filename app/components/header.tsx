@@ -3,13 +3,9 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import { useTheme } from "@/components/theme-provider";
-import { Sun, Moon } from "lucide-react";
 
 export function Header() {
   const { data: session, status } = useSession();
-  const { theme, toggleTheme } = useTheme();
-
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -41,15 +37,8 @@ export function Header() {
           </Link>
         </nav>
 
-        {/* Theme Toggle + Auth */}
+        {/* Auth */}
         <div className="flex items-center gap-4">
-          <button
-            onClick={toggleTheme}
-            className="w-9 h-9 rounded-full flex items-center justify-center bg-foreground/10 hover:bg-foreground/20 transition-colors text-lg"
-            title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
-          >
-            {theme === "dark" ? <Sun className="w-5 h-5 text-gold" strokeWidth={1.5} /> : <Moon className="w-5 h-5 text-gold" strokeWidth={1.5} />}
-          </button>
           {status === "loading" ? (
             <div className="w-8 h-8 rounded-full bg-foreground/10 animate-pulse" />
           ) : session ? (
