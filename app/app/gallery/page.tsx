@@ -59,6 +59,18 @@ export default function GalleryPage() {
 
   const isPremium = session?.user?.subscriptionType !== "FREE";
 
+  // Блокируем прокрутку фона при открытом модальном окне
+  useEffect(() => {
+    if (selectedImage || showShareModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [selectedImage, showShareModal]);
+
   useEffect(() => {
     if (status === "authenticated") {
       fetchGenerations();
@@ -305,7 +317,7 @@ export default function GalleryPage() {
                       deleteGeneration(gen.id);
                     }}
                     className="absolute top-2 right-2 p-1.5 rounded-full bg-black/40 hover:bg-black/60 transition-colors"
-                    title="Убрать из избранного"
+                    title="Избранное"
                   >
                     <Heart className="w-5 h-5 text-gold fill-gold" strokeWidth={1.5} />
                   </button>
@@ -356,9 +368,9 @@ export default function GalleryPage() {
                   </button>
                   <button
                     onClick={() => deleteGeneration(selectedImage.id)}
-                    className="flex-1 py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] flex items-center justify-center gap-2"
+                    className="flex-1 py-3 px-4 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] flex items-center justify-center gap-3"
                   >
-                    <Heart className="w-5 h-5 text-gold fill-gold" strokeWidth={1.5} /> Убрать из избранного
+                    <Heart className="w-6 h-6 text-gold fill-gold" strokeWidth={1.5} /> Избранное
                   </button>
                 </div>
 
