@@ -126,7 +126,7 @@ export default function PricingPage() {
           </div>
 
           {/* Карточки тарифов */}
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {plans.map((plan) => {
               const isCurrentPlan = currentPlan === plan.id;
               const isDisabled =
@@ -251,7 +251,7 @@ export default function PricingPage() {
             <h2 className="text-2xl font-bold text-foreground text-center mb-8">
               Частые вопросы
             </h2>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="glass-card rounded-xl p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
                 <h3 className="text-foreground font-semibold mb-2">
                   Чем отличается Base от Premium?

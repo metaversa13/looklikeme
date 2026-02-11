@@ -463,14 +463,14 @@ export default function GeneratePage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background pt-20 pb-10 relative z-0">
-        <div className="max-w-6xl mx-auto px-4">
+      <main className="min-h-screen bg-background pt-20 pb-10 relative z-0 overflow-x-hidden">
+        <div className="max-w-6xl mx-auto px-4 w-full">
           {/* Заголовок */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+            <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-2">
               Создайте свой образ
             </h1>
-            <p className="text-foreground/60">
+            <p className="text-foreground/60 text-sm md:text-base">
               Загрузите фото и выберите стиль для генерации
             </p>
           </div>
@@ -584,7 +584,7 @@ export default function GeneratePage() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {(showAllStyles ? styles : styles.slice(0, 6)).map((style) => {
                     const isPremiumLocked = style.isPremium && !isPremium;
 
@@ -703,7 +703,7 @@ export default function GeneratePage() {
                   <ImageIcon className="w-5 h-5 text-gold" strokeWidth={1.5} /> Локация
                 </h2>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {locations.map((location) => {
                     const isLocked = location.isPremium && !isPremium;
                     const isSelected = selectedLocation === location.id;

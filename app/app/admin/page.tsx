@@ -113,7 +113,7 @@ export default function AdminPage() {
           {/* Пользователи */}
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4">Пользователи</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <StatCard label="Всего" value={stats.users.total} />
               <StatCard label="Сегодня" value={stats.users.today} accent />
               <StatCard label="За неделю" value={stats.users.week} />
@@ -124,7 +124,7 @@ export default function AdminPage() {
           {/* Подписки */}
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4">Подписки</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               {(Object.entries(stats.subscriptions) as [string, number][]).map(([type, count]) => (
                 <StatCard key={type} label={subLabels[type] || type} value={count} />
               ))}
@@ -134,7 +134,7 @@ export default function AdminPage() {
           {/* Генерации */}
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4">Генерации</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               <StatCard label="Всего" value={stats.generations.total} />
               <StatCard label="Сегодня" value={stats.generations.today} accent />
               <StatCard label="За неделю" value={stats.generations.week} />
@@ -144,7 +144,7 @@ export default function AdminPage() {
           {/* Рефералы */}
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4">Рефералы</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               <StatCard label="Всего приглашённых" value={stats.referrals} />
             </div>
           </section>
@@ -152,7 +152,7 @@ export default function AdminPage() {
           {/* Платежи */}
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4">Платежи</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               <StatCard label="Всего оплат" value={stats.payments.count} />
               <StatCard label="Общая сумма" value={formatMoney(stats.payments.totalAmount)} accent />
             </div>

@@ -21,7 +21,7 @@ export default function Home() {
           <div className="relative z-10 text-center max-w-4xl mx-auto">
             {/* Logo */}
             <div className="mb-8">
-              <h1 className="text-6xl md:text-8xl font-bold tracking-tight">
+              <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold tracking-tight">
                 <span className="text-foreground">Look</span>
                 <span className="text-gold">Like</span>
                 <span className="text-foreground">me</span>
