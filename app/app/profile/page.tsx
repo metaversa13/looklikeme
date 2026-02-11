@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Header } from "@/components/header";
 import Image from "next/image";
+import { Sparkles, ImageIcon } from "lucide-react";
 
 interface UserStats {
   totalGenerations: number;
@@ -264,16 +265,16 @@ export default function ProfilePage() {
           <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => router.push("/generate")}
-              className="p-4 glass-card rounded-xl text-center hover:bg-muted transition-colors"
+              className="p-4 glass-card rounded-xl text-center hover:bg-muted transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]"
             >
-              <div className="text-2xl mb-2">🎨</div>
+              <Sparkles className="w-7 h-7 text-gold mx-auto mb-2" strokeWidth={1.5} />
               <div className="text-foreground font-medium">Создать образ</div>
             </button>
             <button
               onClick={() => router.push("/gallery")}
-              className="p-4 glass-card rounded-xl text-center hover:bg-muted transition-colors"
+              className="p-4 glass-card rounded-xl text-center hover:bg-muted transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]"
             >
-              <div className="text-2xl mb-2">🖼️</div>
+              <ImageIcon className="w-7 h-7 text-gold mx-auto mb-2" strokeWidth={1.5} />
               <div className="text-foreground font-medium">Мои образы</div>
             </button>
           </div>

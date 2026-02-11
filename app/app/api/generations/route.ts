@@ -56,6 +56,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Проверяем, не сохранено ли уже это изображение
+    const existing = await prisma.generation.findFirst({
+      where: {
+        userId: session.user.id,
+        resultImageUrl,
+      },
+    });
+
+    if (existing) {
+      return NextResponse.json({
+        success: true,
+        generation: existing,
+        alreadySaved: true,
+      });
+    }
+
     // Создаём запись генерации
     const generation = await prisma.generation.create({
       data: {
@@ -66,9 +82,9 @@ export async function POST(request: NextRequest) {
         locationSlug,
         generationTime,
         status: "COMPLETED",
-        // Для FREE пользователей - истекает через 30 дней
+        // Для FREE пользователей - истекает через 14 дней
         expiresAt: session.user.subscriptionType === "FREE"
-          ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
           : null,
       },
     });

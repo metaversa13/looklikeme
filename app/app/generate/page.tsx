@@ -141,7 +141,7 @@ export default function GeneratePage() {
     }).catch(() => {});
   }, [session]);
 
-  // Загружаем информацию о лимитах
+  // Загружаем информацию о лимитах и пол пользователя
   useEffect(() => {
     const fetchLimits = async () => {
       try {
@@ -155,8 +155,23 @@ export default function GeneratePage() {
       }
     };
 
+    const fetchGender = async () => {
+      try {
+        const response = await fetch("/api/user/stats");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.gender && data.gender !== "NOT_SPECIFIED" && !selectedGender) {
+            setSelectedGender(data.gender);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch gender:", error);
+      }
+    };
+
     if (session) {
       fetchLimits();
+      fetchGender();
     }
   }, [session]);
 
