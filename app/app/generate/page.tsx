@@ -478,7 +478,7 @@ export default function GeneratePage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background pt-20 pb-10 relative z-0 overflow-x-hidden">
+      <main className="min-h-screen bg-background pt-20 pb-10 relative z-0">
         <div className="max-w-6xl mx-auto px-4 w-full">
           {/* Заголовок */}
           <div className="text-center mb-8">

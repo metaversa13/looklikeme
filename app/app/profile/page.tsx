@@ -148,7 +148,7 @@ export default function ProfilePage() {
             <div className="border-t border-foreground/10 my-6" />
 
             {/* Статистика */}
-            <div className="grid grid-cols-3 gap-2 md:gap-4">
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
               <div className="text-center p-3 md:p-4 bg-foreground/5 rounded-lg">
                 <div className="text-xl md:text-2xl font-bold text-gold">
                   {stats?.totalGenerations || 0}
@@ -158,12 +158,6 @@ export default function ProfilePage() {
               <div className="text-center p-3 md:p-4 bg-foreground/5 rounded-lg">
                 <div className="text-xl md:text-2xl font-bold text-foreground">
                   {stats?.savedImages || 0}
-                </div>
-                <div className="text-foreground/60 text-xs md:text-sm">Сохранено</div>
-              </div>
-              <div className="text-center p-3 md:p-4 bg-foreground/5 rounded-lg">
-                <div className="text-xl md:text-2xl font-bold text-red-400">
-                  {stats?.favorites || 0}
                 </div>
                 <div className="text-foreground/60 text-xs md:text-sm">Избранное</div>
               </div>

@@ -1833,19 +1833,22 @@ export async function POST(request: NextRequest) {
         const metadata = await sharp(imgBuffer).metadata();
         const width = metadata.width || 768;
         const height = metadata.height || 1024;
-        const fontSize = Math.round(width * 0.04);
+        const fontSize = Math.round(width * 0.06);
+        const bandHeight = Math.round(fontSize * 2.5);
 
         const svgWatermark = `
           <svg width="${width}" height="${height}">
+            <rect x="0" y="${height - bandHeight}" width="${width}" height="${bandHeight}" fill="rgba(0,0,0,0.6)"/>
             <text
-              x="${width / 2}" y="${height - fontSize * 1.5}"
+              x="${width / 2}" y="${height - bandHeight / 2}"
               text-anchor="middle"
-              font-family="Arial, sans-serif"
+              dominant-baseline="middle"
+              font-family="Arial, Helvetica, sans-serif"
               font-size="${fontSize}"
               font-weight="bold"
               fill="white"
-              opacity="0.5"
-            >Looklike-me.ru</text>
+              opacity="0.9"
+            >looklike-me.ru</text>
           </svg>`;
 
         const watermarked = await sharp(imgBuffer)

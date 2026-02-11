@@ -23,8 +23,16 @@ export function Header() {
         setProfileMenuOpen(false);
       }
     };
+    const handleScroll = () => {
+      setProfileMenuOpen(false);
+      setMobileMenuOpen(false);
+    };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    window.addEventListener("scroll", handleScroll, true);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", handleScroll, true);
+    };
   }, []);
 
   const toggleMobileMenu = () => {

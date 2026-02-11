@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import Image from "next/image";
 import { MarketplacePanel } from "@/components/marketplace-panel";
-import { Heart, HeartOff, Trash2, Download, ShoppingBag, Share2, Sparkles, Gem } from "lucide-react";
+import { Heart, Download, ShoppingBag, Share2, Sparkles, Gem } from "lucide-react";
 
 interface Generation {
   id: string;
@@ -93,33 +93,6 @@ export default function GalleryPage() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Download error:", error);
-    }
-  };
-
-  const toggleFavorite = async (generationId: string) => {
-    try {
-      const response = await fetch("/api/favorites", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ generationId }),
-      });
-
-      if (response.ok) {
-        // Обновляем список
-        fetchGenerations();
-        // Обновляем selectedImage если открыто модальное окно
-        if (selectedImage?.id === generationId) {
-          const updated = generations.find(g => g.id === generationId);
-          if (updated) {
-            setSelectedImage({
-              ...updated,
-              favorite: updated.favorite ? null : { id: "temp" }
-            });
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Favorite error:", error);
     }
   };
 
@@ -325,23 +298,16 @@ export default function GalleryPage() {
                     </div>
                   </div>
 
-                  {/* Иконка избранного */}
-                  {gen.favorite && (
-                    <div className="absolute top-2 right-2">
-                      <Heart className="w-5 h-5 text-red-500 fill-red-500" strokeWidth={1.5} />
-                    </div>
-                  )}
-
-                  {/* Кнопка удаления образа */}
+                  {/* Иконка избранного — нажатие удаляет из избранного */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       deleteGeneration(gen.id);
                     }}
-                    className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-red-500/80 hover:bg-red-500 text-white p-2 rounded-lg"
-                    title="Удалить образ"
+                    className="absolute top-2 right-2 p-1.5 rounded-full bg-black/40 hover:bg-black/60 transition-colors"
+                    title="Убрать из избранного"
                   >
-                    <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+                    <Heart className="w-5 h-5 text-gold fill-gold" strokeWidth={1.5} />
                   </button>
                 </div>
               ))}
@@ -389,21 +355,10 @@ export default function GalleryPage() {
                     <Download className="w-5 h-5 text-gold" strokeWidth={1.5} /> Скачать
                   </button>
                   <button
-                    onClick={() => toggleFavorite(selectedImage.id)}
-                    className={`flex-1 py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 font-semibold ${
-                      selectedImage.favorite
-                        ? "bg-red-500/20 text-red-400 border border-red-500/50 hover:shadow-[0_0_25px_rgba(239,68,68,0.25)]"
-                        : "glass-card text-foreground hover:bg-muted hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]"
-                    }`}
-                  >
-                    {selectedImage.favorite ? <><HeartOff className="w-5 h-5 text-red-400" strokeWidth={1.5} /> Убрать</> : <><Heart className="w-5 h-5 text-gold" strokeWidth={1.5} /> В избранное</>}
-                  </button>
-                  <button
                     onClick={() => deleteGeneration(selectedImage.id)}
-                    className="py-3 px-4 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-lg transition-all duration-300 hover:shadow-[0_0_25px_rgba(239,68,68,0.25)] flex items-center justify-center"
-                    title="Удалить"
+                    className="flex-1 py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] flex items-center justify-center gap-2"
                   >
-                    <Trash2 className="w-5 h-5" strokeWidth={1.5} />
+                    <Heart className="w-5 h-5 text-gold fill-gold" strokeWidth={1.5} /> Убрать из избранного
                   </button>
                 </div>
 

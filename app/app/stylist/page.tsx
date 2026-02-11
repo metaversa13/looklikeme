@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import Link from "next/link";
-import { Palette, Ruler, TrendingUp, ShoppingBag, Gem, HelpCircle, Shirt, Pipette, Send, RotateCcw } from "lucide-react";
+import { Palette, Ruler, TrendingUp, ShoppingBag, Gem, HelpCircle, Shirt, Pipette, Send, RotateCcw, MessageCircle } from "lucide-react";
 
 export default function StylistPage() {
   const { data: session, status } = useSession();
@@ -110,7 +110,7 @@ export default function StylistPage() {
             <div className="space-y-4 mb-4 md:mb-6 min-h-[300px]">
               {messages.length === 0 && (
                 <div className="text-center py-8 md:py-12">
-                  <div className="text-5xl md:text-6xl mb-4">💬</div>
+                  <MessageCircle className="w-14 h-14 md:w-16 md:h-16 text-gold mx-auto mb-4" strokeWidth={1.5} />
                   <p className="text-foreground/60 mb-6 text-sm md:text-base">
                     Задайте вопрос AI стилисту о моде, стиле, цветовых сочетаниях
                   </p>

@@ -23,24 +23,23 @@ export async function POST(request: NextRequest) {
     const height = metadata.height || 1024;
 
     // Размер watermark (пропорционально изображению)
-    const fontSize = Math.floor(width / 20); // Примерно 38px для 768px ширины
-    const padding = Math.floor(width / 40);
+    const fontSize = Math.floor(width / 14);
+    const bandHeight = Math.floor(fontSize * 2.5);
 
     // Создаем SVG с текстом watermark
     const watermarkSvg = `
-      <svg width="${width}" height="${Math.floor(fontSize * 3)}">
-        <style>
-          .watermark {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-size: ${fontSize}px;
-            font-weight: 600;
-            fill: rgba(0, 0, 0, 0.75);
-          }
-        </style>
-        <rect width="${width}" height="${Math.floor(fontSize * 3)}" fill="rgba(245, 245, 220, 0.95)"/>
-        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" class="watermark">
-          Создано в looklike-me.ru ✨
-        </text>
+      <svg width="${width}" height="${bandHeight}">
+        <rect width="${width}" height="${bandHeight}" fill="rgba(0, 0, 0, 0.7)"/>
+        <text
+          x="50%" y="50%"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          font-family="Arial, Helvetica, sans-serif"
+          font-size="${fontSize}"
+          font-weight="bold"
+          fill="white"
+          opacity="0.95"
+        >looklike-me.ru</text>
       </svg>
     `;
 
