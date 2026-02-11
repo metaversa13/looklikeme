@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,6 +9,33 @@ import { Menu, X } from "lucide-react";
 export function Header() {
   const { data: session, status } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+
+  // Закрываем меню при клике вне хедера
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        setProfileMenuOpen(false);
+        setMobileMenuOpen(false);
+      } else if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+    setProfileMenuOpen(false); // закрыть профиль
+  };
+
+  const toggleProfileMenu = () => {
+    setProfileMenuOpen(!profileMenuOpen);
+    setMobileMenuOpen(false); // закрыть бургер
+  };
 
   const navLinks = [
     { href: "/generate", label: "Создать образ" },
@@ -19,7 +46,7 @@ export function Header() {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md border-b border-border">
+    <header ref={headerRef} className="fixed top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="text-2xl font-bold tracking-tight">
@@ -41,11 +68,11 @@ export function Header() {
           ))}
         </nav>
 
-        {/* Right side: Auth + Mobile burger */}
+        {/* Right side: Mobile burger + Auth */}
         <div className="flex items-center gap-3">
           {/* Mobile menu button */}
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={toggleMobileMenu}
             className="md:hidden p-2 text-foreground/70 hover:text-gold transition-colors"
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -64,8 +91,11 @@ export function Header() {
               )}
 
               {/* User Menu */}
-              <div className="relative group">
-                <button className="flex items-center gap-2">
+              <div className="relative" ref={profileRef}>
+                <button
+                  onClick={toggleProfileMenu}
+                  className="flex items-center gap-2"
+                >
                   {session.user.image ? (
                     <Image
                       src={session.user.image}
@@ -82,42 +112,50 @@ export function Header() {
                 </button>
 
                 {/* Dropdown */}
-                <div className="absolute right-0 top-full mt-2 w-48 z-[9999] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                  <div className="bg-background border border-border rounded-lg py-2 mt-2 shadow-xl">
-                    <div className="px-4 py-2 border-b border-border">
-                      <p className="text-foreground text-sm font-medium truncate">
-                        {session.user.name}
-                      </p>
-                      <p className="text-foreground/50 text-xs truncate">
-                        {session.user.email}
-                      </p>
+                {profileMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 z-[9999]">
+                    <div className="bg-background border border-border rounded-lg py-2 shadow-xl">
+                      <div className="px-4 py-2 border-b border-border">
+                        <p className="text-foreground text-sm font-medium truncate">
+                          {session.user.name}
+                        </p>
+                        <p className="text-foreground/50 text-xs truncate">
+                          {session.user.email}
+                        </p>
+                      </div>
+                      <Link
+                        href="/profile"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="block px-4 py-2 text-foreground/70 hover:text-gold hover:bg-foreground/5 transition-colors"
+                      >
+                        Мой профиль
+                      </Link>
+                      <Link
+                        href="/gallery"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="block px-4 py-2 text-foreground/70 hover:text-gold hover:bg-foreground/5 transition-colors"
+                      >
+                        Избранное
+                      </Link>
+                      <Link
+                        href="/referral"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="block px-4 py-2 text-foreground/70 hover:text-gold hover:bg-foreground/5 transition-colors"
+                      >
+                        Пригласить друга
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setProfileMenuOpen(false);
+                          signOut({ callbackUrl: "/" });
+                        }}
+                        className="w-full text-left px-4 py-2 text-red-400 hover:bg-foreground/5 transition-colors"
+                      >
+                        Выйти
+                      </button>
                     </div>
-                    <Link
-                      href="/profile"
-                      className="block px-4 py-2 text-foreground/70 hover:text-gold hover:bg-foreground/5 transition-colors"
-                    >
-                      Мой профиль
-                    </Link>
-                    <Link
-                      href="/gallery"
-                      className="block px-4 py-2 text-foreground/70 hover:text-gold hover:bg-foreground/5 transition-colors"
-                    >
-                      Избранное
-                    </Link>
-                    <Link
-                      href="/referral"
-                      className="block px-4 py-2 text-foreground/70 hover:text-gold hover:bg-foreground/5 transition-colors"
-                    >
-                      Пригласить друга
-                    </Link>
-                    <button
-                      onClick={() => signOut({ callbackUrl: "/" })}
-                      className="w-full text-left px-4 py-2 text-red-400 hover:bg-foreground/5 transition-colors"
-                    >
-                      Выйти
-                    </button>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           ) : (

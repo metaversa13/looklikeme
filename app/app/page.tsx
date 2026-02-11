@@ -63,6 +63,16 @@ export default function Home() {
 
               <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
                 <div className="w-14 h-14 rounded-lg bg-gold/10 flex items-center justify-center mx-auto mb-4">
+                  <ShoppingBag className="w-7 h-7 text-gold" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-gold font-semibold mb-2">Поиск на маркетплейсах</h3>
+                <p className="text-foreground/70 text-sm">
+                  Находите похожую одежду на популярных маркетплейсах
+                </p>
+              </div>
+
+              <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
+                <div className="w-14 h-14 rounded-lg bg-gold/10 flex items-center justify-center mx-auto mb-4">
                   <Shirt className="w-7 h-7 text-gold" strokeWidth={1.5} />
                 </div>
                 <h3 className="text-gold font-semibold mb-2">20 Стилей</h3>
@@ -78,16 +88,6 @@ export default function Home() {
                 <h3 className="text-gold font-semibold mb-2">8 Локаций</h3>
                 <p className="text-foreground/70 text-sm">
                   Студия, город, пляж, кафе и другие фоны для ваших образов
-                </p>
-              </div>
-
-              <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
-                <div className="w-14 h-14 rounded-lg bg-gold/10 flex items-center justify-center mx-auto mb-4">
-                  <ShoppingBag className="w-7 h-7 text-gold" strokeWidth={1.5} />
-                </div>
-                <h3 className="text-gold font-semibold mb-2">Поиск на маркетплейсах</h3>
-                <p className="text-foreground/70 text-sm">
-                  Находите похожую одежду на популярных маркетплейсах
                 </p>
               </div>
 
