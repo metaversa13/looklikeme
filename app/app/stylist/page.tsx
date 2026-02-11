@@ -107,7 +107,7 @@ export default function StylistPage() {
           {/* Chat Container */}
           <div className="glass-card rounded-2xl p-4 md:p-6 mb-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
             {/* Messages */}
-            <div className="space-y-4 mb-4 md:mb-6 min-h-[300px] md:min-h-[400px] max-h-[60vh] overflow-y-auto overflow-x-hidden">
+            <div className="space-y-4 mb-4 md:mb-6 min-h-[300px]">
               {messages.length === 0 && (
                 <div className="text-center py-8 md:py-12">
                   <div className="text-5xl md:text-6xl mb-4">💬</div>

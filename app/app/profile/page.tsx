@@ -186,7 +186,7 @@ export default function ProfilePage() {
                     <span className="text-red-400">✗</span> Premium локации заблокированы
                   </div>
                   <div className="flex items-center gap-2 text-foreground/60">
-                    <span className="text-red-400">✗</span> Образы удаляются через 30 дней
+                    <span className="text-red-400">✗</span> Образы удаляются через 14 дней
                   </div>
                 </div>
                 <button
