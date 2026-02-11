@@ -1,11 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
+import { Menu, X } from "lucide-react";
 
 export function Header() {
   const { data: session, status } = useSession();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { href: "/generate", label: "Создать образ" },
+    { href: "/stylist", label: "AI Стилист" },
+    ...(session ? [{ href: "/gallery", label: "Избранное" }] : []),
+    { href: "/referral", label: "Пригласить друга" },
+    { href: "/pricing", label: "Тарифы" },
+  ];
+
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -16,29 +28,30 @@ export function Header() {
           <span className="text-foreground">me</span>
         </Link>
 
-        {/* Navigation */}
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link href="/generate" className="text-foreground/70 hover:text-gold transition-colors">
-            Создать образ
-          </Link>
-          <Link href="/stylist" className="text-foreground/70 hover:text-gold transition-colors">
-            AI Стилист
-          </Link>
-          {session && (
-            <Link href="/gallery" className="text-foreground/70 hover:text-gold transition-colors">
-              Избранное
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-foreground/70 hover:text-gold transition-colors"
+            >
+              {link.label}
             </Link>
-          )}
-          <Link href="/referral" className="text-foreground/70 hover:text-gold transition-colors">
-            Пригласить друга
-          </Link>
-          <Link href="/pricing" className="text-foreground/70 hover:text-gold transition-colors">
-            Тарифы
-          </Link>
+          ))}
         </nav>
 
-        {/* Auth */}
-        <div className="flex items-center gap-4">
+        {/* Right side: Auth + Mobile burger */}
+        <div className="flex items-center gap-3">
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-foreground/70 hover:text-gold transition-colors"
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+
+          {/* Auth */}
           {status === "loading" ? (
             <div className="w-8 h-8 rounded-full bg-foreground/10 animate-pulse" />
           ) : session ? (
@@ -117,6 +130,45 @@ export function Header() {
           )}
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-background border-t border-border">
+          <nav className="flex flex-col px-4 py-3 gap-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-3 px-3 text-foreground/70 hover:text-gold hover:bg-foreground/5 rounded-lg transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+            {session && (
+              <>
+                <div className="border-t border-border my-1" />
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-3 px-3 text-foreground/70 hover:text-gold hover:bg-foreground/5 rounded-lg transition-colors"
+                >
+                  Мой профиль
+                </Link>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    signOut({ callbackUrl: "/" });
+                  }}
+                  className="py-3 px-3 text-left text-red-400 hover:bg-foreground/5 rounded-lg transition-colors"
+                >
+                  Выйти
+                </button>
+              </>
+            )}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
