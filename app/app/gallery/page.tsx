@@ -330,7 +330,7 @@ export default function GalleryPage() {
         {/* Модальное окно просмотра */}
         {selectedImage && (
           <div
-            className="fixed inset-0 bg-black/90 z-50 overflow-y-auto p-4"
+            className="fixed inset-0 bg-black/90 z-[110] overflow-y-auto p-4"
             onClick={() => setSelectedImage(null)}
           >
             <div
@@ -407,7 +407,7 @@ export default function GalleryPage() {
         {/* Модальное окно "Поделиться" */}
         {showShareModal && shareImageUrl && (
           <div
-            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/90 z-[110] flex items-center justify-center p-4"
             onClick={() => {
               setShowShareModal(false);
               if (shareImageUrl && !isPremium) {

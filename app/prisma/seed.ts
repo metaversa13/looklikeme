@@ -368,7 +368,7 @@ async function main() {
       name: 'Природные',
       slug: 'nature-earth',
       description: 'Природные естественные оттенки',
-      colors: ['#8B7355', '#6B8E23', '#D2691E', '#556B2F'],
+      colors: ['#8B7355', '#BDB76B', '#D2691E', '#556B2F'],
       isPremium: true,
       season: null,
     },

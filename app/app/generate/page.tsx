@@ -74,6 +74,7 @@ export default function GeneratePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [selectedGender, setSelectedGender] = useState<"MALE" | "FEMALE" | null>(null);
@@ -221,6 +222,21 @@ export default function GeneratePage() {
       }
     }
   }, [isGenerating]);
+
+  // Автопрокрутка к результату на мобильном устройстве после генерации
+  useEffect(() => {
+    if (generatedImage && resultRef.current) {
+      // Проверяем, что это мобильное устройство (ширина < 1024px)
+      if (window.innerWidth < 1024) {
+        setTimeout(() => {
+          resultRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
+        }, 300);
+      }
+    }
+  }, [generatedImage]);
 
   // Сохранить в галерею
   const handleSaveToGallery = async () => {
@@ -826,7 +842,7 @@ export default function GeneratePage() {
             </div>
 
             {/* Правая колонка - Результат */}
-            <div className="glass-card rounded-xl p-6 h-fit lg:sticky lg:top-24 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
+            <div ref={resultRef} className="glass-card rounded-xl p-6 h-fit lg:sticky lg:top-24 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]">
               <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-gold" strokeWidth={1.5} /> Результат
               </h2>
