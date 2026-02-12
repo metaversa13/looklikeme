@@ -110,6 +110,7 @@ export default function GeneratePage() {
   const [marketplaceProducts, setMarketplaceProducts] = useState<Array<{ title: string; url: string; image: string; marketplace: string; icon: string }>>([]);
   const [marketplaceLoading, setMarketplaceLoading] = useState(false);
   const [marketplaceError, setMarketplaceError] = useState<string | null>(null);
+  const [marketplaceFilter, setMarketplaceFilter] = useState<string>("Все");
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [referralCopied, setReferralCopied] = useState(false);
 
@@ -222,21 +223,6 @@ export default function GeneratePage() {
       }
     }
   }, [isGenerating]);
-
-  // Автопрокрутка к результату на мобильном устройстве после генерации
-  useEffect(() => {
-    if (generatedImage && resultRef.current) {
-      // Проверяем, что это мобильное устройство (ширина < 1024px)
-      if (window.innerWidth < 1024) {
-        setTimeout(() => {
-          resultRef.current?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-          });
-        }, 300);
-      }
-    }
-  }, [generatedImage]);
 
   // Сохранить в галерею
   const handleSaveToGallery = async () => {
@@ -418,6 +404,16 @@ export default function GeneratePage() {
     setIsSaved(false);
     const startTime = Date.now();
 
+    // Прокрутка к результату на мобильном сразу после нажатия кнопки
+    if (window.innerWidth < 1024 && resultRef.current) {
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }, 100);
+    }
+
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
@@ -587,7 +583,7 @@ export default function GeneratePage() {
                       }
                     `}
                   >
-                    <div className="text-2xl mb-2 text-gold">♂</div>
+                    <div className="text-4xl md:text-2xl mb-2 text-gold">♂</div>
                     <div className="text-foreground text-sm font-medium">Мужской</div>
                   </button>
                   <button
@@ -600,7 +596,7 @@ export default function GeneratePage() {
                       }
                     `}
                   >
-                    <div className="text-2xl mb-2 text-gold">♀</div>
+                    <div className="text-4xl md:text-2xl mb-2 text-gold">♀</div>
                     <div className="text-foreground text-sm font-medium">Женский</div>
                   </button>
                 </div>
@@ -694,7 +690,7 @@ export default function GeneratePage() {
                     <Sparkles className="w-5 h-5 text-gold" strokeWidth={1.5} /> Описание одежды
                   </h2>
                   <label className="flex items-center gap-3 cursor-pointer group">
-                    <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors">Сам напишу</span>
+                    <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors">Свой вариант</span>
                     <div className="relative">
                       <input
                         type="checkbox"
@@ -729,7 +725,7 @@ export default function GeneratePage() {
                   </div>
                 ) : (
                   <p className="text-foreground/60 text-sm">
-                    Используйте готовые стили или включите "Сам напишу" для создания своего описания
+                    Используйте готовые стили или включите "Свой вариант" для создания своего описания
                   </p>
                 )}
               </div>
@@ -966,8 +962,31 @@ export default function GeneratePage() {
                         <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
                         Найдено на маркетплейсах
                       </h3>
+
+                      {/* Фильтры маркетплейсов */}
+                      <div className="flex gap-2 overflow-x-auto pb-2 mb-3 -mx-1 px-1">
+                        {["Все", "Wildberries", "Ozon", "Яндекс Маркет", "Lamoda", "AliExpress", "Quelle", "Otto"]
+                          .filter(tab => tab === "Все" || marketplaceProducts.some(p => p.marketplace === tab))
+                          .map((tab) => (
+                            <button
+                              key={tab}
+                              onClick={() => setMarketplaceFilter(tab)}
+                              className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors flex-shrink-0 ${
+                                marketplaceFilter === tab
+                                  ? "bg-gold text-black"
+                                  : "bg-foreground/10 text-foreground/60"
+                              }`}
+                            >
+                              {tab}
+                            </button>
+                          ))}
+                      </div>
+
                       <div className="space-y-2">
-                        {marketplaceProducts.slice(0, 5).map((product, idx) => (
+                        {(marketplaceFilter === "Все"
+                          ? marketplaceProducts
+                          : marketplaceProducts.filter(p => p.marketplace === marketplaceFilter)
+                        ).slice(0, 5).map((product, idx) => (
                           <a
                             key={idx}
                             href={product.url}
@@ -995,12 +1014,12 @@ export default function GeneratePage() {
                           </a>
                         ))}
                       </div>
-                      {marketplaceProducts.length > 5 && (
+                      {(marketplaceFilter === "Все" ? marketplaceProducts : marketplaceProducts.filter(p => p.marketplace === marketplaceFilter)).length > 5 && (
                         <button
                           onClick={handleMarketplaceSearch}
                           className="w-full mt-2 py-2 text-xs text-gold hover:text-gold/80 transition-colors"
                         >
-                          Показать все ({marketplaceProducts.length})
+                          Показать все ({marketplaceFilter === "Все" ? marketplaceProducts.length : marketplaceProducts.filter(p => p.marketplace === marketplaceFilter).length})
                         </button>
                       )}
                     </div>
