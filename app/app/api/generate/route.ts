@@ -1551,7 +1551,7 @@ const studioBackgrounds: string[] = [
   "smooth warm beige-cream gradient background, diffused lighting",
   "smooth soft ivory gradient background, natural soft lighting",
   "smooth warm powder pink gradient background, soft even lighting",
-  "smooth pale sage green gradient background, soft even lighting"
+  "smooth very light mint gradient background, soft even lighting"
 ];
 
 function getRandomStudioBackground(): string {

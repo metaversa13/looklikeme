@@ -12,7 +12,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Устанавливаем OpenSSL для Prisma
-RUN apk add --no-cache openssl1.1-compat
+RUN apk add --no-cache openssl libc6-compat
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
