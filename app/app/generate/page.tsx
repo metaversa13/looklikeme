@@ -306,16 +306,14 @@ export default function GeneratePage() {
   };
 
   // Поиск на маркетплейсах через Yandex Search API
-  const handleMarketplaceSearch = async () => {
-    if (!generatedImage) return;
-
-    setShowMarketplace(true);
+  // Автоматический поиск товаров на маркетплейсах
+  const searchMarketplaceProducts = async (imageUrl: string) => {
     setMarketplaceLoading(true);
     setMarketplaceError(null);
     setMarketplaceProducts([]);
 
     try {
-      const base64 = await imageToBase64(generatedImage);
+      const base64 = await imageToBase64(imageUrl);
 
       const response = await fetch("/api/marketplace-search", {
         method: "POST",
@@ -332,10 +330,16 @@ export default function GeneratePage() {
       setMarketplaceProducts(data.products || []);
     } catch (err) {
       console.error("Marketplace search error:", err);
-      setMarketplaceError("Не удалось выполнить поиск. Попробуйте позже.");
+      setMarketplaceError("Не удалось выполнить поиск товаров");
     } finally {
       setMarketplaceLoading(false);
     }
+  };
+
+  const handleMarketplaceSearch = async () => {
+    if (!generatedImage) return;
+    setShowMarketplace(true);
+    await searchMarketplaceProducts(generatedImage);
   };
 
   // Редирект на логин если не авторизован
@@ -473,6 +477,8 @@ export default function GeneratePage() {
         }));
       } catch {}
 
+      // Автоматический поиск товаров на маркетплейсах
+      searchMarketplaceProducts(data.imageUrl);
 
       // Обновляем лимиты после успешной генерации
       const limitsResponse = await fetch("/api/limits");
@@ -944,13 +950,67 @@ export default function GeneratePage() {
                     </button>
                   </div>
 
-                  {/* Кнопка поиска на маркетплейсах */}
-                  <button
-                    onClick={handleMarketplaceSearch}
-                    className="w-full py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] flex items-center justify-center gap-2"
-                  >
-                    <ShoppingBag className="w-5 h-5 text-gold" strokeWidth={1.5} /> Найти на маркетплейсах
-                  </button>
+                  {/* Товары с маркетплейсов */}
+                  {marketplaceLoading && (
+                    <div className="p-4 glass-card rounded-lg">
+                      <div className="flex items-center gap-2 text-gold">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gold"></div>
+                        <span className="text-sm">Ищем похожие товары...</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {marketplaceProducts.length > 0 && (
+                    <div className="glass-card rounded-lg p-4">
+                      <h3 className="text-sm font-semibold text-gold mb-3 flex items-center gap-2">
+                        <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
+                        Найдено на маркетплейсах
+                      </h3>
+                      <div className="space-y-2">
+                        {marketplaceProducts.slice(0, 5).map((product, idx) => (
+                          <a
+                            key={idx}
+                            href={product.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block p-2 hover:bg-foreground/5 rounded-lg transition-colors group"
+                          >
+                            <div className="flex gap-2 items-center">
+                              <div className="w-12 h-12 flex-shrink-0 bg-foreground/5 rounded overflow-hidden">
+                                {product.image && (
+                                  <img
+                                    src={product.image}
+                                    alt={product.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm text-foreground group-hover:text-gold transition-colors line-clamp-2">
+                                  {product.title}
+                                </p>
+                                <p className="text-xs text-foreground/40">{product.marketplace}</p>
+                              </div>
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                      {marketplaceProducts.length > 5 && (
+                        <button
+                          onClick={handleMarketplaceSearch}
+                          className="w-full mt-2 py-2 text-xs text-gold hover:text-gold/80 transition-colors"
+                        >
+                          Показать все ({marketplaceProducts.length})
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {marketplaceError && (
+                    <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                      <p className="text-red-400 text-xs">{marketplaceError}</p>
+                    </div>
+                  )}
 
                   {/* Кнопка поделиться */}
                   <button

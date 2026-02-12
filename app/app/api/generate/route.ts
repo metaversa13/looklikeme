@@ -1596,10 +1596,20 @@ function buildPromptStyleLocation(style: string, location: string, gender?: stri
 /**
  * Шаблон 3: Пользовательское описание одежды
  */
-function buildPromptCustom(customOutfit: string, location?: string): string {
+function buildPromptCustom(customOutfit: string, location?: string, gender?: string): string {
   const hasLocation = location && location !== "studio";
 
-  let prompt = `Replace all clothing with ${customOutfit}.`;
+  // Добавляем префикс определения пола
+  let prompt = "FIRST: Look at this person carefully and determine if they are male or female. THEN: ";
+
+  // Если пол известен, даём инструкцию для конкретного пола
+  if (gender === "MALE") {
+    prompt += `Replace all clothing with ${customOutfit} (male clothing).`;
+  } else if (gender === "FEMALE") {
+    prompt += `Replace all clothing with ${customOutfit} (female clothing).`;
+  } else {
+    prompt += `Replace all clothing with ${customOutfit}.`;
+  }
 
   // Добавляем фон (локация или студия)
   if (hasLocation) {
@@ -1623,8 +1633,8 @@ function buildPromptCustom(customOutfit: string, location?: string): string {
 function buildPrompt(style: string, location?: string, customOutfit?: string, gender?: string): string {
   // Шаблон 3: Пользовательское описание одежды (приоритет)
   if (customOutfit) {
-    console.log("Template 3: Custom outfit text");
-    return buildPromptCustom(customOutfit, location);
+    console.log("Template 3: Custom outfit text", gender ? `(gender: ${gender})` : "");
+    return buildPromptCustom(customOutfit, location, gender);
   }
 
   const hasLocation = location && location !== "studio";
