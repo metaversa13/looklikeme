@@ -1,0 +1,25 @@
+openapi: 3.0.0
+info:
+  title: LookLikeme API Gateway
+  version: 1.0.0
+
+paths:
+  /:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: serverless_containers
+        container_id: bbaqelg5j62cbv0r7huc
+        service_account_id: aje7d7leqhf0651eal8b
+
+  /{proxy+}:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: serverless_containers
+        container_id: bbaqelg5j62cbv0r7huc
+        service_account_id: aje7d7leqhf0651eal8b
+      parameters:
+        - name: proxy
+          in: path
+          required: false
+          schema:
+            type: string

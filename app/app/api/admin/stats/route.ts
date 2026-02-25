@@ -8,7 +8,16 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "").split(",").map((e) => e.tr
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email || !ADMIN_EMAILS.includes(session.user.email.toLowerCase())) {
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Проверяем email из БД (надёжнее, чем из JWT-токена)
+    const adminUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { email: true },
+    });
+    if (!adminUser?.email || !ADMIN_EMAILS.includes(adminUser.email.toLowerCase())) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

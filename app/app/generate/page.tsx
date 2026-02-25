@@ -7,6 +7,7 @@ import { Header } from "@/components/header";
 import Image from "next/image";
 import Link from "next/link";
 import { fashionFacts } from "@/lib/fashion-facts";
+import { toast } from "sonner";
 import { MarketplacePanel } from "@/components/marketplace-panel";
 import {
   Shirt, Briefcase, Dumbbell, MapPin, Heart, Circle, Flower2, Link2,
@@ -87,6 +88,7 @@ export default function GeneratePage() {
   const [error, setError] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [savedGenerationId, setSavedGenerationId] = useState<string | null>(null);
   const [lastGenerationData, setLastGenerationData] = useState<{
     resultImageUrl: string;
     prompt: string;
@@ -113,6 +115,9 @@ export default function GeneratePage() {
   const [marketplaceFilter, setMarketplaceFilter] = useState<string>("Все");
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [referralCopied, setReferralCopied] = useState(false);
+  const [sliderPos, setSliderPos] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
+  const sliderContainerRef = useRef<HTMLDivElement>(null);
 
   const isPremium = session?.user?.subscriptionType !== "FREE";
 
@@ -124,8 +129,14 @@ export default function GeneratePage() {
         const parsed = JSON.parse(saved);
         setGeneratedImage(parsed.generatedImage);
         setLastGenerationData(parsed.lastGenerationData);
+        if (parsed.uploadedImage) setUploadedImage(parsed.uploadedImage);
         if (parsed.selectedStyle) setSelectedStyle(parsed.selectedStyle);
         if (parsed.selectedLocation) setSelectedLocation(parsed.selectedLocation);
+        if (parsed.isSaved) setIsSaved(true);
+        if (parsed.savedGenerationId) setSavedGenerationId(parsed.savedGenerationId);
+        if (parsed.marketplaceProducts?.length > 0) {
+          setMarketplaceProducts(parsed.marketplaceProducts);
+        }
       }
     } catch {}
   }, []);
@@ -224,9 +235,55 @@ export default function GeneratePage() {
     }
   }, [isGenerating]);
 
-  // Сохранить в галерею
-  const handleSaveToGallery = async () => {
-    if (!lastGenerationData || isSaved) return;
+  // Тоггл избранного: первый клик — сохраняет в галерею + добавляет в избранное,
+  // повторный клик — убирает из избранного (запись в галерее остаётся)
+  const handleFavoriteToggle = async () => {
+    if (isSaving) return;
+
+    // Уже сохранено — переключаем избранное через /api/favorites
+    if (savedGenerationId) {
+      setIsSaving(true);
+      try {
+        const res = await fetch("/api/favorites", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ generationId: savedGenerationId }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          const nowFavorited = data.action === "added";
+          setIsSaved(nowFavorited);
+          try {
+            const saved = sessionStorage.getItem("lastGeneration");
+            if (saved) {
+              sessionStorage.setItem("lastGeneration", JSON.stringify({
+                ...JSON.parse(saved),
+                isSaved: nowFavorited,
+                savedGenerationId,
+              }));
+            }
+          } catch {}
+        } else {
+          console.error("Favorite toggle failed:", data);
+          toast.error(`Не удалось изменить избранное: ${data.error || res.status}`);
+        }
+      } catch (err) {
+        console.error("Favorite toggle error:", err);
+        toast.error("Не удалось изменить избранное. Проверьте соединение.");
+      } finally {
+        setIsSaving(false);
+      }
+      return;
+    }
+
+    // Первое сохранение — сохраняем генерацию и добавляем в избранное
+    if (!lastGenerationData) return;
+
+    // Проверяем что это не base64
+    if (lastGenerationData.resultImageUrl.startsWith("data:")) {
+      toast.error("Изображение не загружено в хранилище. Попробуйте сгенерировать заново.");
+      return;
+    }
 
     setIsSaving(true);
     try {
@@ -236,11 +293,32 @@ export default function GeneratePage() {
         body: JSON.stringify(lastGenerationData),
       });
 
-      if (response.ok) {
-        setIsSaved(true);
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Save failed:", data);
+        toast.error(`Не удалось сохранить: ${data.error || "Ошибка сервера"}`);
+        return;
       }
+
+      const genId = data.generation?.id || null;
+      setSavedGenerationId(genId);
+      setIsSaved(true);
+
+      // Сохраняем в sessionStorage
+      try {
+        const saved = sessionStorage.getItem("lastGeneration");
+        if (saved) {
+          sessionStorage.setItem("lastGeneration", JSON.stringify({
+            ...JSON.parse(saved),
+            isSaved: true,
+            savedGenerationId: genId,
+          }));
+        }
+      } catch {}
     } catch (err) {
       console.error("Save error:", err);
+      toast.error("Не удалось сохранить образ. Проверьте соединение.");
     } finally {
       setIsSaving(false);
     }
@@ -299,21 +377,30 @@ export default function GeneratePage() {
     setMarketplaceProducts([]);
 
     try {
-      const base64 = await imageToBase64(imageUrl);
-
+      // Передаём URL напрямую — API загрузит изображение серверно (обход CORS)
       const response = await fetch("/api/marketplace-search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: base64 }),
+        body: JSON.stringify({ imageUrl }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Ошибка поиска");
+        throw new Error(data.error || data.details || "Ошибка поиска");
       }
 
-      setMarketplaceProducts(data.products || []);
+      const products = data.products || [];
+      setMarketplaceProducts(products);
+
+      // Сохраняем в sessionStorage чтобы не пропали при навигации
+      try {
+        const saved = sessionStorage.getItem("lastGeneration");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          sessionStorage.setItem("lastGeneration", JSON.stringify({ ...parsed, marketplaceProducts: products }));
+        }
+      } catch {}
     } catch (err) {
       console.error("Marketplace search error:", err);
       setMarketplaceError("Не удалось выполнить поиск товаров");
@@ -402,6 +489,11 @@ export default function GeneratePage() {
     sessionStorage.removeItem("lastGeneration");
     setLastGenerationData(null);
     setIsSaved(false);
+    setSavedGenerationId(null);
+    setMarketplaceProducts([]);
+    setMarketplaceLoading(false);
+    setMarketplaceError(null);
+    setSliderPos(1);
     const startTime = Date.now();
 
     // Прокрутка к результату на мобильном сразу после нажатия кнопки
@@ -462,19 +554,20 @@ export default function GeneratePage() {
       };
       setLastGenerationData(genData);
       setIsSaved(false);
+      setSavedGenerationId(null);
 
       // Сохраняем в sessionStorage чтобы не потерять при навигации
       try {
         sessionStorage.setItem("lastGeneration", JSON.stringify({
           generatedImage: data.imageUrl,
+          uploadedImage,
           lastGenerationData: genData,
           selectedStyle,
           selectedLocation,
+          isSaved: false,
+          savedGenerationId: null,
         }));
       } catch {}
-
-      // Автоматический поиск товаров на маркетплейсах
-      searchMarketplaceProducts(data.imageUrl);
 
       // Обновляем лимиты после успешной генерации
       const limitsResponse = await fetch("/api/limits");
@@ -482,6 +575,9 @@ export default function GeneratePage() {
         const limitsData = await limitsResponse.json();
         setLimits(limitsData);
       }
+
+      // Автоматически ищем похожие товары
+      searchMarketplaceProducts(data.imageUrl);
     } catch (err) {
       console.error("Generation error:", err);
       setError(err instanceof Error ? err.message : "Ошибка генерации");
@@ -583,7 +679,7 @@ export default function GeneratePage() {
                       }
                     `}
                   >
-                    <div className="text-4xl md:text-2xl mb-2 text-gold">♂</div>
+                    <div className="text-5xl md:text-3xl mb-2 text-gold">♂</div>
                     <div className="text-foreground text-sm font-medium">Мужской</div>
                   </button>
                   <button
@@ -596,7 +692,7 @@ export default function GeneratePage() {
                       }
                     `}
                   >
-                    <div className="text-4xl md:text-2xl mb-2 text-gold">♀</div>
+                    <div className="text-5xl md:text-3xl mb-2 text-gold">♀</div>
                     <div className="text-foreground text-sm font-medium">Женский</div>
                   </button>
                 </div>
@@ -857,6 +953,83 @@ export default function GeneratePage() {
 
               <div className="aspect-[3/4] bg-foreground/5 rounded-xl flex items-center justify-center overflow-hidden">
                 {generatedImage ? (
+                  uploadedImage ? (
+                    /* Слайдер До/После */
+                    <div
+                      ref={sliderContainerRef}
+                      className="relative w-full h-full overflow-hidden select-none"
+                      onPointerMove={(e) => {
+                        if (!isDragging) return;
+                        const rect = sliderContainerRef.current!.getBoundingClientRect();
+                        const pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+                        setSliderPos(pct);
+                      }}
+                      onPointerUp={() => setIsDragging(false)}
+                      onPointerLeave={() => setIsDragging(false)}
+                    >
+                      {/* Слой 1: оригинальное фото (До) */}
+                      <Image src={uploadedImage} alt="До" fill className="object-cover" unoptimized />
+                      {/* Слой 2: сгенерированное фото (После), обрезанное слева */}
+                      <div
+                        className="absolute inset-0 overflow-hidden"
+                        style={{ clipPath: `inset(0 0 0 ${sliderPos}%)` }}
+                      >
+                        <Image src={generatedImage} alt="После" fill className="object-cover" unoptimized />
+                      </div>
+                      {/* Разделитель + ручка — только она реагирует на drag */}
+                      <div
+                        className={`absolute top-0 bottom-0 z-10 ${isDragging ? "cursor-grabbing" : "cursor-ew-resize"}`}
+                        style={{ left: `${sliderPos}%`, touchAction: "none" }}
+                        onPointerDown={(e) => {
+                          e.preventDefault();
+                          setIsDragging(true);
+                          e.currentTarget.setPointerCapture(e.pointerId);
+                        }}
+                        onPointerMove={(e) => {
+                          if (!isDragging) return;
+                          const rect = sliderContainerRef.current!.getBoundingClientRect();
+                          const pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+                          setSliderPos(pct);
+                        }}
+                        onPointerUp={(e) => {
+                          setIsDragging(false);
+                          e.currentTarget.releasePointerCapture(e.pointerId);
+                        }}
+                      >
+                        <div className="absolute inset-y-0 w-0.5 bg-white shadow-[0_0_8px_rgba(0,0,0,0.6)] -translate-x-1/2" />
+                        <div className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-lg flex flex-col items-center justify-center gap-0.5 select-none">
+                          {/* Стрелка вправо */}
+                          <svg viewBox="0 0 20 10" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-3">
+                            <line x1="2" y1="5" x2="16" y2="5" />
+                            <polyline points="11,1 16,5 11,9" />
+                          </svg>
+                          {/* Стрелка влево */}
+                          <svg viewBox="0 0 20 10" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-3">
+                            <line x1="18" y1="5" x2="4" y2="5" />
+                            <polyline points="9,1 4,5 9,9" />
+                          </svg>
+                        </div>
+                      </div>
+                      {/* Подпись «До» — в центре левой части (оригинал) */}
+                      {sliderPos > 10 && (
+                        <div
+                          className="absolute bottom-2 text-white text-xs bg-black/60 px-2 py-0.5 rounded pointer-events-none z-10"
+                          style={{ left: `${sliderPos / 2}%`, transform: "translateX(-50%)" }}
+                        >
+                          До
+                        </div>
+                      )}
+                      {/* Подпись «После» — в центре правой части (генерация) */}
+                      {sliderPos < 90 && (
+                        <div
+                          className="absolute bottom-2 text-white text-xs bg-black/60 px-2 py-0.5 rounded pointer-events-none z-10"
+                          style={{ left: `${sliderPos + (100 - sliderPos) / 2}%`, transform: "translateX(-50%)" }}
+                        >
+                          После
+                        </div>
+                      )}
+                    </div>
+                  ) : (
                   <div className="relative w-full h-full">
                     <Image
                       src={generatedImage}
@@ -866,6 +1039,7 @@ export default function GeneratePage() {
                       unoptimized
                     />
                   </div>
+                  )
                 ) : isGenerating ? (
                   <div className="text-center px-4 w-full">
                     <Sparkles className="w-10 h-10 text-gold mx-auto mb-3 animate-pulse" strokeWidth={1.5} />
@@ -934,15 +1108,21 @@ export default function GeneratePage() {
                       <Download className="w-5 h-5 text-gold" strokeWidth={1.5} /> Скачать
                     </button>
                     <button
-                      onClick={handleSaveToGallery}
-                      disabled={isSaved || isSaving}
-                      className={`flex-1 py-3 rounded-lg transition-all duration-300 font-semibold flex items-center justify-center gap-2 ${
-                        isSaved
-                          ? "bg-green-500/20 text-green-400 border border-green-500/50 hover:shadow-[0_0_25px_rgba(34,197,94,0.25)]"
-                          : "glass-card text-foreground hover:bg-muted hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]"
-                      }`}
+                      onClick={handleFavoriteToggle}
+                      disabled={isSaving}
+                      className="flex-1 py-3 rounded-lg transition-all duration-300 font-semibold flex items-center justify-center gap-2 glass-card hover:bg-muted"
+                      style={isSaved
+                        ? { borderColor: 'rgba(212, 175, 55, 0.6)', boxShadow: '0 0 20px rgba(212, 175, 55, 0.25)' }
+                        : { borderColor: 'transparent' }
+                      }
+                      title={isSaved ? "Убрать из избранного" : "Добавить в избранное"}
                     >
-                      {isSaving ? "Сохранение..." : isSaved ? <><Heart className="w-5 h-5 fill-green-400" strokeWidth={1.5} /> В избранном</> : <><Heart className="w-5 h-5 text-gold" strokeWidth={1.5} /> В избранное</>}
+                      {isSaving
+                        ? "Загрузка..."
+                        : isSaved
+                          ? <><Heart className="w-5 h-5 fill-gold text-gold" strokeWidth={1.5} /><span className="text-gold">В избранном</span></>
+                          : <><Heart className="w-5 h-5 text-gold" strokeWidth={1.5} /><span className="text-foreground">В избранное</span></>
+                      }
                     </button>
                   </div>
 

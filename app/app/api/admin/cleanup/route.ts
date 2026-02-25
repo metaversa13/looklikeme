@@ -13,7 +13,15 @@ export async function POST(request: NextRequest) {
 
     if (!isCron) {
       const session = await getServerSession(authOptions);
-      if (!session?.user?.email || !ADMIN_EMAILS.includes(session.user.email.toLowerCase())) {
+      if (!session?.user?.id) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      // Проверяем email из БД (надёжнее, чем из JWT-токена)
+      const adminUser = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { email: true },
+      });
+      if (!adminUser?.email || !ADMIN_EMAILS.includes(adminUser.email.toLowerCase())) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
     }

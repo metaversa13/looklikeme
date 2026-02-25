@@ -3,15 +3,21 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db/prisma";
 
+// Отключаем кеширование — данные всегда должны быть актуальными
+export const dynamic = "force-dynamic";
+
 // GET - получить все генерации пользователя
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
+      console.log("[generations GET] no session");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const generations = await prisma.generation.findMany({
+    console.log("[generations GET] userId:", session.user.id);
+
+    const allGenerations = await prisma.generation.findMany({
       where: {
         userId: session.user.id,
         status: "COMPLETED",
@@ -23,22 +29,42 @@ export async function GET() {
       orderBy: {
         createdAt: "desc",
       },
-      include: {
-        favorite: true,
+      select: {
+        id: true,
+        resultImageUrl: true,
+        styleSlug: true,
+        locationSlug: true,
+        paletteSlug: true,
+        createdAt: true,
+        expiresAt: true,
+        status: true,
+        generationTime: true,
+        favorite: {
+          select: { id: true },
+        },
       },
     });
 
-    return NextResponse.json({ generations });
+    // Фильтруем base64 записи — они слишком большие для ответа
+    const generations = allGenerations.filter(
+      (g) => !g.resultImageUrl.startsWith("data:")
+    );
+
+    console.log("[generations GET] found:", allGenerations.length, "filtered:", generations.length);
+
+    return NextResponse.json({ generations }, {
+      headers: { "Cache-Control": "no-store" },
+    });
   } catch (error) {
-    console.error("Error fetching generations:", error);
+    console.error("[generations GET] error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch generations" },
+      { error: "Failed to fetch generations", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
 }
 
-// POST - сохранить новую генерацию
+// POST - сохранить новую генерацию и добавить в избранное
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -56,12 +82,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Отклоняем base64 — слишком большой для хранения
+    if (resultImageUrl.startsWith("data:")) {
+      return NextResponse.json(
+        { error: "Cannot save: image upload to storage failed. Please try generating again." },
+        { status: 400 }
+      );
+    }
+
     // Проверяем, не сохранено ли уже это изображение
     const existing = await prisma.generation.findFirst({
       where: {
         userId: session.user.id,
         resultImageUrl,
       },
+      include: { favorite: true },
     });
 
     if (existing) {
@@ -89,6 +124,15 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Добавляем в избранное (не блокируем сохранение если не получилось)
+    try {
+      await prisma.favorite.create({
+        data: { userId: session.user.id, generationId: generation.id },
+      });
+    } catch (favErr) {
+      console.error("Could not create favorite (generation saved ok):", favErr);
+    }
+
     // Обновляем счётчик генераций пользователя
     await prisma.user.update({
       where: { id: session.user.id },
@@ -104,7 +148,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error saving generation:", error);
     return NextResponse.json(
-      { error: "Failed to save generation" },
+      { error: "Failed to save generation", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

@@ -2,7 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import GoogleProvider from "next-auth/providers/google";
 import YandexProvider from "next-auth/providers/yandex";
-import VkProvider from "next-auth/providers/vk";
+// import VkProvider from "next-auth/providers/vk"; // временно отключён
 import { prisma } from "@/lib/db/prisma";
 
 // Функция для автоматического определения пола по имени
@@ -46,15 +46,12 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.YANDEX_CLIENT_ID!,
       clientSecret: process.env.YANDEX_CLIENT_SECRET!,
     }),
-    VkProvider({
-      clientId: process.env.VK_CLIENT_ID!,
-      clientSecret: process.env.VK_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          scope: "",
-        },
-      },
-    }),
+    // VkProvider временно отключён
+    // VkProvider({
+    //   clientId: process.env.VK_CLIENT_ID!,
+    //   clientSecret: process.env.VK_CLIENT_SECRET!,
+    //   authorization: { params: { scope: "" } },
+    // }),
   ],
   session: {
     strategy: "jwt",
@@ -79,24 +76,36 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      return true;
+      try {
+        console.log("SignIn attempt:", { userId: user?.id, provider: account?.provider, email: user?.email });
+        return true;
+      } catch (error) {
+        console.error("SignIn callback error:", error);
+        return false;
+      }
     },
     async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
+        session.user.email = token.email as string;
 
         // Получаем данные пользователя из БД
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.sub },
-          select: {
-            subscriptionType: true,
-            lifetimeAccess: true,
-            subscriptionEndDate: true,
-            totalGenerations: true,
-            bonusGenerations: true,
-            referralCode: true,
-          },
-        });
+        let dbUser = null;
+        try {
+          dbUser = await prisma.user.findUnique({
+            where: { id: token.sub },
+            select: {
+              subscriptionType: true,
+              lifetimeAccess: true,
+              subscriptionEndDate: true,
+              totalGenerations: true,
+              bonusGenerations: true,
+              referralCode: true,
+            },
+          });
+        } catch (dbErr) {
+          console.error("session callback: DB query failed:", dbErr);
+        }
 
         if (dbUser) {
           // Проверяем истечение подписки и даунгрейдим до FREE
@@ -130,6 +139,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;
+        token.email = user.email;
       }
       return token;
     },

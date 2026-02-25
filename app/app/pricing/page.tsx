@@ -197,12 +197,12 @@ export default function PricingPage() {
                   <button
                     onClick={() => handleSelectPlan(plan.id)}
                     disabled={isDisabled || loading === plan.id}
-                    className={`w-full py-3 rounded-lg font-semibold transition-all ${
+                    className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 border ${
                       isCurrentPlan
-                        ? "bg-foreground/10 text-foreground/40 cursor-not-allowed"
+                        ? "bg-gold/20 text-gold border-gold/30 cursor-default"
                         : plan.highlighted
-                          ? "bg-gold hover:bg-gold-600 text-black"
-                          : "bg-foreground/10 hover:bg-foreground/20 text-foreground"
+                          ? "bg-gold text-black border-gold hover:border-gold hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]"
+                          : "bg-foreground/10 text-foreground border-transparent hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]"
                     } ${loading === plan.id ? "opacity-70 cursor-wait" : ""}`}
                   >
                     {loading === plan.id ? (

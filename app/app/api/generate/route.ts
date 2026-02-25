@@ -1547,11 +1547,11 @@ const locationData: Record<string, LocationData> = new Proxy({} as Record<string
 
 // 5 студийных фонов для случайного выбора
 const studioBackgrounds: string[] = [
-  "smooth light lavender gradient background, soft even lighting",
-  "smooth warm beige-cream gradient background, diffused lighting",
-  "smooth soft ivory gradient background, natural soft lighting",
-  "smooth warm powder pink gradient background, soft even lighting",
-  "smooth very light mint gradient background, soft even lighting"
+  "plain neutral light gray background, soft professional studio lighting",
+  "plain clean white background, soft diffused studio lighting",
+  "plain warm off-white background, even soft studio lighting",
+  "plain medium gray background, professional studio lighting",
+  "plain dark charcoal background, dramatic professional lighting"
 ];
 
 function getRandomStudioBackground(): string {
@@ -1571,6 +1571,9 @@ function getClothingForStyle(style: string, gender?: string): string {
   return getRandomOutfitForStyle(style, gender);
 }
 
+// Короткая инструкция по сохранению идентичности для Flux
+const KEEP = "Keep same face, body, pose, proportions and framing.";
+
 /**
  * Шаблон 1: Только стиль (студийный фон)
  */
@@ -1578,7 +1581,7 @@ function buildPromptStyleOnly(style: string, gender?: string): string {
   const clothing = getClothingForStyle(style, gender);
   const studio = getRandomStudioBackground();
 
-  return `Replace all clothing with ${clothing}. ${studio}. Keep face unchanged`;
+  return `Change clothing to ${clothing}. ${studio}. ${KEEP}`;
 }
 
 /**
@@ -1590,7 +1593,7 @@ function buildPromptStyleLocation(style: string, location: string, gender?: stri
 
   if (!loc) return buildPromptStyleOnly(style, gender);
 
-  return `Replace all clothing with ${clothing}. Background: ${loc.background}, ${loc.lighting}. Keep face unchanged`;
+  return `Change clothing to ${clothing}. Background: ${loc.background}, ${loc.lighting}. ${KEEP}`;
 }
 
 /**
@@ -1599,9 +1602,8 @@ function buildPromptStyleLocation(style: string, location: string, gender?: stri
 function buildPromptCustom(customOutfit: string, location?: string): string {
   const hasLocation = location && location !== "studio";
 
-  let prompt = `Replace all clothing with ${customOutfit}.`;
+  let prompt = `Change clothing to ${customOutfit}.`;
 
-  // Добавляем фон (локация или студия)
   if (hasLocation) {
     const loc = locationData[location!];
     if (loc) {
@@ -1612,7 +1614,7 @@ function buildPromptCustom(customOutfit: string, location?: string): string {
     prompt += ` ${studio}.`;
   }
 
-  prompt += ` Keep face unchanged`;
+  prompt += ` ${KEEP}`;
 
   return prompt;
 }
@@ -1779,40 +1781,35 @@ export async function POST(request: NextRequest) {
     }
 
     // Собираем промпт через систему из 3 шаблонов
-    // Шаблон 1: Только стиль (студийный фон - случайный из 5)
-    // Шаблон 2: Стиль + Локация (не studio)
-    // Шаблон 3: Пользовательское описание одежды (приоритет)
     const fullPrompt = buildPrompt(style || "", location, customOutfit, gender);
 
     console.log("Generated prompt:", fullPrompt);
 
-    // Flux Kontext Pro - редактирование с сохранением лица ($0.04/image)
+    // Flux Kontext Pro - специализированная модель для редактирования изображений
+    // Принимает data URI напрямую через input_image
+    console.log("Calling Replicate Flux Kontext Pro...");
     const output = await replicate.run(
       "black-forest-labs/flux-kontext-pro",
       {
         input: {
           prompt: fullPrompt,
           input_image: image,
-          aspect_ratio: "3:4",
+          aspect_ratio: "match_input_image",
           output_format: "jpg",
           safety_tolerance: 2,
-          prompt_upsampling: false,
-          // Критические параметры для сохранения лица и фигуры:
-          image_to_image_strength: 0.5,  // 0.5 = баланс сохранения лица и смены одежды
-          cfg_scale: 2.0,                // Ниже = мягче интерпретирует промпт, не перерисовывает
-          num_inference_steps: 32,       // Чуть выше = стабильнее результат
         },
       }
     );
 
     console.log("Generation complete!");
-    console.log("Output:", output);
 
-    // Kontext возвращает URL напрямую или в массиве
-    const replicateUrl = Array.isArray(output) ? output[0] : output;
-
-    // Скачиваем изображение с Replicate (временный URL, истекает через ~1 час)
-    const imgResponse = await fetch(String(replicateUrl));
+    // Flux возвращает FileOutput (URL строку)
+    const replicateUrl = String(output);
+    console.log("Fetching result from:", replicateUrl.substring(0, 100));
+    const imgResponse = await fetch(replicateUrl);
+    if (!imgResponse.ok) {
+      throw new Error(`Failed to fetch generated image: ${imgResponse.status} ${imgResponse.statusText}`);
+    }
     const imgBuffer = Buffer.from(await imgResponse.arrayBuffer());
 
     // Загружаем в Yandex Object Storage для постоянного хранения

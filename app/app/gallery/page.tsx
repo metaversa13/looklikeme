@@ -7,6 +7,7 @@ import { Header } from "@/components/header";
 import Image from "next/image";
 import { MarketplacePanel } from "@/components/marketplace-panel";
 import { Heart, Download, ShoppingBag, Share2, Sparkles, Gem } from "lucide-react";
+import { toast } from "sonner";
 
 interface Generation {
   id: string;
@@ -56,6 +57,7 @@ export default function GalleryPage() {
   const [marketplaceLoading, setMarketplaceLoading] = useState(false);
   const [marketplaceError, setMarketplaceError] = useState<string | null>(null);
   const [bonusMessage, setBonusMessage] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(10);
 
   const isPremium = session?.user?.subscriptionType !== "FREE";
 
@@ -79,13 +81,17 @@ export default function GalleryPage() {
 
   const fetchGenerations = async () => {
     try {
-      const response = await fetch("/api/generations");
+      const response = await fetch("/api/generations", { cache: "no-store" });
       const data = await response.json();
-      if (data.generations) {
+      if (!response.ok) {
+        console.error("Generations API error:", response.status, data);
+        toast.error(`Ошибка загрузки: ${data.error || response.status}${data.details ? ` — ${data.details}` : ""}`);
+      } else if (data.generations) {
         setGenerations(data.generations);
       }
     } catch (error) {
       console.error("Error fetching generations:", error);
+      toast.error("Не удалось загрузить образы. Проверьте соединение.");
     } finally {
       setLoading(false);
     }
@@ -105,6 +111,41 @@ export default function GalleryPage() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Download error:", error);
+    }
+  };
+
+  const toggleFavorite = async (gen: Generation) => {
+    const wasFavorite = !!gen.favorite;
+
+    // Оптимистично обновляем UI
+    setGenerations((prev) =>
+      prev.map((g) =>
+        g.id === gen.id
+          ? { ...g, favorite: wasFavorite ? null : { id: "temp" } }
+          : g
+      )
+    );
+    // Если убираем из избранного — закрываем модальное окно
+    if (wasFavorite && selectedImage?.id === gen.id) {
+      setSelectedImage(null);
+    } else if (!wasFavorite && selectedImage?.id === gen.id) {
+      setSelectedImage((prev) => prev ? { ...prev, favorite: { id: "temp" } } : null);
+    }
+
+    try {
+      const res = await fetch("/api/favorites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ generationId: gen.id }),
+      });
+      if (!res.ok) {
+        throw new Error("Favorites API error");
+      }
+    } catch (error) {
+      console.error("Favorite toggle error:", error);
+      toast.error("Не удалось изменить избранное");
+      // Откатываем при ошибке
+      fetchGenerations();
     }
   };
 
@@ -202,18 +243,17 @@ export default function GalleryPage() {
     setMarketplaceProducts([]);
 
     try {
-      const base64 = await imageToBase64(imageUrl);
-
+      // Передаём URL напрямую — API загрузит изображение серверно (обход CORS)
       const response = await fetch("/api/marketplace-search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: base64 }),
+        body: JSON.stringify({ imageUrl }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Ошибка поиска");
+        throw new Error(data.error || data.details || "Ошибка поиска");
       }
 
       setMarketplaceProducts(data.products || []);
@@ -260,31 +300,35 @@ export default function GalleryPage() {
       <main className="min-h-screen bg-background pt-20 pb-10 relative z-0">
         <div className="max-w-6xl mx-auto px-4">
           {/* Заголовок */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
               Мои образы
             </h1>
             <p className="text-foreground/60">
-              {generations.length > 0
-                ? `${generations.length} ${generations.length === 1 ? "образ" : "образов"}`
+              {generations.filter(g => !!g.favorite).length > 0
+                ? `${generations.filter(g => !!g.favorite).length} сохранённых образов`
                 : "Здесь появятся ваши сгенерированные образы"}
             </p>
           </div>
 
-          {generations.length === 0 ? (
-            <div className="text-center py-20">
-              <Gem className="w-16 h-16 text-gold/50 mx-auto mb-4" strokeWidth={1.5} />
-              <p className="text-foreground/60 mb-6">У вас пока нет сохранённых образов</p>
-              <button
-                onClick={() => router.push("/generate")}
-                className="bg-gold hover:bg-gold-600 text-black font-semibold py-3 px-6 rounded-lg transition-all"
-              >
-                Создать первый образ
-              </button>
-            </div>
-          ) : (
+          {(() => {
+            const favorites = generations.filter((g) => !!g.favorite);
+            const visible = favorites.slice(0, visibleCount);
+            return favorites.length === 0 ? (
+              <div className="text-center py-20">
+                <Gem className="w-16 h-16 text-gold/50 mx-auto mb-4" strokeWidth={1.5} />
+                <p className="text-foreground/60 mb-6">У вас пока нет сохранённых образов</p>
+                <button
+                  onClick={() => router.push("/generate")}
+                  className="bg-gold hover:bg-gold-600 text-black font-semibold py-3 px-6 rounded-lg transition-all"
+                >
+                  Создать первый образ
+                </button>
+              </div>
+            ) : (
+            <>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {generations.map((gen) => (
+              {visible.map((gen) => (
                 <div
                   key={gen.id}
                   className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-foreground/5 cursor-pointer"
@@ -310,21 +354,33 @@ export default function GalleryPage() {
                     </div>
                   </div>
 
-                  {/* Иконка избранного — нажатие удаляет из избранного */}
+                  {/* Иконка избранного — toggle */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      deleteGeneration(gen.id);
+                      toggleFavorite(gen);
                     }}
                     className="absolute top-2 right-2 p-1.5 rounded-full bg-black/40 hover:bg-black/60 transition-colors"
-                    title="Избранное"
+                    title={gen.favorite ? "Убрать из избранного" : "В избранное"}
                   >
-                    <Heart className="w-5 h-5 text-gold fill-gold" strokeWidth={1.5} />
+                    <Heart className={`w-5 h-5 ${gen.favorite ? "text-gold fill-gold" : "text-white/70"}`} strokeWidth={1.5} />
                   </button>
                 </div>
               ))}
             </div>
-          )}
+            {favorites.length > visibleCount && (
+              <div className="text-center mt-8">
+                <button
+                  onClick={() => setVisibleCount((c) => c + 10)}
+                  className="px-8 py-3 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]"
+                >
+                  Ещё
+                </button>
+              </div>
+            )}
+            </>
+            );
+          })()}
         </div>
 
         {/* Модальное окно просмотра */}
@@ -367,10 +423,12 @@ export default function GalleryPage() {
                     <Download className="w-5 h-5 text-gold" strokeWidth={1.5} /> Скачать
                   </button>
                   <button
-                    onClick={() => deleteGeneration(selectedImage.id)}
-                    className="flex-1 py-3 px-4 glass-card hover:bg-muted text-foreground font-semibold rounded-lg transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] flex items-center justify-center gap-3"
+                    onClick={() => toggleFavorite(selectedImage)}
+                    className="flex-1 py-3 px-4 glass-card hover:bg-muted font-semibold rounded-lg transition-all duration-300 flex items-center justify-center gap-3"
+                    style={{ borderColor: 'rgba(212, 175, 55, 0.6)', boxShadow: '0 0 20px rgba(212, 175, 55, 0.25)' }}
                   >
-                    <Heart className="w-6 h-6 text-gold fill-gold" strokeWidth={1.5} /> Избранное
+                    <Heart className="w-5 h-5 fill-gold text-gold" strokeWidth={1.5} />
+                    <span className="text-gold">В избранном</span>
                   </button>
                 </div>
 
